@@ -68,7 +68,7 @@ def train_model(model, train_ds, test_ds, epochs=5000, lr=0.001,
         model.train()
         optimizer.zero_grad()
 
-        loss, mse = model.loss(F_train, S_train, gamma_override=gamma_train)
+        loss, mse = model.loss(F_train, S_train, gamma=gamma_train)
         loss.backward()
         optimizer.step()
 

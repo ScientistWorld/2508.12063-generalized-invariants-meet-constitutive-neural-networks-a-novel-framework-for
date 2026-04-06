@@ -6,7 +6,7 @@
 # The workspace is bind-mounted at /home/user at runtime.
 
 Bootstrap: docker
-From: python:3.11-slim
+From: python:3.12-slim
 
 %post
     apt-get update && apt-get install -y --no-install-recommends \

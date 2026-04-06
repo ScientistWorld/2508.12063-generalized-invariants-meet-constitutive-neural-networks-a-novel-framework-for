@@ -120,8 +120,21 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
 
 
 def build_scores_json(checkpoint_results, output_path):
-    """Build scoring/scores.json from evaluation results."""
-    scores = {}
+    """Build scoring/scores.json from evaluation results.
+
+    Output format mirrors reference.json:
+    {
+      "experiments": {
+        "exp_name": {
+          "results": {
+            "method_name": { metrics... }
+          }
+        }
+      }
+    }
+    """
+    # Group by experiment name
+    exp_data = {}
 
     for result in checkpoint_results:
         material = result['material']
@@ -150,9 +163,9 @@ def build_scores_json(checkpoint_results, output_path):
             avg_r2 = float(np.mean([r2_ut, r2_bt, r2_ps]))
             alpha_star = params.get('alpha_plus', params.get('alpha_fixed', 0.0))
 
-            if exp_name not in scores:
-                scores[exp_name] = {}
-            scores[exp_name][method_name] = {
+            if exp_name not in exp_data:
+                exp_data[exp_name] = {}
+            exp_data[exp_name][method_name] = {
                 'r2_ut': round(r2_ut, 4),
                 'r2_bt': round(r2_bt, 4),
                 'r2_ps': round(r2_ps, 4),
@@ -179,15 +192,18 @@ def build_scores_json(checkpoint_results, output_path):
             avg_r2 = float(np.mean([r2_ut, r2_uc, r2_ss]))
             alpha_star = params.get('alpha_minus', params.get('alpha_fixed', 0.0))
 
-            if exp_name not in scores:
-                scores[exp_name] = {}
-            scores[exp_name][method_name] = {
+            if exp_name not in exp_data:
+                exp_data[exp_name] = {}
+            exp_data[exp_name][method_name] = {
                 'r2_ut': round(r2_ut, 4),
                 'r2_uc': round(r2_uc, 4),
                 'r2_ss': round(r2_ss, 4),
                 'avg_r2': round(avg_r2, 4),
                 'alpha_star': round(float(alpha_star), 4),
             }
+
+    # Wrap in "experiments" key
+    scores = {"experiments": exp_data}
 
     os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
     with open(output_path, 'w') as f:

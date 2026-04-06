@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from method.gicann import GICANN, detect_mode, get_principal_stretches_batch
+from method.gicann import GICANN, detect_deformation_mode, get_principal_stretches
 
 
 class SICANN(nn.Module):
@@ -97,11 +97,11 @@ class SICANN(nn.Module):
 
         return dpsi
 
-    def compute_stress(self, F):
+    def compute_stress(self, F, gamma_override=None):
         """Compute Cauchy stress tensor from deformation gradient."""
         batch = F.shape[0]
-        l1, l2, l3 = get_principal_stretches_batch(F)
-        modes = detect_mode(F)
+        l1, l2, l3 = get_principal_stretches(F)
+        modes = detect_deformation_mode(l1, l2, l3, F)
 
         sigma = torch.zeros((batch, 3, 3), dtype=F.dtype, device=F.device)
 
@@ -149,7 +149,13 @@ class SICANN(nn.Module):
                     sigma[sample_idx, 1, 1] = sigma11[idx]
 
             elif mode == 'ss':
-                gamma = F_m[:, 0, 1]
+                if gamma_override is not None:
+                    # Use gamma values from the dataset (stored in gamma_override tensor)
+                    # indices contains original sample positions in the full batch
+                    gamma = gamma_override[[i for i in indices]]
+                else:
+                    # Fallback: extract from deformation gradient
+                    gamma = F_m[:, 0, 1]
 
                 if self.mode == 'combined':
                     sigma12 = torch.zeros(len(indices), dtype=F.dtype, device=F.device)

@@ -318,7 +318,7 @@ class GICANN(nn.Module):
                 s11 = alpha * dpsi_plus[i].item() * (l1_i ** alpha - l3_i ** alpha)
             else:
                 alpha = self.alpha_minus.item()
-                s11 = alpha * dpsi_plus[i].item() * (l1_i ** alpha - l3_i ** alpha)
+                s11 = alpha * dpsi_minus[i].item() * (l1_i ** alpha - l3_i ** alpha)
 
             sigma[i, 0, 0] = s11
 
@@ -355,7 +355,7 @@ class GICANN(nn.Module):
                 s11 = alpha * dpsi_plus[i].item() * (l1_i ** alpha - l3_i ** alpha)
             else:
                 alpha = self.alpha_minus.item()
-                s11 = alpha * dpsi_plus[i].item() * (l1_i ** alpha - l3_i ** alpha)
+                s11 = alpha * dpsi_minus[i].item() * (l1_i ** alpha - l3_i ** alpha)
 
             sigma[i, 0, 0] = s11
             sigma[i, 1, 1] = s11

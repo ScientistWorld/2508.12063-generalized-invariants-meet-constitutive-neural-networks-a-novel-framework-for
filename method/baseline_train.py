@@ -71,7 +71,7 @@ def main():
 
     for epoch in range(args.epochs):
         optimizer.zero_grad()
-        loss, mse = model.loss(F_train, S_train, gamma_override=gamma_train)
+        loss, mse = model.loss(F_train, S_train, gamma=gamma_train)
         loss.backward()
         optimizer.step()
 

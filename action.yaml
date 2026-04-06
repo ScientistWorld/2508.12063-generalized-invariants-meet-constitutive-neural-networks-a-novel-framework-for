@@ -3,4 +3,4 @@ action: submit
 gpus: 0
 test: false
 milestone: method_runs
-notes: "First full training run: SI-CANN baselines + GI-CANN method + evaluation. 5000 epochs per config, 6 configs (3 rubber + 3 brain). Expect avg R² ~0.998 for GI-CANN rubber, ~0.966 for GI-CANN brain."
+notes: "Full training run: SI-CANN baselines (6 configs) + GI-CANN method (6 configs) + evaluation. Fixed critical bugs in gicann.py (dpsi branch for negative mode) and sicann.py (imports, gamma handling, forward signature). 5000 epochs per config."
