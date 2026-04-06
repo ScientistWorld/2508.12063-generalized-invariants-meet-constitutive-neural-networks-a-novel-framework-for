@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+"""Evaluation script for GI-CANN reproduction.
+
+This script evaluates trained model checkpoints and produces scoring/scores.json.
+
+Usage:
+    python eval/evaluate.py --checkpoints-dir checkpoints --scores-json scoring/scores.json
+"""
+
+import argparse
+import json
+import os
+import sys
+import numpy as np
+import torch
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from data.load_data import (
+    get_rubber_dataset, get_brain_dataset,
+    compute_r2
+)
+from method.gicann import GICANN
+from method.sicann import SICANN
+
+
+def evaluate_checkpoint(checkpoint_path, device='cpu'):
+    """Evaluate a single checkpoint.
+
+    Returns:
+        dict with material, mode, model_type, r2_train, r2_test, avg_r2, params
+    """
+    state = torch.load(checkpoint_path, map_location=device)
+    config = state.get('config', {})
+
+    # Infer material and mode from checkpoint filename
+    stem = checkpoint_path.stem
+    is_sicann = 'sicann' in stem.lower()
+
+    # Parse material
+    if 'rubber' in stem:
+        material = 'rubber'
+        train_ds, test_ds = get_rubber_dataset()
+        train_modes = ['ut', 'bt']
+        test_modes = ['ps']
+    else:
+        material = 'brain'
+        train_ds, test_ds = get_brain_dataset()
+        train_modes = ['ut', 'uc']
+        test_modes = ['ss']
+
+    mode = config.get('mode', 'unknown')
+    model_type = 'SI-CANN' if is_sicann else 'GI-CANN'
+
+    # Reconstruct model
+    if is_sicann:
+        model = SICANN(config)
+    else:
+        model = GICANN(config)
+
+    model.load_state_dict(state['model_state'])
+    model.eval()
+
+    device_obj = torch.device(device)
+    model = model.to(device_obj)
+
+    F_train = train_ds.F.to(device_obj)
+    S_train = train_ds.S.to(device_obj)
+    gamma_train = train_ds.gamma.to(device_obj)
+    F_test = test_ds.F.to(device_obj)
+    S_test = test_ds.S.to(device_obj)
+    gamma_test = test_ds.gamma.to(device_obj)
+
+    with torch.no_grad():
+        r2_train = {}
+        r2_test = {}
+
+        for mode_name in train_modes:
+            indices = train_ds.mode_indices[mode_name]
+            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
+            if mode_name == 'ss':
+                pred = model(F_train[idx_t], gamma=gamma_train[idx_t])
+            else:
+                pred = model(F_train[idx_t])
+            tgt = S_train[idx_t]
+            r2_train[mode_name] = float(compute_r2(
+                pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
+
+        for mode_name in test_modes:
+            indices = test_ds.mode_indices[mode_name]
+            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
+            if mode_name == 'ss':
+                pred = model(F_test[idx_t], gamma=gamma_test[idx_t])
+            else:
+                pred = model(F_test[idx_t])
+            tgt = S_test[idx_t]
+            r2_test[mode_name] = float(compute_r2(
+                pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
+
+    all_r2 = list(r2_train.values()) + list(r2_test.values())
+    avg_r2 = float(np.mean(all_r2))
+    params = {}
+    for k, v in model.get_parameters_dict().items():
+        if isinstance(v, (int, float)):
+            params[k] = round(float(v), 4)
+        else:
+            params[k] = v
+
+    return {
+        'material': material,
+        'mode': mode,
+        'model_type': model_type,
+        'r2_train': r2_train,
+        'r2_test': r2_test,
+        'avg_r2': avg_r2,
+        'params': params,
+        'checkpoint': str(checkpoint_path),
+    }
+
+
+def build_scores_json(checkpoint_results, output_path):
+    """Build scoring/scores.json from evaluation results."""
+    scores = {}
+
+    for result in checkpoint_results:
+        material = result['material']
+        mode = result['mode']
+        model_type = result['model_type']
+        r2_train = result['r2_train']
+        r2_test = result['r2_test']
+        params = result['params']
+
+        if material == 'rubber':
+            if mode == 'positive':
+                exp_name = 'rubber_generalization'
+                method_name = 'SI-CANN' if model_type == 'SI-CANN' else 'GI-CANN'
+            elif mode == 'negative':
+                exp_name = 'rubber_negative_ablation'
+                method_name = 'SI-CANN_Jα-' if model_type == 'SI-CANN' else 'GI-CANN_Jα-'
+            elif mode == 'combined':
+                exp_name = 'rubber_combined_ablation'
+                method_name = 'SI-CANN_Jα+Jα-' if model_type == 'SI-CANN' else 'GI-CANN_Jα+Jα-'
+            else:
+                continue
+
+            r2_ut = r2_train.get('ut', r2_test.get('ut', 0.0))
+            r2_bt = r2_train.get('bt', 0.0)
+            r2_ps = r2_test.get('ps', 0.0)
+            avg_r2 = float(np.mean([r2_ut, r2_bt, r2_ps]))
+            alpha_star = params.get('alpha_plus', params.get('alpha_fixed', 0.0))
+
+            if exp_name not in scores:
+                scores[exp_name] = {}
+            scores[exp_name][method_name] = {
+                'r2_ut': round(r2_ut, 4),
+                'r2_bt': round(r2_bt, 4),
+                'r2_ps': round(r2_ps, 4),
+                'avg_r2': round(avg_r2, 4),
+                'alpha_star': round(float(alpha_star), 4),
+            }
+
+        elif material == 'brain':
+            if mode == 'negative':
+                exp_name = 'brain_generalization'
+                method_name = 'SI-CANN' if model_type == 'SI-CANN' else 'GI-CANN'
+            elif mode == 'positive':
+                exp_name = 'brain_positive_ablation'
+                method_name = 'SI-CANN_Jα+' if model_type == 'SI-CANN' else 'GI-CANN_Jα+'
+            elif mode == 'combined':
+                exp_name = 'brain_combined_ablation'
+                method_name = 'SI-CANN_Jα+Jα-' if model_type == 'SI-CANN' else 'GI-CANN_Jα+Jα-'
+            else:
+                continue
+
+            r2_ut = r2_train.get('ut', 0.0)
+            r2_uc = r2_train.get('uc', 0.0)
+            r2_ss = r2_test.get('ss', 0.0)
+            avg_r2 = float(np.mean([r2_ut, r2_uc, r2_ss]))
+            alpha_star = params.get('alpha_minus', params.get('alpha_fixed', 0.0))
+
+            if exp_name not in scores:
+                scores[exp_name] = {}
+            scores[exp_name][method_name] = {
+                'r2_ut': round(r2_ut, 4),
+                'r2_uc': round(r2_uc, 4),
+                'r2_ss': round(r2_ss, 4),
+                'avg_r2': round(avg_r2, 4),
+                'alpha_star': round(float(alpha_star), 4),
+            }
+
+    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
+    with open(output_path, 'w') as f:
+        json.dump(scores, f, indent=2)
+
+    print(f"Scores written to {output_path}")
+    return scores
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Evaluate GI-CANN results')
+    parser.add_argument('--checkpoint', type=str, default=None)
+    parser.add_argument('--checkpoints-dir', type=str, default='checkpoints')
+    parser.add_argument('--scores-json', type=str, default='scoring/scores.json')
+    parser.add_argument('--device', type=str, default='cpu')
+    args = parser.parse_args()
+
+    results = []
+
+    if args.checkpoint:
+        ckpt_path = Path(args.checkpoint)
+        if ckpt_path.exists():
+            print(f"Evaluating {ckpt_path}")
+            result = evaluate_checkpoint(ckpt_path, args.device)
+            results.append(result)
+            print(f"  {result['model_type']} | {result['material']} | {result['mode']}")
+            print(f"  Train R²: {result['r2_train']}")
+            print(f"  Test R²: {result['r2_test']}")
+            print(f"  Avg R²: {result['avg_r2']:.4f}")
+        else:
+            print(f"Checkpoint not found: {ckpt_path}")
+
+    if args.checkpoints_dir:
+        ckpt_dir = Path(args.checkpoints_dir)
+        if ckpt_dir.exists():
+            for ckpt_path in sorted(ckpt_dir.glob('*.pt')):
+                if ckpt_path.name.startswith('_'):
+                    continue
+                print(f"Evaluating {ckpt_path.name}")
+                try:
+                    result = evaluate_checkpoint(ckpt_path, args.device)
+                    results.append(result)
+                    print(f"  {result['model_type']} | {result['material']} | {result['mode']} | Avg R²: {result['avg_r2']:.4f}")
+                except Exception as e:
+                    print(f"  ERROR: {e}")
+
+    if results:
+        scores = build_scores_json(results, args.scores_json)
+        print(f"\n=== Scores Summary ===")
+        for exp_name, methods in sorted(scores.items()):
+            print(f"\n{exp_name}:")
+            for method_name, metrics in sorted(methods.items()):
+                print(f"  {method_name}: avg_r2={metrics['avg_r2']:.4f}")
+
+
+if __name__ == '__main__':
+    main()

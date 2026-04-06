@@ -1,30 +1,18 @@
 #!/bin/bash
 # Download all data and models needed for this environment.
 #
-# Run on a node with internet access BEFORE building the container
-# or submitting compute jobs.
+# This paper uses experimental stress-strain data published directly in the paper
+# (Table A.5). All data is embedded in the data loading code (data/load_data.py).
+# No external downloads are required.
 #
-# This script should be idempotent — safe to run multiple times.
-# It should skip files that already exist.
+# Estimated total download size: 0 MB
+# Estimated disk usage: ~0 MB
 #
-# Update the storage estimate below as you add downloads.
-#
-# Estimated total download size: TODO GB
-# Estimated disk usage after extraction: TODO GB
-#
-# During reproduction, prefer downloading to shared directories
-# (shared/datasets/, shared/models/) so other papers can reuse them.
-# You do not need to run this script during reproduction — it exists
-# for future portability. Write it to download to workspace-local
-# paths (data/, checkpoints/) instead of the shared directories
-# so a future user with just the workspace can run this script and get everything they need.
+# The only external dependency is PyTorch (installed via setup.sh).
 
 set -e
-
 cd "$(dirname "$0")"
 
-# TODO: implement downloads
-# Examples:
-#   wget -nc https://example.com/dataset.tar.gz -P data/
-#   python -c "from huggingface_hub import snapshot_download; snapshot_download('model/name', local_dir='checkpoints/')"
-#   huggingface-cli download Qwen/Qwen3-1.7B --local-dir /checkpoints/Qwen3-1.7B
+echo "No external downloads required."
+echo "All data (rubber and brain tissue stress-strain measurements) is embedded in data/load_data.py"
+echo "from the paper's Table A.5."

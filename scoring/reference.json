@@ -1,0 +1,172 @@
+{
+  "experiments": {
+    "rubber_generalization": {
+      "description": "Rubber: train on uniaxial tension + equibiaxial tension, test on pure shear. Comparing SI-CANN (fixed α+=2) vs GI-CANN (learned α+*). This is the core claim for rubber: GI-CANN discovers α*≈1.675 and achieves near-perfect R².",
+      "weight": 0.4,
+      "primary_metric": "avg_r2",
+      "metrics": {
+        "r2_ut": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_bt": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_ps": {"higher_is_better": true, "coefficient": 0.4},
+        "avg_r2": {"higher_is_better": true, "coefficient": 1.0},
+        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+      },
+      "results": {
+        "SI-CANN": {
+          "type": "baseline",
+          "r2_ut": 0.992,
+          "r2_bt": 0.960,
+          "r2_ps": 0.996,
+          "avg_r2": 0.982,
+          "alpha_star": 2.0
+        },
+        "GI-CANN": {
+          "type": "proposed",
+          "r2_ut": 0.999,
+          "r2_bt": 0.997,
+          "r2_ps": 0.998,
+          "avg_r2": 0.998,
+          "alpha_star": 1.675
+        }
+      }
+    },
+    "rubber_negative_ablation": {
+      "description": "Rubber with negative exponent (I₂-like behavior). Shows that negative exponents perform poorly for rubber — an ablation confirming that stretch-dominated materials prefer positive exponents.",
+      "weight": 0.05,
+      "primary_metric": "avg_r2",
+      "metrics": {
+        "r2_ut": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_bt": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_ps": {"higher_is_better": true, "coefficient": 0.4},
+        "avg_r2": {"higher_is_better": true, "coefficient": 1.0}
+      },
+      "results": {
+        "SI-CANN_Jα-": {
+          "type": "baseline",
+          "r2_ut": 0.0,
+          "r2_bt": 0.954,
+          "r2_ps": 0.0,
+          "avg_r2": 0.318
+        },
+        "GI-CANN_Jα-": {
+          "type": "proposed",
+          "r2_ut": 0.166,
+          "r2_bt": 0.0,
+          "r2_ps": 0.627,
+          "avg_r2": 0.264
+        }
+      }
+    },
+    "rubber_combined_ablation": {
+      "description": "Rubber with both positive and negative exponents simultaneously. Shows that using both α+ and α- gives the best results (R²=0.999). Ablation confirming multi-invariant formulation is optimal for rubber.",
+      "weight": 0.05,
+      "primary_metric": "avg_r2",
+      "metrics": {
+        "r2_ut": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_bt": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_ps": {"higher_is_better": true, "coefficient": 0.4},
+        "avg_r2": {"higher_is_better": true, "coefficient": 1.0}
+      },
+      "results": {
+        "SI-CANN_Jα+Jα-": {
+          "type": "baseline",
+          "r2_ut": 0.994,
+          "r2_bt": 0.984,
+          "r2_ps": 0.952,
+          "avg_r2": 0.977
+        },
+        "GI-CANN_Jα+Jα-": {
+          "type": "proposed",
+          "r2_ut": 0.998,
+          "r2_bt": 0.999,
+          "r2_ps": 1.0,
+          "avg_r2": 0.999
+        }
+      }
+    },
+    "brain_generalization": {
+      "description": "Brain cortex: train on uniaxial tension + uniaxial compression, test on simple shear. Comparing SI-CANN (fixed α-=-2) vs GI-CANN (learned α-*≈-18). This is the core claim for brain tissue: GI-CANN discovers a large negative exponent capturing shear-sensitive behavior.",
+      "weight": 0.4,
+      "primary_metric": "avg_r2",
+      "metrics": {
+        "r2_ut": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_uc": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_ss": {"higher_is_better": true, "coefficient": 0.4},
+        "avg_r2": {"higher_is_better": true, "coefficient": 1.0},
+        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+      },
+      "results": {
+        "SI-CANN": {
+          "type": "baseline",
+          "r2_ut": 0.120,
+          "r2_uc": 0.836,
+          "r2_ss": 0.879,
+          "avg_r2": 0.610,
+          "alpha_star": -2.0
+        },
+        "GI-CANN": {
+          "type": "proposed",
+          "r2_ut": 0.930,
+          "r2_uc": 0.998,
+          "r2_ss": 0.970,
+          "avg_r2": 0.966,
+          "alpha_star": -18.016
+        }
+      }
+    },
+    "brain_positive_ablation": {
+      "description": "Brain cortex with positive exponent (I₁-like behavior). Shows that positive exponents perform poorly for brain tissue — an ablation confirming that shear-sensitive materials prefer negative exponents.",
+      "weight": 0.05,
+      "primary_metric": "avg_r2",
+      "metrics": {
+        "r2_ut": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_uc": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_ss": {"higher_is_better": true, "coefficient": 0.4},
+        "avg_r2": {"higher_is_better": true, "coefficient": 1.0}
+      },
+      "results": {
+        "SI-CANN_Jα+": {
+          "type": "baseline",
+          "r2_ut": 0.0,
+          "r2_uc": 0.706,
+          "r2_ss": 0.875,
+          "avg_r2": 0.527
+        },
+        "GI-CANN_Jα+": {
+          "type": "proposed",
+          "r2_ut": 0.0,
+          "r2_uc": 0.700,
+          "r2_ss": 0.879,
+          "avg_r2": 0.526
+        }
+      }
+    },
+    "brain_combined_ablation": {
+      "description": "Brain cortex with both positive and negative exponents simultaneously. Shows that combined invariants give good results, but a single optimized negative exponent is sufficient and more interpretable.",
+      "weight": 0.05,
+      "primary_metric": "avg_r2",
+      "metrics": {
+        "r2_ut": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_uc": {"higher_is_better": true, "coefficient": 0.3},
+        "r2_ss": {"higher_is_better": true, "coefficient": 0.4},
+        "avg_r2": {"higher_is_better": true, "coefficient": 1.0}
+      },
+      "results": {
+        "SI-CANN_Jα+Jα-": {
+          "type": "baseline",
+          "r2_ut": 0.140,
+          "r2_uc": 0.832,
+          "r2_ss": 0.878,
+          "avg_r2": 0.617
+        },
+        "GI-CANN_Jα+Jα-": {
+          "type": "proposed",
+          "r2_ut": 0.930,
+          "r2_uc": 0.997,
+          "r2_ss": 0.972,
+          "avg_r2": 0.966
+        }
+      }
+    }
+  }
+}

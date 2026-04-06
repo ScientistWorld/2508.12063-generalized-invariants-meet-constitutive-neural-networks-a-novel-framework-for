@@ -9,16 +9,38 @@
 #   - Container is built (environment/container.sif)
 #   - Data and models are downloaded (via scripts/download.sh)
 #   - Working directory is /home/user
-#
-# This is the "gold standard" reproduction — 
-# You do not need to run this, but keep this in good shape
-# so other agents can easily run a full loop of reproduction and get the paper's numbers.
 
 set -e
 
 cd /home/user
+PYTHON=${PYTHON:-python3}
 
-# TODO: implement full reproduction pipeline
-# e.g.:
-#   bash scripts/baseline.sh
-#   bash scripts/method.sh
+# Download data (no-op since data is embedded)
+bash scripts/download.sh
+
+# Run baseline (SI-CANN)
+echo ""
+echo "========================================"
+echo "Running SI-CANN baseline..."
+echo "========================================"
+bash scripts/baseline.sh
+
+# Run the paper's method (GI-CANN)
+echo ""
+echo "========================================"
+echo "Running GI-CANN method..."
+echo "========================================"
+bash scripts/method.sh
+
+# Evaluate all results
+echo ""
+echo "========================================"
+echo "Evaluating all results..."
+echo "========================================"
+bash scripts/evaluate.sh
+
+echo ""
+echo "========================================"
+echo "Reproduction complete!"
+echo "========================================"
+echo "Results are in scoring/scores.json"
