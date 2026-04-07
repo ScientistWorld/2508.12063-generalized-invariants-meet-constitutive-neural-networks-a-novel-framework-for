@@ -1,94 +1,50 @@
 # Research Direction
 
-<!-- Do not edit this unless you decide to stop -->
+Future agents must work within the paper's problem space and approach family.
 
-<!--
-Define the research direction a scientist must follow when trying to
-improve on the paper's results. This is NOT about resource constraints
-(model size, dataset — those go in CONSTRAINTS.md). This is about
-the methodological scope: what research question is being pursued,
-and what approaches are in-bounds vs out-of-bounds.
+## Problem Space
 
-WHY THIS MATTERS: Without direction constraints, a scientist evaluate on this
-can trivially "beat" a paper by switching paradigms entirely. As a general
-example: if a paper proposes a novel Mamba variant and benchmarks it
-against prior Mamba models, switching to a Transformer would likely
-beat the numbers — but that tells us nothing about Mamba research.
-The scientist must work within the paper's problem space so that
-improvement demonstrates genuine insight in that area.
+**Domain**: Hyperelastic constitutive modeling for soft materials.
 
-THE RIGHT LEVEL OF SPECIFICITY: The direction should be scoped to the
-paper's actual contribution — not so broad that anything goes, but not
-so narrow that it dictates the exact technique. Think of it as: the
-scientist must work on the SAME PROBLEM and improve the SAME KIND OF
-THING the paper contributed, but they have full freedom in HOW they
-improve it.
+**Challenge**: Discovering appropriate invariant exponents α that characterize material behavior without prior knowledge.
 
-In the same example: 
-Too broad:  "Must use SSMs" — lets the scientist work on any SSM
-            problem, ignoring what this paper actually contributed.
-Too narrow: "Must use selective scan with input-dependent A matrices"
-            — dictates the technique, leaving no room for creativity.
-Right:      "Must improve input-dependent state dynamics for SSM
-            language modeling" — scoped to the contribution, open on
-            how to achieve it.
+**Materials**: Rubber (stretch-dominated, prefers positive α) and brain tissue (shear-sensitive, paper claims prefers negative α).
 
-WHAT TO WRITE:
-1. Research Problem — what question the paper addresses (one paragraph)
-2. Core Contribution — what specific thing the paper introduced or
-   improved (this is the area the scientist must work within)
-3. Approach Scope — what approach family and what aspects the scientist
-   can modify
-4. Out of Bounds — paradigm switches and scope violations
+## Approach Family
 
-Be specific to this paper. Explain the reasoning so the scientist
-understands the intent, not just the rule.
+**Must Use**: Generalized invariant-based constitutive neural networks (CI-CANN/GI-CANN framework).
 
-Example for a paper proposing a new Mamba variant for language modeling:
+**Key Idea**: Replace fixed invariants (I1, I2, I3) with generalized invariants J_α = Σ λ_i^α where α is learnable.
 
-## Research Problem
-This paper improves state-space models (SSMs) for language modeling.
-The core question is whether input-dependent state dynamics can close
-the quality gap between SSMs and Transformers on language tasks. ...
+**Required Components**:
+1. Generalized invariant computation with trainable exponent α
+2. Three-branch strain energy (identity + exponential + logarithmic)
+3. Stress derivation via hyperelasticity theory (∂ψ/∂C)
 
-## Core Contribution
-The paper's novelty is a selective scan mechanism that adapts the
-state transition matrices to the input, replacing the fixed dynamics
-of prior SSMs (S4, H3). The scientist must work on improving this
-kind of contribution: how the SSM processes sequences with
-input-dependent dynamics. ...
+**Cannot Switch To**:
+- Black-box neural networks that directly map λ → σ
+- Physics-uninformed learning without hyperelasticity constraints
+- Different invariants or constitutive formulations
+- Data-driven surrogate models that bypass the physics
 
-## Approach Scope
-The scientist should focus on the scan / state-dynamics component
-of the SSM. They may:
-- Redesign the selection mechanism (different parameterization,
-  gating, conditioning)
-- Change the state representation (different dimensions, structure,
-  initialization)
-- Modify how input signals interact with the state (mixing,
-  normalization, discretization)
-- Alter the training procedure for the SSM components (loss,
-  scheduling, curriculum)
- - ...
+## Innovation Directions (Within Framework)
 
-The scientist may also make architectural changes around the core
-SSM block (normalization, skip connections, mixing layers) as long
-as the SSM with input-dependent dynamics remains the central
-sequence-processing component. ...
+While staying within the GI-CANN family, future agents can:
+
+1. **Multi-branch architectures**: Explore different branch structures (additive vs multiplicative)
+2. **Initialization strategies**: Better warm-start for negative α regimes
+3. **Regularization**: L1/L2 on weights to improve generalization
+4. **Training stability**: Alternative optimizers, learning rate schedules, gradient clipping strategies
+5. **Invariant combinations**: J_α+ + J_α- with separate learnable exponents
+6. **Material-specific formulations**: Different architectures for stretch vs shear dominated materials
 
 ## Out of Bounds
-- Replacing the SSM backbone with a Transformer or attention-based
-  architecture. The paper's thesis is that SSMs can be competitive
-  — switching to attention sidesteps that thesis entirely.
-- Hybrid architectures that are majority-attention (e.g., Transformer
-  with one SSM layer). A small attention component used as a tool
-  within an SSM-first design is acceptable if justified.
-- Ensemble methods that combine an SSM with a separate Transformer.
-  The goal is a single-model SSM contribution.
-- Working on a different SSM problem (e.g., improving SSM efficiency
-  or hardware utilization) rather than the quality of input-dependent
-  dynamics. Stay on the paper's research question.
- - ...
 
-Delete this comment block and fill in your actual direction below.
--->
+Cannot claim improvement by:
+- Using a completely different neural architecture (e.g., MLP, Transformer)
+- Adding model capacity to memorize data
+- Switching to a regression problem without hyperelasticity constraints
+- Using external priors or embeddings not derived from deformation data
+- Simplifying the problem to trivial toy cases
+
+The goal is methodological advancement within the GI-CANN framework, not beating benchmarks at any cost.

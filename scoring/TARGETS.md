@@ -1,50 +1,48 @@
-# Evaluation Targets
+# Optimization Targets
 
-<!-- Do not edit this unless you decide to stop -->
+This document defines what future agents should optimize to improve upon the GI-CANN reproduction.
 
-<!--
-Describe what a scientist could optimize and how to measure it.
+## Primary Goals
 
-If a paper claims "we get X without sacrificing Y." Your targets must
-capture BOTH sides. Without constraint targets, a scientist can trivially
-"improve" by breaking the property the paper was designed to satisfy.
+### 1. Rubber Material (VHB 4910) — Solved
+**Target**: Reproduce or improve upon GI-CANN's R²≈0.998 performance with discovered α*≈1.675.
 
-Three kinds of targets:
+**Current Status**: Achieved R²=0.999 with α*≈1.677. ✓
 
-  PRIMARY    — the main thing the paper optimizes (accuracy, PSNR, etc.)
-  CONSTRAINT — what the paper must maintain (security, fairness, param count,
-               baseline comparison). Constraint metrics guard against cheating:
-               a scientist who ignores the constraint should score WORSE.
-  ABLATION   — what breaks when the key idea is removed (wrong-key test,
-               no-module test). Proves the method actually does something. 
-               This can be ignored if truly not important.
+**Evaluation**: Run `python eval/evaluate.py --checkpoints-dir checkpoints --scores-json scoring/scores.json` and verify `rubber_generalization` experiment shows high avg_r2 for GI-CANN.
 
-For each target, write:
-- What the experiment tests (one sentence)
-- The primary metric and direction (higher/lower is better)
-- How to run evaluation
+### 2. Brain Tissue (Brain Cortex) — Open Problem
+**Target**: Achieve R²≈0.966 with α*≈-18 as reported in the paper.
 
-Every target here MUST appear in both reference.json and scores.json.
-Do not list targets you cannot measure — phantom targets are worse than
-missing targets.
+**Current Status**: R²=0.14-0.62 — NOT REPRODUCED.
 
-Example for a steganography paper:
+**Root Cause**: The α⁻ stress formula (σ ∝ (l3^α - l1^α)) appears incompatible with brain UT/UC data. For uniaxial compression with α=-18, the term l3^α ≫ l1^α produces huge positive stress.
 
-## Primary: reconstruction_quality
-Cover and hidden scene PSNR on Blender Synthetic.
-- **Metric**: psnr (higher is better)
+**Challenge**: The paper reports excellent results for brain, but our faithful reproduction fails. Possible directions:
+- Investigate if the paper used a different stress formulation for brain
+- Verify the brain data matches the paper's source
+- Explore alternative invariant definitions or stress derivations
+- Check for data preprocessing steps not described in the paper
 
-## Constraint: key_security
-Wrong-key rendering must produce incoherent output.
-- **Metric**: wrong_key_psnr (lower is better — high means security is broken)
+## Secondary Goals
 
-## Ablation: vs_standalone_baseline
-Cover quality should match standalone model (no hidden scene embedded).
-- **Metric**: psnr_gap (lower is better — large gap means hiding costs quality)
+### Ablation Studies
+- **Negative exponent for rubber**: Should show poor performance (R²<0.7) — confirms stretch-dominated materials prefer positive α
+- **Positive exponent for brain**: Should show poor performance (R²<0.6) — confirms shear-sensitive materials prefer negative α
 
-Delete this comment block and fill in your actual targets below.
--->
+## Baselines
 
-<!-- This is high-level. IT IS ABOUT CONCEPT, NOT NUMBERS. DO NOT INCLUDE ANY ACTUAL VALUES FROM THE PAPER OR YOUR EXPERIMENTS HERE. -->
+**SI-CANN** (fixed α=±2) serves as the baseline. Any proposed method should:
+1. Exceed SI-CANN performance on the primary material (rubber: R²>0.99)
+2. Demonstrate learnable α values differ from the fixed ±2
+3. Maintain similar parameter count (not just a larger model)
 
-<!-- This should EXACTLY corresponds to the structure in your scores.json. -->
+## Evaluation Protocol
+
+Run `bash scripts/evaluate.sh` to:
+1. Load all trained checkpoints from `checkpoints/`
+2. Evaluate on test data (pure shear for rubber, simple shear for brain)
+3. Compute R² scores for train and test modes
+4. Write results to `scoring/scores.json`
+
+The system compares `scoring/scores.json` against `scoring/reference.json` (paper's reported values).

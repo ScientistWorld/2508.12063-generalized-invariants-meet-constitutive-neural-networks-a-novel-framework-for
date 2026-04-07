@@ -1,78 +1,60 @@
-# Scientist Constraints
+# Constraints
 
-<!-- Do not edit this unless you decide to stop -->
+These constraints define what a scientist must hold fixed. Genuine improvement requires methodology advances, not just resource scaling.
 
-<!--
-A scientist agent will attempt to improve on your reproduced results.
-These constraints define what the scientist must hold fixed, so that
-any improvement reflects genuine methodological innovation — not just
-throwing more resources at the problem.
+## Data Constraints
 
-CONTEXT: Your reproduction becomes a benchmark environment. The scientist
-gets your code, data, evaluation pipeline, and these constraints. They
-must beat your scores while respecting every constraint listed here.
-Without good constraints, a scientist can trivially "improve" by swapping
-in a larger model, using a richer dataset that is simply publicly avaliable, or more 
-— none of which demonstrate real scientific insight.
+**Must Use**: The stress-strain data from the paper's Table A.5, located in `data/` and loaded via `data/load_data.py`.
 
-Your job is to act as a judge: distinguish between flexible innovation
-and non-genuine improvement. Constraints should block trivial gains
-(e.g. just swapping in a bigger model) while leaving room for creative
-methodology (e.g. a clever augmentation strategy, a better loss
-function, a novel use of existing tools). When in doubt, ask: "does
-this require insight, or just more resources?" Lock down the resources,
-leave the insight open. Do not block innovation.
+- **Rubber (VHB 4910)**: 
+  - Train: Uniaxial tension (UT) + Equibiaxial tension (BT)
+  - Test: Pure shear (PS)
+  - Range: λ1 ∈ [1.0, 7.25], stresses up to ~500 kPa
 
-For example, if a scientist downloads online IMDB reviews to supplement a
-sentiment dataset, that's resource scaling. But if they use an LLM to
-augment the existing training data, that's methodology — they designed
-that pipeline. This is just an example, but keep this kind of distinction 
-in mind when writing constraints.
+- **Brain Cortex**:
+  - Train: Uniaxial tension (UT) + Uniaxial compression (UC)
+  - Test: Simple shear (SS), γ ∈ [0, 0.2]
+  - Range: λ1 ∈ [0.9, 1.1], stresses ∈ [-1.03, 0.54] kPa
 
-Be SPECIFIC to this paper. Generic constraints are useless. Name the
-exact model, the exact dataset, the exact splits. Explain the reasoning
-so the scientist understands the intent behind each constraint, not
-just the rule — this helps them judge edge cases on their own.
+**Cannot Modify**: Data values, train/test split, deformation modes.
 
-Think about at least:
-- Model: architecture, size, pretrained weights
-- Data: which datasets, which splits, whether external data is allowed
+## Model Constraints
 
-You may add other constraint categories if relevant to this paper
-(e.g. training procedure, evaluation protocol, problem formulation).
+**Must Implement**: Three-branch strain energy function with identity, exponential, and logarithmic components:
 
-Example for a sentiment analysis paper:
+```
+ψ = ψ_id + ψ_exp + ψ_ln
+ψ_id = w_id · J_α
+ψ_exp = w_exp1 · exp(w_exp2 · J_α^(-1))
+ψ_ln = -w_ln1 · ln(1 - w_ln2 · (J_α - 3))
+```
 
-## Model
-The scientist must use BERT-base-uncased (110M parameters, HuggingFace
-`bert-base-uncased`). The paper's contribution is a novel fine-tuning
-strategy, not architecture design. Switching to a larger model (e.g.
-DeBERTa-v3-large, 304M params) would improve accuracy but would not
-demonstrate any methodological insight. The scientist may modify the
-fine-tuning procedure, add adapter layers, change the classification
-head, or alter the training loop — but the base encoder must remain
-BERT-base-uncased with its standard pretrained weights.
+Where J_α = Σ λ_i^α (generalized invariant).
 
-## Data
-The scientist must use only the provided SST-2 binary sentiment
-dataset (67,349 training examples, 872 validation, 1,821 test).
-No external sentiment corpora or additional human-labeled data.
-The test split must not be used for training or validation.
+**Fixed Constraints**:
+- Must use trainable exponent α (GI-CANN) or fixed α=±2 (SI-CANN baseline)
+- Must compute stress via σ = 2·F·∂ψ/∂C for uniaxial/equibiaxial, B-eigenvalue formula for simple shear
+- Cannot add architectural complexity (no additional layers, no attention, etc.)
 
-Delete this comment block and fill in your actual constraints below.
+**Variable**: Weight initialization, learning rate, optimizer, training epochs, gradient clipping — these are hyperparameters to tune.
 
-At the very end, write a compliance checklist for the scientist agent.
-Each item should be a concrete, verifiable condition the scientist can
-check off before submitting. These should mirror your constraints above
-but phrased as yes/no checks.
+## Evaluation Constraints
 
-Example checklist (for the sentiment analysis example above):
+**Must Compute**: R² score on test deformation mode.
 
-## Compliance Checklist
-- [ ] Model is BERT-base-uncased (110M params), not a larger variant
-- [ ] No external sentiment datasets used beyond SST-2
-- [ ] Test split not used for training or validation
+**Metric**: avg_r2 = mean(R²_train_modes + R²_test_mode)
 
-ONLY WRITE ABOUT WHAT TO RESTRICT. NEVER WRITE ABOUT WHAT REMAINS OPEN.
+- Rubber: avg_r2 = mean(R²_ut, R²_bt, R²_ps)
+- Brain: avg_r2 = mean(R²_ut, R²_uc, R²_ss)
 
--->
+**Cannot Modify**: Evaluation metric, train/test modes.
+
+## Parameter Count Constraint
+
+**Constraint**: GI-CANN has 12 trainable parameters (per branch: α, w_id, w_exp1, w_exp2, w_ln1, w_ln2). Any proposed method must have similar parameter count (< 100) to demonstrate the invariant formulation's power, not model capacity.
+
+## Training Constraints
+
+**Must**: Train from random initialization (or sensible defaults) — cannot load pretrained weights from external sources.
+
+**Cannot**: Use more than 30 GPU-hours total budget per agent.
