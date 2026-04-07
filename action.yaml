@@ -1,6 +1,4 @@
 # End-of-turn action file.
-action: submit
-gpus: 1
-test: false
+action: done
 milestone: core_claim
-notes: "Core claim: GI-CANN rubber reproduces (R²=0.999, α*=1.677). Brain NOT reproduced: α⁻ stress formula incompatible with brain UT/UC data."
+notes: "10 consecutive container build failures due to external registry issues (Docker Hub rate limiting + malformed responses). Rubber models: GI-CANN R²=0.999, SI-CANN R²=0.991. Brain models: NOT reproduced — α⁻ stress formula incompatible with brain UT/UC data. Checkpoints, scores.json, and PROGRESS.md committed."

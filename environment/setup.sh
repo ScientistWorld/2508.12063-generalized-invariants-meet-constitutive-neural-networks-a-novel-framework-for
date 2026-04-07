@@ -12,4 +12,4 @@ set -e
 
 # Install PyTorch CPU-only (fast install, small download)
 # Using pip since uv may not be available in all container builds
-pip install torch --index-url https://download.pytorch.org/whl/cpu --quiet
+python3 -m pip install torch --index-url https://download.pytorch.org/whl/cpu --quiet

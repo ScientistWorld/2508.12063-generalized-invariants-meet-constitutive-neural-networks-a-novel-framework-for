@@ -6,13 +6,12 @@
 # The workspace is bind-mounted at /home/user at runtime.
 
 Bootstrap: docker
-From: python:3.12-slim
+From: public.ecr.aws/amazonlinux/amazonlinux:2023
 
 %post
-    apt-get update && apt-get install -y --no-install-recommends \
-        tmux nano vim-tiny less curl wget git && \
-    ln -sf /usr/bin/vim.tiny /usr/bin/vim && \
-    rm -rf /var/lib/apt/lists/*
+    dnf install -y --setopt=install_weak_deps=False \
+        python3.11 vim nano less curl wget git tmux && \
+    dnf clean all
 
     mkdir -p /home/user/data /home/user/checkpoints /home/user/scoring
     chmod 755 /home/user
