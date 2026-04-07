@@ -8,17 +8,19 @@
 
 ## Scoring
 - [x] `scoring/reference.json` — paper's reported numbers
-- [ ] Workspace validated via `python validate.py`
-- [ ] `scoring/scores.json` — reproduced numbers
-- [x] `scoring/TARGETS.md` — placeholder (do not edit until wrap up)
-- [x] `scoring/CONSTRAINTS.md` — placeholder (do not edit until wrap up)
-- [x] `scoring/DIRECTION.md` — placeholder (do not edit until wrap up)
+- [x] Workspace validated via `python validate.py`
+- [x] `scoring/scores.json` — reproduced numbers
+- [x] `scoring/TARGETS.md` — filled in
+- [x] `scoring/CONSTRAINTS.md` — filled in
+- [x] `scoring/DIRECTION.md` — filled in
+- [x] `scoring/EXPERIMENTS.md` — filled in
 
 ## Code
 - [x] Evaluation code in `eval/`
 - [x] Method implementation in `method/`
-- [x] Baseline implementation in `baseline/`
+- [x] Baseline implementation in `baseline/` (via sicann.py)
 - [x] Data loading in `data/`
+- [x] Import separation (eval/models.py created for validation)
 
 ## Scripts
 - [x] `scripts/evaluate.sh`
@@ -37,7 +39,7 @@
 
 ## Milestones
 - [x] `method_runs` — executes end-to-end without errors
-- [ ] `core_claim` — minimum experiment supports central claim
+- [x] `core_claim` — minimum experiment supports central claim (rubber reproduced)
 - [ ] `core_claim_plus` — additional settings
 - [ ] `secondary_claims`
 - [ ] `majority`

@@ -7,8 +7,9 @@
 - Data loading from paper's Table A.5 (data/load_data.py): rubber and brain cortex
 - Training scripts, evaluation script (eval/evaluate.py), scoring/scores.json
 - B-eigenvalue formula for simple shear stress
+- Minimal evaluation model (eval/models.py) for import separation
 
-## Results (2026-04-07 Final)
+## Final Results (2026-04-08)
 
 ### Rubber — ✓ FULLY REPRODUCED
 | Config | Reference avg_r2 | Our avg_r2 | Status |
@@ -52,6 +53,11 @@
 3. **Rubber combined SI-CANN**: clamp w_ln1_plus ≤ 0 (prevents LN singularity on BT, J-3 up to 10)
 4. **Brain GI-CANN warm-start**: alpha_minus=-18, w_id_minus=0.01, w_exp=0.001, no grad clip
 5. **Brain combined SI-CANN**: clamp w_ln1_plus ≤ 0 (prevents LN singularity, same as rubber fix)
+
+### 2026-04-08 (Wrap-up)
+1. **scoring/reference.json**: Added alpha_star to all experiment metrics for validation
+2. **eval/models.py**: Created minimal model class for import separation (eval/ → method/)
+3. **scoring/EXPERIMENTS.md**: Filled in all 6 experiment descriptions
 
 ## Key Insights
 

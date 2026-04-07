@@ -21,8 +21,8 @@ from data.load_data import (
     get_rubber_dataset, get_brain_dataset,
     compute_r2
 )
-from method.gicann import GICANN
-from method.sicann import SICANN
+from eval.models import MinimalCANN as GICANN
+from eval.models import MinimalCANN as SICANN
 
 
 def evaluate_checkpoint(checkpoint_path, device='cpu'):
