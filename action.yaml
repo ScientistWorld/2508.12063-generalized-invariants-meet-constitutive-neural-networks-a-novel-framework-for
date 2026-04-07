@@ -1,4 +1,8 @@
-# End-of-turn action file.
-action: done
-milestone: core_claim
-notes: "10 consecutive container build failures due to external registry issues (Docker Hub rate limiting + malformed responses). Rubber models: GI-CANN R²=0.999, SI-CANN R²=0.991. Brain models: NOT reproduced — α⁻ stress formula incompatible with brain UT/UC data. Checkpoints, scores.json, and PROGRESS.md committed."
+# IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
+# Do NOT sleep, poll, or wait for jobs. The system reads this file
+# only after your turn ends. Sleeping blocks the entire pipeline.
+action: pending
+gpus: 1
+test: false
+milestone: method_runs
+notes: ""
