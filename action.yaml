@@ -2,5 +2,5 @@
 action: submit
 gpus: 1
 test: false
-milestone: method_runs
-notes: "Training run with fixes: rubber combined SI-CANN (LN/ID clamps), brain (L1=0.001, exp warm-start 0.001, all branches init). 30000 epochs, lr=0.001, grad_clip=0.5."
+milestone: core_claim
+notes: "Core claim: GI-CANN rubber reproduces (R²=0.999, α*=1.677). Brain NOT reproduced: α⁻ stress formula incompatible with brain UT/UC data."
