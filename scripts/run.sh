@@ -1,61 +1,27 @@
 #!/bin/bash
 # Job script for GI-CANN hyperelastic materials reproduction.
 #
-# This runs inside the compute container with:
-#   - Workspace mounted at /home/user
-#   - Python with PyTorch installed
-#   - No internet access
-#
-# The full reproduction pipeline: baseline + GI-CANN + evaluation
+# Fixes in this run:
+# - Rubber combined SI-CANN: clamp LN and negative-ID branches to prevent divergence
+# - Brain models: reduced L1 (0.01→0.001), exp branch warm-start for all configs
+# - Brain GI-CANN: all branches (id/exp/ln) initialized for negative mode
 
 set -e
 
 cd /home/user
-PYTHON=${PYTHON:-python3}
-export PYTHON
+mkdir -p logs checkpoints
 
 echo "========================================="
-echo "GI-CANN Hyperelastic Reproduction"
+echo "GI-CANN Training Run (with fixes)"
 echo "========================================="
 
-# Quick smoke test first
-echo ""
-echo "--- Smoke test: data loading ---"
-/usr/bin/python3 -c "
-import sys
-sys.path.insert(0, '/home/user')
-from data.load_data import get_rubber_dataset, get_brain_dataset, compute_r2
-from method.gicann import GICANN
-train_ds, test_ds = get_rubber_dataset()
-print(f'Rubber train: {len(train_ds)} samples')
-print(f'Rubber test: {len(test_ds)} samples')
-train_ds2, test_ds2 = get_brain_dataset()
-print(f'Brain train: {len(train_ds2)} samples')
-print(f'Brain test: {len(test_ds2)} samples')
-model = GICANN({'mode': 'positive', 'r': 0.01}).double()
-F = train_ds.F[:3]
-S_pred = model(F)
-print(f'Smoke test: model forward pass OK, output shape: {S_pred.shape}')
-print('Data loading and model: OK')
-"
-
-echo ""
-echo "--- Downloading data (embedded, no-op) ---"
-bash scripts/download.sh
-
-echo ""
-echo "--- Running SI-CANN baselines ---"
-bash scripts/baseline.sh
-
-echo ""
-echo "--- Running GI-CANN method ---"
-bash scripts/method.sh
+python3 run_all_training.py --epochs 30000 --lr 0.001 --device cuda --grad-clip 0.5 2>&1 | tee logs/training.log
 
 echo ""
 echo "--- Evaluating results ---"
-bash scripts/evaluate.sh
+python3 eval/evaluate.py --checkpoints-dir checkpoints --scores-json scoring/scores.json
 
 echo ""
 echo "========================================="
-echo "All done! Results in scoring/scores.json"
+echo "Done! Results in scoring/scores.json"
 echo "========================================="
