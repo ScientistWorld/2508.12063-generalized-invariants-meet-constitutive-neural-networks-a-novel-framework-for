@@ -5,6 +5,8 @@ checkpoints/
 *.ckpt
 *.safetensors
 *.bin
+core.*
+*.core
 
 # Data — reproduced via scripts/download.sh, not tracked
 data/
