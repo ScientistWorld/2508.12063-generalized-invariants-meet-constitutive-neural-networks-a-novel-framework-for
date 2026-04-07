@@ -29,8 +29,8 @@
 | GI-CANN negative (α*≈-18) | 0.966 | **0.141** | -0.825 |
 | GI-CANN positive (α≈0) | 0.526 | **-0.212** | -0.738 |
 | SI-CANN positive (α=2) | 0.527 | **-0.109** | -0.636 |
-| SI-CANN negative (α=-2) | 0.610 | **-3.16** | -3.77 |
-| SI-CANN combined (α=-2) | 0.617 | **-32.1** | -32.7 |
+| SI-CANN negative (α=-2) | 0.610 | **-0.51** | -1.12 |
+| SI-CANN combined (α=-2) | 0.617 | **-0.50** | -1.12 |
 
 **Key finding**: Brain SI-CANN with α=-2 produces catastrophically bad predictions (R²=-3 to -32).
 The α=-2 stress formula is fundamentally incompatible with brain UT/UC/SS data.
