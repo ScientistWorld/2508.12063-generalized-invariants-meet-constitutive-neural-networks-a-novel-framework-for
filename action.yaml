@@ -1,6 +1,6 @@
 # End-of-turn action file.
 action: submit
-gpus: 0
+gpus: 1
 test: false
 milestone: method_runs
-notes: "Full training run: SI-CANN baselines (6 configs) + GI-CANN method (6 configs) + evaluation. Fixed critical bugs in gicann.py (dpsi branch for negative mode) and sicann.py (imports, gamma handling, forward signature). 5000 epochs per config."
+notes: "Training run with fixes: rubber combined SI-CANN (LN/ID clamps), brain (L1=0.001, exp warm-start 0.001, all branches init). 30000 epochs, lr=0.001, grad_clip=0.5."

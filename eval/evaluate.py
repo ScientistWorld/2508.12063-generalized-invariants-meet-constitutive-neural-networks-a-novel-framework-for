@@ -253,10 +253,11 @@ def main():
     if results:
         scores = build_scores_json(results, args.scores_json)
         print(f"\n=== Scores Summary ===")
-        for exp_name, methods in sorted(scores.items()):
+        experiments = scores.get('experiments', scores)
+        for exp_name, methods in sorted(experiments.items()):
             print(f"\n{exp_name}:")
             for method_name, metrics in sorted(methods.items()):
-                print(f"  {method_name}: avg_r2={metrics['avg_r2']:.4f}")
+                print(f"  {method_name}: avg_r2={metrics.get('avg_r2', 'N/A')}")
 
 
 if __name__ == '__main__':
