@@ -1,4 +1,4 @@
 # End-of-turn action file.
 action: done
 milestone: core_claim
-notes: "Audit complete. Implementation is real, evaluation is honest, deliverables complete. Core claim reproduced: GI-CANN for rubber (R²=0.999, α*≈1.677). Brain NOT reproduced: α⁻ stress formula incompatible with brain UT/UC data (R²=0.14-0.62 vs ref 0.966)."
+notes: "Wrap-up complete. Core claim reproduced: GI-CANN for rubber (R²=0.999, α*≈1.677). Brain NOT reproduced (R²=0.14-0.62 vs ref 0.966) — α⁻ stress formula incompatible with brain UT/UC data. All validation checks passed, documentation complete."

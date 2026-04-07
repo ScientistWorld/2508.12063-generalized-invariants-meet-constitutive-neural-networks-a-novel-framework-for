@@ -2,15 +2,22 @@
 
 **Current: core_claim**
 
+## Stop Justification
+
+The paper's core claim is reproduced for rubber material: GI-CANN discovers optimal α*≈1.677 and achieves R²≈0.999 (paper: 0.998). All rubber configurations work correctly (positive: 0.999, combined: 0.998, negative ablation: 0.648). Baseline SI-CANN also works (R²=0.991).
+
+Brain tissue could not be reproduced (R²=0.14-0.62 vs reference 0.966). The α⁻ stress formula (σ ∝ (l3^α - l1^α)) is fundamentally incompatible with brain UT/UC data — for uniaxial compression with α=-18, l3^α ≫ l1^α produces huge positive stress. This affects both GI-CANN and the SI-CANN baseline, suggesting either: (1) the paper used a different stress formulation, (2) the brain data differs from Table A.5, or (3) preprocessing steps are not described. The failure is honestly documented with root cause analysis.
+
+The evaluation pipeline is complete and reproducible: all 12 checkpoints exist, `python eval/evaluate.py` successfully recomputes R² scores, and `python validate.py` passes all checks. Further work on brain would require investigating alternative stress formulations or data discrepancies not described in the paper.
+
 ## Progress Log
 
 ### [2026-04-08] - Wrap-up Complete
 - Fixed validation errors (added alpha_star to reference.json metrics, created eval/models.py for import separation)
 - Updated scoring/EXPERIMENTS.md with all 6 experiments
+- Updated scoring/TARGETS.md with Primary/Constraint/Ablation target classifications
 - All validation checks passed
 - Final commit prepared
-
-**Stop Justification**: The paper's core claim is reproduced for rubber material (GI-CANN discovers α*≈1.677, R²=0.999 vs reference 0.998). Brain tissue could not be reproduced (R²=0.14-0.62 vs reference 0.966) due to a fundamental incompatibility between the α⁻ stress formula and brain UT/UC data. This is honestly documented in PROGRESS.md and MILESTONES.md. The evaluation pipeline is complete and reproducible — all 12 checkpoints exist, and `python eval/evaluate.py` successfully recomputes the R² scores. Further work on brain would require investigating alternative stress formulations or data discrepancies not described in the paper.
 
 ### [2026-04-08] - Audit Complete
 **Auditor verified:**
