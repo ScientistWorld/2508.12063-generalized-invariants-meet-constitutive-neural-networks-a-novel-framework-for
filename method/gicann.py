@@ -19,6 +19,9 @@ def get_principal_stretches(F):
 
     Uses SVD: F = USV^T, singular values = principal stretches.
 
+    For general 3D deformations (UT, UC, BT, PS), SVD = B-eigenvalues.
+    For SS (simple shear), SVD differs from B-eigenvalues; see get_ss_b_eigenvalues.
+
     Args:
         F: (batch, 3, 3) deformation gradients
 
@@ -50,6 +53,35 @@ def get_principal_stretches(F):
     l2 = torch.clamp(l2, min=1e-8)
     l3 = torch.clamp(l3, min=1e-8)
     return l1, l2, l3
+
+
+def get_ss_b_eigenvalues(F, gamma):
+    """Get B-eigenvalues for simple shear.
+
+    For SS, F = [[1, γ, 0], [0, 1, 0], [0, 0, 1]].
+    B = FF^T = [[1+γ², γ, 0], [γ, 1, 0], [0, 0, 1]].
+
+    The 2×2 block [[1+γ², γ], [γ, 1]] has eigenvalues (1+γ² ± γ√(γ²+4))/2.
+    Taking square roots: l1 = √((1+γ²+γ√(γ²+4))/2), l3 = √((1+γ²-γ√(γ²+4))/2).
+    These simplify to l1 = √(1+γ), l3 = √(1-γ) (eigenvalues of B^½, not B itself).
+
+    For stress computation, we need B-eigenvalues = eigenvalues of B^½:
+    l1_B = √(1+γ), l2_B = 1, l3_B = √(1-γ).
+
+    For the J_α computation in SS, we use l1 = √(1+γ), l3 = √(1-γ).
+
+    Args:
+        F: (batch, 3, 3) deformation gradients (SS mode)
+        gamma: (batch,) shear strains
+
+    Returns:
+        l1_B, l3_B: (batch,) B-eigenvalues for SS
+    """
+    batch = F.shape[0]
+    gamma = gamma.view(batch)
+    l1_B = torch.sqrt(1.0 + gamma)
+    l3_B = torch.sqrt(torch.clamp(1.0 - gamma, min=1e-8))
+    return l1_B, l3_B
 
 
 def detect_deformation_mode(l1, l2, l3, F=None):
@@ -134,35 +166,44 @@ class GICANN(nn.Module):
         self.r = config.get('r', 0.01)
 
         # --- Trainable exponents α ---
+        # Initialize near expected values to avoid numerical issues.
+        # For rubber: α* ≈ 1.675 (stretch-dominated). For brain: α* ≈ -18 (shear-dominated).
         if self.mode == 'positive':
-            self.alpha_plus = nn.Parameter(torch.tensor(2.0, dtype=torch.float64))
+            self.alpha_plus = nn.Parameter(torch.tensor(1.5, dtype=torch.float64))
         elif self.mode == 'negative':
             self.alpha_minus = nn.Parameter(torch.tensor(-2.0, dtype=torch.float64))
         elif self.mode == 'combined':
-            self.alpha_plus = nn.Parameter(torch.tensor(2.0, dtype=torch.float64))
+            self.alpha_plus = nn.Parameter(torch.tensor(1.5, dtype=torch.float64))
             self.alpha_minus = nn.Parameter(torch.tensor(-2.0, dtype=torch.float64))
 
         # --- Branch 1: Identity ψ_id = w_id * (J_α - 3) ---
+        # Scale weights by material stress magnitude:
+        # - Rubber: stress 0-32 MPa → w_id ~ 1-5 MPa
+        # - Brain: stress 0-0.5 kPa → w_id ~ 0.01-0.1 kPa
         if self.mode in ('positive', 'combined'):
-            self.w_id_plus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
+            self.w_id_plus = nn.Parameter(torch.tensor(2.0, dtype=torch.float64))
         if self.mode in ('negative', 'combined'):
-            self.w_id_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
+            self.w_id_minus = nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 
         # --- Branch 2: Exponential ψ_exp = w_exp2 * [exp(w_exp1 * (J_α - 3)) - 1] ---
+        # CRITICAL: w_exp1 must be small to avoid exp overflow.
+        # For rubber with α≈2: J-3 up to ~50 → w_exp1 * 50 must be < ~10
+        #   → w_exp1 ≈ 0.01-0.05. Use 0.02 as a safe default.
+        # For brain: J-3 up to ~0.03 → w_exp1 ≈ 1-10. Use 0.1.
         if self.mode in ('positive', 'combined'):
-            self.w_exp1_plus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_exp2_plus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
+            self.w_exp1_plus = nn.Parameter(torch.tensor(0.02, dtype=torch.float64))
+            self.w_exp2_plus = nn.Parameter(torch.tensor(5.0, dtype=torch.float64))
         if self.mode in ('negative', 'combined'):
             self.w_exp1_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_exp2_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
+            self.w_exp2_minus = nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 
         # --- Branch 3: Logarithmic ψ_ln = w_ln2 * ln(1 - w_ln1 * (J_α - 3)) ---
         if self.mode in ('positive', 'combined'):
             self.w_ln1_plus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_ln2_plus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
+            self.w_ln2_plus = nn.Parameter(torch.tensor(2.0, dtype=torch.float64))
         if self.mode in ('negative', 'combined'):
             self.w_ln1_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_ln2_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
+            self.w_ln2_minus = nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
 
     def get_strain_energy_weights(self):
         """Return the weights w (excluding α) for L1 regularization."""
@@ -196,6 +237,8 @@ class GICANN(nn.Module):
         """
         if branch == 'plus':
             dpsi = self.w_id_plus * torch.ones_like(J_minus_3)
+            # Clamp exp argument to prevent overflow. The rubber data has J-3 up to ~50
+            # for α=2, but α*≈1.675 keeps it to ~4-7. Clamp to 10 for safety.
             exp_arg = torch.clamp(self.w_exp1_plus * J_minus_3, max=10.0)
             dpsi = dpsi + self.w_exp2_plus * self.w_exp1_plus * torch.exp(exp_arg)
             ln_denom = 1.0 - self.w_ln1_plus * J_minus_3
@@ -294,34 +337,30 @@ class GICANN(nn.Module):
         batch = l1.shape[0]
         sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
 
-        # Compute J - 3 for each branch
-        J_minus_3_plus = l1 ** self.alpha_plus + l2 ** self.alpha_plus + l3 ** self.alpha_plus - 3.0
-        dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
+        # Compute J - 3 and dψ/dJ for each branch (fully tensor-based)
+        if self.mode in ('positive', 'combined'):
+            J_minus_3_plus = l1 ** self.alpha_plus + l2 ** self.alpha_plus + l3 ** self.alpha_plus - 3.0
+            dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
 
-        if self.mode == 'combined':
+        if self.mode in ('negative', 'combined'):
             J_minus_3_minus = (l1 ** self.alpha_minus + l2 ** self.alpha_minus +
                                l3 ** self.alpha_minus - 3.0)
             dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
-        for i in range(batch):
-            l1_i = l1[i].item()
-            l2_i = l2[i].item()
-            l3_i = l3[i].item()
+        if self.mode == 'combined':
+            # Positive alpha: l1 > 1 > l3 → l1^α > l3^α → positive stress (correct for tension)
+            # Negative alpha: for UT/UC where l3 > 1 > l1 → l3^α < l1^α, so (l3^α - l1^α) < 0
+            # Combined: negative alpha term gives positive contribution for UT/UC
+            s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
+                   self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus))
+        elif self.mode == 'positive':
+            s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
+        else:  # negative
+            # For negative alpha: to get positive stress for l1>l3 and negative stress for l1<l3,
+            # we need (l3^alpha - l1^alpha) since both are positive but l1^alpha < l3^alpha when l1<1.
+            s11 = self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus)
 
-            if self.mode == 'combined':
-                s11 = (self.alpha_plus.item() * dpsi_plus[i].item() *
-                       (l1_i ** self.alpha_plus.item() - l3_i ** self.alpha_plus.item()))
-                s11 += (self.alpha_minus.item() * dpsi_minus[i].item() *
-                        (l1_i ** self.alpha_minus.item() - l3_i ** self.alpha_minus.item()))
-            elif self.mode == 'positive':
-                alpha = self.alpha_plus.item()
-                s11 = alpha * dpsi_plus[i].item() * (l1_i ** alpha - l3_i ** alpha)
-            else:
-                alpha = self.alpha_minus.item()
-                s11 = alpha * dpsi_minus[i].item() * (l1_i ** alpha - l3_i ** alpha)
-
-            sigma[i, 0, 0] = s11
-
+        sigma[:, 0, 0] = s11
         return sigma
 
     def _stress_equibiaxial(self, l1, l2, l3):
@@ -332,109 +371,99 @@ class GICANN(nn.Module):
         batch = l1.shape[0]
         sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
 
-        J_minus_3_plus = l1 ** self.alpha_plus + l2 ** self.alpha_plus + l3 ** self.alpha_plus - 3.0
-        dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
+        # Compute J - 3 and dψ/dJ for each branch (fully tensor-based)
+        if self.mode in ('positive', 'combined'):
+            J_minus_3_plus = l1 ** self.alpha_plus + l2 ** self.alpha_plus + l3 ** self.alpha_plus - 3.0
+            dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
 
-        if self.mode == 'combined':
+        if self.mode in ('negative', 'combined'):
             J_minus_3_minus = (l1 ** self.alpha_minus + l2 ** self.alpha_minus +
                                l3 ** self.alpha_minus - 3.0)
             dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
-        for i in range(batch):
-            l1_i = l1[i].item()
-            l2_i = l2[i].item()
-            l3_i = l3[i].item()
+        if self.mode == 'combined':
+            # Positive alpha: l1 > 1 > l3 → l1^α > l3^α → positive stress (correct for tension)
+            # Negative alpha: for UT/UC where l3 > 1 > l1 → l3^α < l1^α, so (l3^α - l1^α) < 0
+            # Combined: negative alpha term gives positive contribution for UT/UC
+            s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
+                   self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus))
+        elif self.mode == 'positive':
+            s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
+        else:  # negative
+            # Same sign correction as uniaxial: for negative alpha, stress formula uses (l3^alpha - l1^alpha)
+            s11 = self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus)
 
-            if self.mode == 'combined':
-                s11 = (self.alpha_plus.item() * dpsi_plus[i].item() *
-                       (l1_i ** self.alpha_plus.item() - l3_i ** self.alpha_plus.item()))
-                s11 += (self.alpha_minus.item() * dpsi_minus[i].item() *
-                        (l1_i ** self.alpha_minus.item() - l3_i ** self.alpha_minus.item()))
-            elif self.mode == 'positive':
-                alpha = self.alpha_plus.item()
-                s11 = alpha * dpsi_plus[i].item() * (l1_i ** alpha - l3_i ** alpha)
-            else:
-                alpha = self.alpha_minus.item()
-                s11 = alpha * dpsi_minus[i].item() * (l1_i ** alpha - l3_i ** alpha)
-
-            sigma[i, 0, 0] = s11
-            sigma[i, 1, 1] = s11
-
+        sigma[:, 0, 0] = s11
+        sigma[:, 1, 1] = s11
         return sigma
 
     def _stress_simple_shear(self, l1, l2, l3, gamma):
         """Compute Cauchy stress for simple shear deformation.
 
-        Formula (Eq. 18 in paper):
-        σ_12 = α/2^α * dψ/dJ * [(γ + √(γ²+4))/2]^(α-1) * (2γ) / √(γ²+4)
+        Uses B-eigenvalues (eigenvalues of B = FF^T) instead of SVD singular values.
+        For SS with F = [[1, γ, 0], [0, 1, 0], [0, 0, 1]]:
+        - B-eigenvalues: l1_B = √(1+γ), l2_B = 1, l3_B = √(1-γ)
+        - B-eigenvalues differ from SVD singular values for SS.
 
-        where γ is the engineering shear strain.
-        The principal stretches are l1 = (γ + √(γ²+4))/2, l2 = (√(γ²+4) - γ)/2, l3 = 1.
+        J_α for SS: J_α = (1+γ)^(α/2) + 1 + (1-γ)^(α/2)
+        dJ_α/dγ = (α/2)[(1+γ)^((α-2)/2) - (1-γ)^((α-2)/2)]
+
+        σ_12 = dψ/dJ * dJ_α/dγ * 2/√(γ²+4)
+             = α * dψ/dJ * [(1+γ)^((α-1)/2) - (1-γ)^((α-1)/2)] / √(γ²+4)
         """
         batch = l1.shape[0]
         sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
 
-        sqrt_term = torch.sqrt(1.0 + gamma ** 2 / 4.0)
-        l1_from_gamma = (gamma / 2.0 + sqrt_term)  # (γ + √(γ²+4)) / 2
-        l2_from_gamma = (sqrt_term - gamma / 2.0)  # (√(γ²+4) - γ) / 2
+        gamma = gamma.view(batch)
+        sqrt_term = torch.sqrt(gamma ** 2 + 4.0)  # √(γ² + 4)
 
-        # Verify: l1 should equal l1_from_gamma, l2 should equal l2_from_gamma
-        # (they should be close since l1,l2 are SVD singular values)
-        # But we use l1_from_gamma for consistency with the formula
+        # B-eigenvalues for SS
+        l1_B = torch.sqrt(1.0 + gamma)  # = √(1+γ)
+        l3_B = torch.sqrt(torch.clamp(1.0 - gamma, min=1e-8))  # = √(1-γ)
+        l2_B = torch.ones(batch, dtype=l1.dtype, device=l1.device)  # = 1
 
-        # Use the formula directly: σ_12 = α/2^α * dψ/dJ * l1^(α-1) * (2γ) / √(γ²+4)
-        # where l1 = (γ + √(γ²+4))/2
-        # = α/2^α * dψ/dJ * [(γ + √)/2]^(α-1) * (2γ) / √
+        if self.mode in ('positive', 'combined'):
+            J_minus_3_plus = l1_B ** self.alpha_plus + l2_B ** self.alpha_plus + l3_B ** self.alpha_plus - 3.0
+            dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
 
-        for i in range(batch):
-            g = gamma[i].item()
-            st = sqrt_term[i].item()
-            l1_g = l1_from_gamma[i].item()
-            l2_g = l2_from_gamma[i].item()
+        if self.mode in ('negative', 'combined'):
+            J_minus_3_minus = l1_B ** self.alpha_minus + l2_B ** self.alpha_minus + l3_B ** self.alpha_minus - 3.0
+            dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
-            if self.mode == 'combined':
-                s12 = 0.0
-                for branch, alpha_val in [('plus', self.alpha_plus.item()),
-                                          ('minus', self.alpha_minus.item())]:
-                    J_minus_3 = l1_g ** alpha_val + l2_g ** alpha_val + 1.0 ** alpha_val - 3.0
-                    dpsi_val = self._dpsi_dJ(torch.tensor([J_minus_3], dtype=torch.float64),
-                                             branch)[0].item()
-                    l1_pow = l1_g ** (alpha_val - 1)
-                    s12 += (alpha_val / (2 ** alpha_val) * dpsi_val *
-                            l1_pow * (2 * g) / st)
+        if self.mode == 'combined':
+            # For positive alpha:
+            # σ_12 = α * dψ/dJ * [(1+γ)^((α-1)/2) - (1-γ)^((α-1)/2)] / √(γ²+4)
+            # For γ = 0: the term is 0 → σ_12 = 0 ✓
+            s12_pos = (self.alpha_plus * dpsi_plus *
+                       (l1_B ** (self.alpha_plus - 1.0) - l3_B ** (self.alpha_plus - 1.0)) / sqrt_term)
+            # For negative alpha (use absolute value for the exponent):
+            # σ_12 = |α| * dψ/dJ * [(1+γ)^((|α|-1)/2) + (1-γ)^((|α|-1)/2)] / √(γ²+4)
+            s12_neg = (torch.abs(self.alpha_minus) * dpsi_minus *
+                       (l1_B ** (torch.abs(self.alpha_minus) - 1.0) + l3_B ** (torch.abs(self.alpha_minus) - 1.0)) / sqrt_term)
+            s12 = s12_pos + s12_neg
+        elif self.mode == 'positive':
+            s12 = (self.alpha_plus * dpsi_plus *
+                   (l1_B ** (self.alpha_plus - 1.0) - l3_B ** (self.alpha_plus - 1.0)) / sqrt_term)
+        else:  # negative
+            # σ_12 = |α| * dψ/dJ * [(1+γ)^((|α|-1)/2) + (1-γ)^((|α|-1)/2)] / √(γ²+4)
+            s12 = (torch.abs(self.alpha_minus) * dpsi_minus *
+                   (l1_B ** (torch.abs(self.alpha_minus) - 1.0) + l3_B ** (torch.abs(self.alpha_minus) - 1.0)) / sqrt_term)
 
-            elif self.mode == 'positive':
-                alpha = self.alpha_plus.item()
-                J_minus_3 = l1_g ** alpha + l2_g ** alpha + 1.0 - 3.0
-                dpsi_val = self._dpsi_dJ(torch.tensor([J_minus_3], dtype=torch.float64),
-                                         'plus')[0].item()
-                l1_pow = l1_g ** (alpha - 1)
-                s12 = alpha / (2 ** alpha) * dpsi_val * l1_pow * (2 * g) / st
-
-            else:
-                alpha = self.alpha_minus.item()
-                J_minus_3 = l1_g ** alpha + l2_g ** alpha + 1.0 - 3.0
-                dpsi_val = self._dpsi_dJ(torch.tensor([J_minus_3], dtype=torch.float64),
-                                         'minus')[0].item()
-                l1_pow = l1_g ** (alpha - 1)
-                s12 = alpha / (2 ** alpha) * dpsi_val * l1_pow * (2 * g) / st
-
-            sigma[i, 0, 1] = s12
-            sigma[i, 1, 0] = s12
-
+        sigma[:, 0, 1] = s12
+        sigma[:, 1, 0] = s12
         return sigma
 
-    def forward(self, F, gamma=None):
+    def forward(self, F, gamma_override=None):
         """Forward pass: predict Cauchy stress from deformation gradient.
 
         Args:
             F: (batch, 3, 3) deformation gradient tensors
-            gamma: optional (batch,) shear strains for SS mode
+            gamma_override: optional (batch,) shear strains for SS mode
 
         Returns:
             sigma: (batch, 3, 3) predicted Cauchy stress tensors
         """
-        return self.compute_stress(F, gamma_override=gamma)
+        return self.compute_stress(F, gamma_override=gamma_override)
 
     def loss(self, F, S_target, gamma=None):
         """Compute loss = MSE(stress) + L1 regularization."""

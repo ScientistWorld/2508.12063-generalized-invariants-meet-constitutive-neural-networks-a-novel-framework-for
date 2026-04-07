@@ -1,0 +1,160 @@
+{
+  "results": [
+    {
+      "material": "brain",
+      "mode": "combined",
+      "model_type": "GI-CANN",
+      "r2_train": {
+        "ut": 0.32090442384078743,
+        "uc": 0.41952111698525396
+      },
+      "r2_test": {
+        "ss": 0.6256882986283687
+      },
+      "avg_r2": 0.4553712798181367
+    },
+    {
+      "material": "brain",
+      "mode": "combined",
+      "model_type": "SI-CANN",
+      "r2_train": {
+        "ut": -0.09718942315236179,
+        "uc": 0.02831490930315672
+      },
+      "r2_test": {
+        "ss": 0.1856995322410594
+      },
+      "avg_r2": 0.038941672797284776
+    },
+    {
+      "material": "brain",
+      "mode": "negative",
+      "model_type": "GI-CANN",
+      "r2_train": {
+        "ut": -0.942850087208503,
+        "uc": 0.42112332336992875
+      },
+      "r2_test": {
+        "ss": -0.009284871231718395
+      },
+      "avg_r2": -0.17700387835676423
+    },
+    {
+      "material": "brain",
+      "mode": "negative",
+      "model_type": "SI-CANN",
+      "r2_train": {
+        "ut": -0.27406380211469283,
+        "uc": 0.019076960081059857
+      },
+      "r2_test": {
+        "ss": -0.2041858355063908
+      },
+      "avg_r2": -0.15305755918000793
+    },
+    {
+      "material": "brain",
+      "mode": "positive",
+      "model_type": "GI-CANN",
+      "r2_train": {
+        "ut": -0.07880995659602164,
+        "uc": -0.07609945713954569
+      },
+      "r2_test": {
+        "ss": -0.14767676950790554
+      },
+      "avg_r2": -0.10086206108115763
+    },
+    {
+      "material": "brain",
+      "mode": "positive",
+      "model_type": "SI-CANN",
+      "r2_train": {
+        "ut": -0.10827770306897744,
+        "uc": -0.06284800287416803
+      },
+      "r2_test": {
+        "ss": -0.1654325047960059
+      },
+      "avg_r2": -0.11218607024638379
+    },
+    {
+      "material": "rubber",
+      "mode": "combined",
+      "model_type": "GI-CANN",
+      "r2_train": {
+        "ut": 0.997726439040088,
+        "bt": 0.9996309167817277
+      },
+      "r2_test": {
+        "ps": 0.9966601925551243
+      },
+      "avg_r2": 0.99800584945898
+    },
+    {
+      "material": "rubber",
+      "mode": "combined",
+      "model_type": "SI-CANN",
+      "r2_train": {
+        "ut": -6.59656459206261,
+        "bt": -41.22077238119472
+      },
+      "r2_test": {
+        "ps": -8.453627117052527
+      },
+      "avg_r2": -18.756988030103287
+    },
+    {
+      "material": "rubber",
+      "mode": "negative",
+      "model_type": "GI-CANN",
+      "r2_train": {
+        "ut": 0.32607778242184005,
+        "bt": 0.6956073718395361
+      },
+      "r2_test": {
+        "ps": 0.9207954567336126
+      },
+      "avg_r2": 0.6474935369983297
+    },
+    {
+      "material": "rubber",
+      "mode": "negative",
+      "model_type": "SI-CANN",
+      "r2_train": {
+        "ut": -0.034781717205625506,
+        "bt": 0.9694710828496734
+      },
+      "r2_test": {
+        "ps": 0.09362118076022052
+      },
+      "avg_r2": 0.34277018213475613
+    },
+    {
+      "material": "rubber",
+      "mode": "positive",
+      "model_type": "GI-CANN",
+      "r2_train": {
+        "ut": 0.9997978572421486,
+        "bt": 0.9985611315107326
+      },
+      "r2_test": {
+        "ps": 0.9994761024789746
+      },
+      "avg_r2": 0.9992783637439518
+    },
+    {
+      "material": "rubber",
+      "mode": "positive",
+      "model_type": "SI-CANN",
+      "r2_train": {
+        "ut": 0.9973778328603987,
+        "bt": 0.974475669898078
+      },
+      "r2_test": {
+        "ps": 0.9985067298926841
+      },
+      "avg_r2": 0.990120077550387
+    }
+  ]
+}

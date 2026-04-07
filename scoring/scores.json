@@ -1,0 +1,100 @@
+{
+  "experiments": {
+    "brain_combined_ablation": {
+      "GI-CANN_J\u03b1+J\u03b1-": {
+        "r2_ut": 0.3209,
+        "r2_uc": 0.4195,
+        "r2_ss": 0.922,
+        "avg_r2": 0.5541,
+        "alpha_star": -20.9159
+      },
+      "SI-CANN_J\u03b1+J\u03b1-": {
+        "r2_ut": -0.2723,
+        "r2_uc": 0.0183,
+        "r2_ss": -1.2519,
+        "avg_r2": -0.502,
+        "alpha_star": -2.0
+      }
+    },
+    "brain_generalization": {
+      "GI-CANN": {
+        "r2_ut": -0.9429,
+        "r2_uc": 0.4211,
+        "r2_ss": 0.4539,
+        "avg_r2": -0.0226,
+        "alpha_star": -18.1333
+      },
+      "SI-CANN": {
+        "r2_ut": -0.2741,
+        "r2_uc": 0.0191,
+        "r2_ss": -1.2636,
+        "avg_r2": -0.5062,
+        "alpha_star": -2.0
+      }
+    },
+    "brain_positive_ablation": {
+      "GI-CANN_J\u03b1+": {
+        "r2_ut": -0.0788,
+        "r2_uc": -0.0761,
+        "r2_ss": -0.1477,
+        "avg_r2": -0.1009,
+        "alpha_star": 0.0
+      },
+      "SI-CANN_J\u03b1+": {
+        "r2_ut": -0.1083,
+        "r2_uc": -0.0628,
+        "r2_ss": -0.1566,
+        "avg_r2": -0.1092,
+        "alpha_star": 2.0
+      }
+    },
+    "rubber_combined_ablation": {
+      "GI-CANN_J\u03b1+J\u03b1-": {
+        "r2_ut": 0.9977,
+        "r2_bt": 0.9996,
+        "r2_ps": 0.9967,
+        "avg_r2": 0.998,
+        "alpha_star": 3.8613
+      },
+      "SI-CANN_J\u03b1+J\u03b1-": {
+        "r2_ut": -1.1532,
+        "r2_bt": -5068.7136,
+        "r2_ps": 0.835,
+        "avg_r2": -1689.6772,
+        "alpha_star": -2.0
+      }
+    },
+    "rubber_negative_ablation": {
+      "GI-CANN_J\u03b1-": {
+        "r2_ut": 0.3261,
+        "r2_bt": 0.6956,
+        "r2_ps": 0.9208,
+        "avg_r2": 0.6475,
+        "alpha_star": 0.0
+      },
+      "SI-CANN_J\u03b1-": {
+        "r2_ut": 0.229,
+        "r2_bt": 0.6663,
+        "r2_ps": 0.8228,
+        "avg_r2": 0.5727,
+        "alpha_star": -2.0
+      }
+    },
+    "rubber_generalization": {
+      "GI-CANN": {
+        "r2_ut": 0.9998,
+        "r2_bt": 0.9986,
+        "r2_ps": 0.9995,
+        "avg_r2": 0.9993,
+        "alpha_star": 1.6769
+      },
+      "SI-CANN": {
+        "r2_ut": 0.9969,
+        "r2_bt": 0.9768,
+        "r2_ps": 0.9981,
+        "avg_r2": 0.9906,
+        "alpha_star": 2.0
+      }
+    }
+  }
+}

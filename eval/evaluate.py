@@ -80,7 +80,7 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
             indices = train_ds.mode_indices[mode_name]
             idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
             if mode_name == 'ss':
-                pred = model(F_train[idx_t], gamma=gamma_train[idx_t])
+                pred = model(F_train[idx_t], gamma_override=gamma_train[idx_t])
             else:
                 pred = model(F_train[idx_t])
             tgt = S_train[idx_t]
@@ -91,7 +91,7 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
             indices = test_ds.mode_indices[mode_name]
             idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
             if mode_name == 'ss':
-                pred = model(F_test[idx_t], gamma=gamma_test[idx_t])
+                pred = model(F_test[idx_t], gamma_override=gamma_test[idx_t])
             else:
                 pred = model(F_test[idx_t])
             tgt = S_test[idx_t]
