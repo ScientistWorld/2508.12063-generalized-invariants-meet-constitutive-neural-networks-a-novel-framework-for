@@ -5,8 +5,8 @@
 # The container packages everything needed to run GI-CANN training and evaluation.
 # The workspace is bind-mounted at /home/user at runtime.
 
-Bootstrap: docker
-From: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+Bootstrap: library
+From: ubuntu:22.04
 
 %post
     apt-get update && \
