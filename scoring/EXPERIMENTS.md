@@ -4,24 +4,24 @@ This document describes what each experiment in `scores.json` is trying to estab
 
 ## rubber_generalization
 
-Tests whether the discovered strain energy function, trained on two deformation modes (uniaxial tension and equibiaxial tension), can accurately predict stress on an unseen deformation mode (pure shear) for rubber material. The rubber data (Treloar 1944) represents a stretch-dominated material where deformation is primarily governed by large principal stretches. This experiment validates that the model captures the underlying material physics rather than simply memorizing the training deformation.
+Tests whether a constitutive model trained on rubber uniaxial tension and equibiaxial tension can generalize to held-out pure shear. This is the main rubber benchmark and measures whether the learned constitutive law transfers across loading modes rather than only matching the training curves.
 
 ## rubber_negative_ablation
 
-Tests whether a negative exponent (I₂-like invariant) can adequately model rubber material behavior. This is an ablation study showing that rubber — as a stretch-dominated material — performs poorly when restricted to negative invariants. The poor expected performance confirms that rubber's constitutive behavior is not captured by I₂-type invariants, supporting the claim that stretch-dominated materials require positive exponents.
+Tests a restricted rubber setting intended to check whether a shear-dominated descriptor family is sufficient for this material. Poor performance is expected and serves as a sanity check that the benchmark can distinguish materially inappropriate constitutive choices.
 
 ## rubber_combined_ablation
 
-Tests whether using both positive and negative exponents simultaneously improves performance over a single positive exponent for rubber. This examines whether the multi-invariant formulation captures additional physics that a single invariant might miss. The expectation is that combined invariants may offer marginal improvements, but the single positive invariant already achieves near-perfect performance, suggesting that the positive invariant alone is sufficient for rubber.
+Tests whether a richer rubber constitutive description improves on the main single-family setting. This experiment asks whether combining complementary descriptors yields a measurable gain beyond the already strong primary rubber benchmark.
 
 ## brain_generalization
 
-Tests whether the discovered strain energy function, trained on two deformation modes (uniaxial tension and uniaxial compression), can accurately predict stress on an unseen deformation mode (simple shear) for brain cortex tissue. The brain data (Budday et al. 2017) represents a shear-sensitive material where deformation behavior is dominated by the coupling between normal and shear responses. This experiment validates that the model captures the complex nonlinear shear behavior characteristic of soft biological tissues.
+Tests whether a constitutive model trained on brain-cortex uniaxial tension and compression can generalize to held-out simple shear. This is the hardest experiment in the workspace and is the most informative check of cross-mode transfer for soft biological tissue.
 
 ## brain_positive_ablation
 
-Tests whether a positive exponent (I₁-like invariant) can adequately model brain tissue behavior. This is an ablation study showing that brain cortex — as a shear-sensitive material — performs poorly when restricted to positive invariants. The poor expected performance confirms that brain's constitutive behavior is not captured by I₁-type invariants, supporting the claim that shear-sensitive materials require negative exponents.
+Tests a restricted brain setting intended to check whether a stretch-dominated descriptor family is sufficient for this material. Poor performance is expected and helps verify that the benchmark remains sensitive to constitutive mismatch.
 
 ## brain_combined_ablation
 
-Tests whether using both positive and negative exponents simultaneously improves performance over a single negative exponent for brain tissue. This examines whether the multi-invariant formulation captures additional physics that a single invariant might miss. The expectation is that combined invariants may offer marginal improvements, but the single negative invariant already achieves good performance, suggesting that the negative invariant alone captures the essential shear-sensitive behavior.
+Tests whether a richer brain constitutive description improves on the main single-family setting. This experiment checks whether extra flexibility materially helps once the model already captures the key shear-sensitive response.

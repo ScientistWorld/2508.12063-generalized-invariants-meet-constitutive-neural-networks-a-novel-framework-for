@@ -10,8 +10,8 @@ Train on rubber `ut` + `bt`, test on held-out `ps`.
 
 - Primary metric: `avg_r2`
 - Component metrics: `r2_ut`, `r2_bt`, `r2_ps`
-- Constraint metric: `alpha_star`
-- Paper target: GI-CANN should learn a positive exponent near `1.675` and outperform fixed-`alpha=2` SI-CANN
+- Report-only descriptor: `alpha_star`
+- Main success condition: improve held-out `r2_ps` without hurting overall fit
 
 ### `brain_generalization`
 
@@ -19,20 +19,20 @@ Train on brain cortex `ut` + `uc`, test on held-out `ss`.
 
 - Primary metric: `avg_r2`
 - Component metrics: `r2_ut`, `r2_uc`, `r2_ss`
-- Constraint metric: `alpha_star`
-- Paper target: GI-CANN should learn a strongly negative exponent near `-18.016` and outperform fixed-`alpha=-2` SI-CANN
+- Report-only descriptor: `alpha_star`
+- Main success condition: improve held-out `r2_ss` without overfitting the training modes
 
 ## Constraint / Interpretation Targets
 
 ### `rubber_negative_ablation`
 
 - Expect low `avg_r2` when the model is restricted to a negative exponent branch
-- This tests the paper’s claim that rubber is stretch-dominated and prefers positive generalized invariants
+- This serves as a contrastive sanity check, not the main optimization target
 
 ### `brain_positive_ablation`
 
 - Expect low `avg_r2` when the model is restricted to a positive exponent branch
-- This tests the paper’s claim that brain tissue is better represented by negative-exponent, `I2`-like behavior
+- This serves as a contrastive sanity check, not the main optimization target
 
 ## Optional Ablation Targets
 

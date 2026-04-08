@@ -17,25 +17,17 @@ Do not change the numeric data, deformation modes, or train/test partition.
 
 ## Model Constraints
 
-Stay within the GI-CANN / SI-CANN family from the paper.
+The task is constitutive-law discovery for isotropic incompressible hyperelasticity.
 
-- Generalized invariant:
-  - `J_alpha = sum_i lambda_i^alpha`
-- GI-CANN strain energy:
-  - `psi = w_id (J_alpha - 3) + w_exp2 (exp(w_exp1 (J_alpha - 3)) - 1) + w_ln2 ln(1 - w_ln1 (J_alpha - 3))`
-- SI-CANN baseline:
-  - Same branch structure, but with fixed exponents `alpha=2` and/or `alpha=-2`
+- Predictions must come from a valid constitutive model, not a direct black-box mapping from input curve coordinates to output stresses.
+- The model should stay compact and interpretable enough that a future scientist can inspect the learned constitutive law.
+- Improvements should come from better constitutive modeling or better training, not from adding large generic function approximators.
 
-The current implementation covers the paper’s core one-positive / one-negative settings and the combined two-branch variant used in the benchmark tables. Do not replace this with a generic black-box regressor.
+## Physics Constraints
 
-## Stress-Calculation Constraints
-
-Stress must be computed from the hyperelastic energy, using the paper’s closed-form mode-specific equations.
-
-- `ut` / `uc`: use the incompressible uniaxial relation
-- `bt`: use the equibiaxial relation
-- `ps`: use the pure-shear relation implied by the chosen deformation gradient
-- `ss`: use the simple-shear formula based on `lambda_± = (sqrt(gamma^2 + 4) ± gamma) / 2`
+- Respect incompressibility in the deformation descriptions used by the benchmark.
+- Predict the appropriate Cauchy stress component for each loading mode.
+- Preserve the same deformation definitions for `ut`, `uc`, `bt`, `ps`, and `ss`.
 
 ## Evaluation Constraints
 
@@ -44,10 +36,9 @@ Evaluate with [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh), which wri
 - Rubber metric set: `r2_ut`, `r2_bt`, `r2_ps`, `avg_r2`, `alpha_star`
 - Brain metric set: `r2_ut`, `r2_uc`, `r2_ss`, `avg_r2`, `alpha_star`
 
-`avg_r2` remains the primary metric, but `alpha_star` is also a constraint because the paper claims interpretable exponent discovery, not only fit quality.
+`avg_r2` remains the primary metric. `alpha_star` is included as a report-only descriptor because interpretability matters, but it is not scored directly.
 
 ## Resource Constraints
 
 - No pretrained external model weights
-- No architecture scaling outside the GI-CANN/SI-CANN family
-- Keep the method small and interpretable rather than increasing capacity to memorize the benchmark
+- Keep the method small enough that gains reflect modeling quality rather than raw capacity

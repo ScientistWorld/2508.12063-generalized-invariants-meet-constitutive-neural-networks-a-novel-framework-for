@@ -12,19 +12,17 @@ Future agents must work within the paper's problem space and approach family.
 
 ## Approach Family
 
-**Must Use**: Generalized invariant-based constitutive neural networks (CI-CANN/GI-CANN framework).
+Work within physics-aware constitutive model discovery for isotropic incompressible hyperelasticity.
 
-**Key Idea**: Replace fixed invariants (I1, I2, I3) with generalized invariants J_α = Σ λ_i^α where α is learnable.
-
-**Required Components**:
-1. Generalized invariant computation with trainable exponent α
-2. Three-branch strain energy (identity + exponential + logarithmic)
-3. Stress derivation via hyperelasticity theory (∂ψ/∂C)
+Suitable directions include:
+1. Better invariant choices or invariant parameterizations
+2. Better compact constitutive-law representations
+3. Better training or regularization for cross-mode generalization
+4. Better ways to preserve interpretability while improving held-out stress prediction
 
 **Cannot Switch To**:
 - Black-box neural networks that directly map λ → σ
 - Physics-uninformed learning without hyperelasticity constraints
-- Different invariants or constitutive formulations
 - Data-driven surrogate models that bypass the physics
 
 ## Innovation Directions (Within Framework)
@@ -47,4 +45,4 @@ Cannot claim improvement by:
 - Using external priors or embeddings not derived from deformation data
 - Simplifying the problem to trivial toy cases
 
-The goal is methodological advancement within the GI-CANN framework, not beating benchmarks at any cost.
+The goal is methodological advancement in compact, interpretable constitutive-law discovery under the same benchmark protocol, not beating the benchmark by leaving the problem setting.

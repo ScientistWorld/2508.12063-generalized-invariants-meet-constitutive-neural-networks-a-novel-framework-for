@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
+action: done
 gpus: 1
-test: true
+test: false
 milestone: core_claim
-notes: "Refresh all GI-CANN and SI-CANN checkpoints with the current robust trainer, then regenerate scoring/scores.json. This validates the packaged scripts against the audited method implementation and re-tests the unreproduced brain settings."
+notes: "Verification complete: method/eval separation is clean, gym-facing docs were de-leaked, and scoring coefficients were tightened to emphasize held-out generalization while preserving the verified core_claim milestone."

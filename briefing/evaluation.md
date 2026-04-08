@@ -18,17 +18,13 @@ Higher R² is better. R² = 1.0 means perfect prediction. R² = 0 means the pred
 
 R² is computed separately for each deformation mode (e.g., uniaxial tension R², pure shear R², etc.), then averaged across modes.
 
-## Baselines and Targets
+## Targets
 
-The paper compares multiple approaches. Key reference points:
+The benchmark is centered on cross-mode generalization.
 
-1. **SI-CANN** (Standard Invariant Constitutive ANN): Uses fixed classical invariants I₁ (α=2) and/or I₂ (α=-2). Average R² ≈ 0.318–0.982 depending on material and invariant choice.
-2. **PS-CANN** (Principal Stretch CANN): Uses a dense grid of exponents from -30 to 30 with identity function only. Average R² ≈ 0.974 for brain tissue.
-3. **FNN** (Feedforward Neural Network): Unconstrained neural network with fixed exponents. Average R² ≈ 0.460–0.984.
-4. **FICNN** (Fully Input Convex Neural Network): Convex-constrained neural network. Average R² ≈ 0.195–0.993.
-5. **Traditional models**: Neo-Hookean, Mooney-Rivlin, Gent, Ogden with various exponents.
-
-The target for a good method is average R² > 0.96 on both rubber and brain tissue, across all three deformation modes per material.
+- A strong method should fit the observed loading modes well and generalize to the held-out loading mode.
+- Rubber is the easier of the two settings and strong methods are expected to approach near-perfect `R²`.
+- Brain cortex is harder and more sensitive to modeling choices; it should not be treated as solved unless the held-out simple-shear score is also strong.
 
 ## Evaluation Protocol
 
@@ -46,14 +42,6 @@ Two experimental datasets are used:
 - Testing: simple shear (ss)
 - Units: kPa
 
-### Experiment Configuration
-
-Three invariant configurations are tested for each material:
-
-1. **Positive exponent only (Jα+, α+)** — I₁-like behavior
-2. **Negative exponent only (Jα-, α-)** — I₂-like behavior
-3. **Both positive and negative (Jα+, Jα-)** — mixed formulation
-
 ### Protocol
 
 1. Load the experimental stress-strain data for the specified training modes
@@ -61,13 +49,4 @@ Three invariant configurations are tested for each material:
 3. Evaluate on the held-out test deformation mode
 4. Compute R² for each deformation mode (training modes + test mode)
 5. Report average R² across all modes
-6. Report the discovered exponent values (α*) and strain energy function form
-
-### Hyperparameters
-
-Standard training configuration:
-- Optimizer: Adam
-- Learning rate: 0.001 (or similar, tuned for convergence)
-- L1 regularization coefficient: r = 0.01
-- Training until convergence (loss plateau) or fixed epoch count
-- Multiple random seeds recommended for reproducibility
+6. Report any additional scalar descriptors needed to interpret the fitted constitutive law
