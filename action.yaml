@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
+action: submit
 gpus: 1
 test: true
 milestone: core_claim
-notes: "Audited reproduction remains valid at core_claim on the rubber benchmark. Further progress was blocked by repeated external container-build failures (`registry response malformed`) across multiple container strategies, with no local image fallback available."
+notes: "Refresh all GI-CANN and SI-CANN checkpoints with the current robust trainer, then regenerate scoring/scores.json. This validates the packaged scripts against the audited method implementation and re-tests the unreproduced brain settings."

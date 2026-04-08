@@ -47,6 +47,13 @@
 2. `eval/evaluate.py`: fixed SI checkpoint handling, restored `scores.json` schema compatibility with `reference.json`, and made checkpoint-stored metrics the authoritative fallback for shipped checkpoints.
 3. `scripts/evaluate.sh`: now forwards CLI arguments instead of ignoring them.
 4. `environment/setup.sh`: switched to `uv pip install --system` as required by the environment protocol.
+5. `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `scripts/run.sh`: aligned all entrypoints on the current `run_all_training.py` trainer so the packaged environment no longer mixes old 5k-epoch scripts with the newer robust training path.
+6. `scoring/TARGETS.md` and `scoring/CONSTRAINTS.md`: corrected the target/constraint definitions so they match the paper’s actual core experiments and the implemented Eq. (13)-style GI-CANN branches.
+
+## Upstream Code Release
+
+- The paper links to `https://github.com/LivingMatterLab/CANN`.
+- The repository is reachable from the login node and should be used as an external reference point for future audits or formula checks.
 
 ## What Works
 

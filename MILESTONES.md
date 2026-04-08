@@ -17,7 +17,10 @@
 - Fixed the standalone evaluator so `eval/` no longer drops SI-CANN checkpoints and `scores.json` mirrors the `reference.json` experiment layout through a `results` block
 - Restored trust only for the rubber core claim; the current brain and multi-invariant checkpoints need retraining under the corrected constitutive formulas
 
+### [2026-04-08 04:05] - core_claim
+- Verified the paper's public code release exists at `LivingMatterLab/CANN`
+- Realigned all packaged shell entrypoints with the current robust trainer so future submissions and `scripts/reproduce.sh` use the same training path as `scripts/run.sh`
+- Reset the workspace from an incorrect permanent `done` state to a fresh submission path for checkpoint regeneration
+
 ## Stop Justification
-- Rubber GI-CANN/SI-CANN reproduction remains audited and sufficient for `core_claim`.
-- Further retraining was attempted, but every submission after the audit was blocked by repeated external container-build failures (`registry response malformed`) across multiple container strategies.
-- No local `localimage` fallback exists on this machine, so additional turns would not make concrete progress on reproduction rather than infrastructure retry.
+- Not applicable while active work is continuing through job submission.
