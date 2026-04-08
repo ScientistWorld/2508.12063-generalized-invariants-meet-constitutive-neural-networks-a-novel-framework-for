@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: pending
+action: done
 gpus: 1
-test: false
-milestone: method_runs
-notes: ""
+test: true
+milestone: core_claim
+notes: "Audited reproduction remains valid at core_claim on the rubber benchmark. Further progress was blocked by repeated external container-build failures (`registry response malformed`) across multiple container strategies, with no local image fallback available."

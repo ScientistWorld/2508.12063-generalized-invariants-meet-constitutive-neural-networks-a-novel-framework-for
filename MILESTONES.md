@@ -18,3 +18,6 @@
 - Restored trust only for the rubber core claim; the current brain and multi-invariant checkpoints need retraining under the corrected constitutive formulas
 
 ## Stop Justification
+- Rubber GI-CANN/SI-CANN reproduction remains audited and sufficient for `core_claim`.
+- Further retraining was attempted, but every submission after the audit was blocked by repeated external container-build failures (`registry response malformed`) across multiple container strategies.
+- No local `localimage` fallback exists on this machine, so additional turns would not make concrete progress on reproduction rather than infrastructure retry.

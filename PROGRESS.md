@@ -60,6 +60,12 @@
 - Re-attempt the brain negative and combined settings after retraining.
 - Refresh `scoring/TARGETS.md` and any summary text after the new run completes.
 
+## Current Blocker
+
+- Multiple post-audit submission attempts were blocked before job launch by external container-build failures, consistently reported as `registry response malformed` while fetching OCI image metadata.
+- I tried Docker Hub, public ECR, Microsoft MCR, Quay, Apptainer library bootstrap, and yum bootstrap. The failures were all infrastructure-facing rather than method/eval code failures, and there is no local `.sif` / `localimage` fallback available on this machine.
+- Given the existing audited rubber results, the workspace remains valid at `core_claim`, but higher coverage now depends on the build system succeeding rather than further local code changes.
+
 ## Bug Fixes Applied
 
 ### 2026-04-06 (Initial)
