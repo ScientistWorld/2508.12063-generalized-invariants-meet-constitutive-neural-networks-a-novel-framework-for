@@ -5,15 +5,14 @@
 # The container packages everything needed to run GI-CANN training and evaluation.
 # The workspace is bind-mounted at /home/user at runtime.
 
-Bootstrap: library
-From: ubuntu:22.04
+Bootstrap: docker
+From: quay.io/rockylinux/rockylinux:9
 
 %post
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3 python3-pip python3-dev \
+    dnf install -y --setopt=install_weak_deps=False \
+        python3 python3-pip \
         vim nano less curl wget git tmux ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+    dnf clean all
 
     mkdir -p /home/user/data /home/user/checkpoints /home/user/scoring
     chmod 755 /home/user
