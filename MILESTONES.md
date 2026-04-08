@@ -23,4 +23,7 @@
 - Reset the workspace from an incorrect permanent `done` state to a fresh submission path for checkpoint regeneration
 
 ## Stop Justification
-- Not applicable while active work is continuing through job submission.
+- Final state: `core_claim`.
+- The workspace is being stopped here because the reproduced rubber benchmark supports the paper's central claim and the environment has been packaged, validated, and documented for future scientist agents.
+- The main unfinished item is stronger reproduction on the brain benchmarks. The current audited brain scores remain materially below the paper's reported values, and closing that gap would require additional retraining and iteration rather than more packaging work.
+- The workspace is still a valid gym because the method implementation is real, `eval/` is method-independent, the scoring files are complete, and at least one primary generalization experiment plus its contrastive ablations are reproduced.

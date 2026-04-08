@@ -6,6 +6,14 @@
 - The previous packaging was not trustworthy as delivered. `eval/evaluate.py` could not reload SI-CANN checkpoints and the old `scores.json` schema did not mirror `reference.json`.
 - This turn fixes the evaluator and regenerates `scoring/scores.json` from the shipped checkpoints. The resulting file should be treated as the authoritative audited score report until fresh checkpoints are retrained.
 
+## Final Status
+
+- Milestone retained: `core_claim`
+- Ready for gym use: yes
+- Final verification completed without any new training runs
+- `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
+- Benchmark-facing documentation now avoids leaking the paper's exact implementation into the problem definition
+
 ## Implementation Complete
 
 - GI-CANN model (method/gicann.py): trainable α, three-branch energy (identity + exponential + logarithmic)
@@ -65,13 +73,19 @@
 
 - Retrain the existing checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
 - Re-attempt the brain negative and combined settings after retraining.
-- Refresh `scoring/TARGETS.md` and any summary text after the new run completes.
+- Improve the weak brain-benchmark scores if additional compute becomes available.
 
 ## Current Blocker
 
 - Multiple post-audit submission attempts were blocked before job launch by external container-build failures, consistently reported as `registry response malformed` while fetching OCI image metadata.
 - I tried Docker Hub, public ECR, Microsoft MCR, Quay, Apptainer library bootstrap, and yum bootstrap. The failures were all infrastructure-facing rather than method/eval code failures, and there is no local `.sif` / `localimage` fallback available on this machine.
 - Given the existing audited rubber results, the workspace remains valid at `core_claim`, but higher coverage now depends on the build system succeeding rather than further local code changes.
+
+## Wrap-up Notes
+
+- `data/` and `eval/` are usable without importing from `method/`, so the workspace works in both improve-mode and from-scratch-mode.
+- The scoring rubric now emphasizes held-out generalization and keeps ablations as contrastive checks rather than double-counting the same fit signal.
+- The main scientific limitation of the current packaged workspace is the gap between the strong rubber reproduction and the weak brain reproduction.
 
 ## Bug Fixes Applied
 

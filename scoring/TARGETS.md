@@ -1,56 +1,55 @@
 # Optimization Targets
 
-This document defines what future agents should optimize in this workspace.
+This document defines the scored targets for the experiments currently present in [`scoring/scores.json`](/home/user/scoring/scores.json).
 
 ## Primary Targets
 
 ### `rubber_generalization`
 
-Train on rubber `ut` + `bt`, test on held-out `ps`.
-
-- Primary metric: `avg_r2`
-- Component metrics: `r2_ut`, `r2_bt`, `r2_ps`
+- What it tests: cross-mode generalization on rubber, training on `ut` + `bt` and evaluating transfer to held-out `ps`
+- Primary metric: `avg_r2` (`higher_is_better`)
+- Important held-out metric: `r2_ps` (`higher_is_better`)
 - Report-only descriptor: `alpha_star`
-- Main success condition: improve held-out `r2_ps` without hurting overall fit
+- Evaluation: `bash scripts/evaluate.sh --experiment rubber_generalization`
 
 ### `brain_generalization`
 
-Train on brain cortex `ut` + `uc`, test on held-out `ss`.
-
-- Primary metric: `avg_r2`
-- Component metrics: `r2_ut`, `r2_uc`, `r2_ss`
+- What it tests: cross-mode generalization on brain cortex, training on `ut` + `uc` and evaluating transfer to held-out `ss`
+- Primary metric: `avg_r2` (`higher_is_better`)
+- Important held-out metric: `r2_ss` (`higher_is_better`)
 - Report-only descriptor: `alpha_star`
-- Main success condition: improve held-out `r2_ss` without overfitting the training modes
+- Evaluation: `bash scripts/evaluate.sh --experiment brain_generalization`
 
-## Constraint / Interpretation Targets
+## Constraint Targets
 
 ### `rubber_negative_ablation`
 
-- Expect low `avg_r2` when the model is restricted to a negative exponent branch
-- This serves as a contrastive sanity check, not the main optimization target
+- What it tests: whether the rubber benchmark still penalizes a materially mismatched constitutive description
+- Primary metric: `avg_r2` (`higher_is_better`, but the benchmark should preserve a visible gap versus the main rubber setting)
+- Evaluation: `bash scripts/evaluate.sh --experiment rubber_negative_ablation`
 
 ### `brain_positive_ablation`
 
-- Expect low `avg_r2` when the model is restricted to a positive exponent branch
-- This serves as a contrastive sanity check, not the main optimization target
+- What it tests: whether the brain benchmark still penalizes a materially mismatched constitutive description
+- Primary metric: `avg_r2` (`higher_is_better`, but the benchmark should preserve a visible gap versus the main brain setting)
+- Evaluation: `bash scripts/evaluate.sh --experiment brain_positive_ablation`
 
-## Optional Ablation Targets
+## Ablation Targets
 
 ### `rubber_combined_ablation`
 
-- Compare combined `alpha+`/`alpha-` training against the single-positive rubber core experiment
+- What it tests: whether a richer rubber constitutive description changes performance relative to the main rubber benchmark
+- Primary metric: `avg_r2` (`higher_is_better`)
+- Evaluation: `bash scripts/evaluate.sh --experiment rubber_combined_ablation`
 
 ### `brain_combined_ablation`
 
-- Compare combined `alpha+`/`alpha-` training against the single-negative brain core experiment
+- What it tests: whether a richer brain constitutive description changes performance relative to the main brain benchmark
+- Primary metric: `avg_r2` (`higher_is_better`)
+- Evaluation: `bash scripts/evaluate.sh --experiment brain_combined_ablation`
 
-## Evaluation Command
+## Run All Evaluation
 
 ```bash
 bash scripts/evaluate.sh
 ```
-
-## Milestone Guidance
-
-- `core_claim` requires at least `rubber_generalization` or `brain_generalization` to support the paper’s central claim with the actual GI-CANN algorithm.
-- `core_claim_plus` requires both generalization experiments to be reproduced or one generalization experiment plus additional ablations/coverage that materially strengthen the claim.

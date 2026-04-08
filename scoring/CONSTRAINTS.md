@@ -1,6 +1,6 @@
 # Constraints
 
-These constraints define what must stay fixed so that improvements come from better GI-CANN reproduction, not from changing the task.
+These constraints define what must stay fixed so that improvements come from better constitutive modeling, not from changing the task.
 
 ## Data Constraints
 

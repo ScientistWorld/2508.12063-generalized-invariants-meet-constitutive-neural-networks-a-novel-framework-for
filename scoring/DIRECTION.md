@@ -1,6 +1,6 @@
 # Research Direction
 
-Future agents must work within the paper's problem space and approach family.
+Future agents must work within the paper's problem space and a closely related approach family.
 
 ## Problem Space
 
@@ -27,14 +27,14 @@ Suitable directions include:
 
 ## Innovation Directions (Within Framework)
 
-While staying within the GI-CANN family, future agents can:
+While staying within compact physics-aware constitutive modeling, future agents can:
 
-1. **Multi-branch architectures**: Explore different branch structures (additive vs multiplicative)
-2. **Initialization strategies**: Better warm-start for negative α regimes
-3. **Regularization**: L1/L2 on weights to improve generalization
-4. **Training stability**: Alternative optimizers, learning rate schedules, gradient clipping strategies
-5. **Invariant combinations**: J_α+ + J_α- with separate learnable exponents
-6. **Material-specific formulations**: Different architectures for stretch vs shear dominated materials
+1. **Invariant design**: Different invariant families or parameterizations with the same benchmark protocol
+2. **Initialization strategies**: Better warm-starts for difficult exponent regimes
+3. **Regularization**: Sparsity or smoothness constraints that improve transfer
+4. **Training stability**: Alternative optimizers, schedules, or stabilization methods
+5. **Constitutive combinations**: Different compact combinations of physically meaningful terms
+6. **Material-specific formulations**: Variants tailored to stretch-dominated versus shear-dominated materials
 
 ## Out of Bounds
 
