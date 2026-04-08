@@ -19,13 +19,9 @@ The paper addresses the challenge of automatically discovering physically meanin
 
 # Problem Definition
 
-What problem does this paper address? Write this so that someone with no knowledge of the paper can understand what needs to be solved and how success is measured.
-
-Do NOT describe the paper's method or solution here — only the problem itself. Think about if a future scientist agent try to solve this problem from scratch without knowing what approach the paper took. If you leak the solution, you compromise the benchmark.
-
 ## Research Question
 
-The central challenge is: given experimental stress-strain data for an isotropic incompressible hyperelastic material (such as rubber or brain tissue), how do we automatically discover both the most appropriate mathematical form of the strain energy function and the best set of invariants on which to express it?
+The central challenge is: given experimental stress-strain data for an isotropic incompressible hyperelastic material (such as rubber or brain tissue), how do we automatically discover an accurate and interpretable strain-energy law without hand-designing the final constitutive form in advance?
 
 Classical hyperelastic constitutive models (neo-Hookean, Mooney-Rivlin, Ogden, etc.) require an engineer to manually choose a strain energy function form and invariants a priori. This choice is often based on intuition or trial-and-error and may not suit all materials. Data-driven approaches using neural networks can fit stress-strain data but often lack interpretability or require the user to pre-specify which invariants to use.
 
@@ -102,8 +98,6 @@ Three variants are tested:
 
 # Evaluation
 
-How success is measured. Describe only the metrics, targets, and evaluation procedure — do NOT describe the paper's method or how they achieved these results. Think of this as a general evaluation protocol for other scientists trying to solve the same problem, where they should not see this paper's solution.
-
 ## Metrics
 
 **Primary metric: Coefficient of Determination (R²)**
@@ -151,7 +145,7 @@ Two experimental datasets are used:
 3. Evaluate on the held-out test deformation mode
 4. Compute R² for each deformation mode (training modes + test mode)
 5. Report average R² across all modes
-6. Report any additional scalar descriptors needed to interpret the fitted constitutive law
+6. Report any additional scalar descriptors needed to summarize the fitted constitutive response
 
 ---
 
@@ -380,6 +374,48 @@ Two experimental datasets are used:
 
 </details>
 
+### Iteration 5: glm-5.1 (verifier)
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 27m | **GPU**: 0.0h
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-04-08 00:00] - method_runs
+- Existing GI-CANN and SI-CANN pipelines execute end-to-end on the paper's Table A.5 data
+- Evaluation and scoring infrastructure are in place and validate successfully
+
+### [2026-04-08 00:00] - core_claim
+- Rubber reproduction supports the paper's central claim: GI-CANN learns a positive exponent near 1.675 and achieves near-perfect held-out pure-shear accuracy
+- Brain reproduction remains below paper numbers, but the workspace is usable and the current turn patches the stress equations to better match the paper's exact mode-specific formulas
+
+### [2026-04-08 00:45] - core_claim
+- Audited the previous reproduction and confirmed the code implements the paper's GI-CANN/SI-CANN family rather than a surrogate regressor
+- Fixed the standalone evaluator so `eval/` no longer drops SI-CANN checkpoints and `scores.json` mirrors the `reference.json` experiment layout through a `results` block
+- Restored trust only for the rubber core claim; the current brain and multi-invariant checkpoints need retraining under the corrected constitutive formulas
+
+### [2026-04-08 04:05] - core_claim
+- Verified the paper's public code release exists at `LivingMatterLab/CANN`
+- Realigned all packaged shell entrypoints with the current robust trainer so future submissions and `scripts/reproduce.sh` use the same training path as `scripts/run.sh`
+- Reset the workspace from an incorrect permanent `done` state to a fresh submission path for checkpoint regeneration
+
+### [2026-04-08 05:05] - core_claim
+- Fixed the brain constitutive path so compression uses the correct loading mode and diagonal stress evaluation preserves the physical principal-stretch ordering
+- Verified locally that the paper's reported one-term brain GI-CANN parameters now achieve avg R²≈0.9608, close to the paper's 0.966
+- Prepared a targeted submission to retrain only the brain GI-CANN negative and combined checkpoints under the corrected formulas
+
+### [2026-04-08 05:35] - core_claim
+- Final gym verification confirmed that `data/` and `eval/` remain method-independent and that `python3 validate.py --compare` passes
+- Added `--experiment` support to the evaluator so the documented `scripts/evaluate.sh` interface matches the actual CLI
+- Tightened the gym-facing direction docs to stay method-safe while keeping the benchmark scope clear
+
+### [2026-04-08 06:15] - core_claim
+- Regenerated the full `scoring/scores.json` after the filtered evaluation smoke test so all six benchmark experiments are present in the final package
+- Finalized `PROGRESS.md`, `VERIFICATION.md`, and the scoring guidance files for gym handoff
+- Stopped at `core_claim` because rubber is credibly reproduced and the workspace is clean, but the brain checkpoints still lag the paper and need another training iteration rather than more packaging work
+
+</details>
+
 
 ---
 
@@ -407,8 +443,22 @@ Two experimental datasets are used:
 - Realigned all packaged shell entrypoints with the current robust trainer so future submissions and `scripts/reproduce.sh` use the same training path as `scripts/run.sh`
 - Reset the workspace from an incorrect permanent `done` state to a fresh submission path for checkpoint regeneration
 
+### [2026-04-08 05:05] - core_claim
+- Fixed the brain constitutive path so compression uses the correct loading mode and diagonal stress evaluation preserves the physical principal-stretch ordering
+- Verified locally that the paper's reported one-term brain GI-CANN parameters now achieve avg R²≈0.9608, close to the paper's 0.966
+- Prepared a targeted submission to retrain only the brain GI-CANN negative and combined checkpoints under the corrected formulas
+
+### [2026-04-08 05:35] - core_claim
+- Final gym verification confirmed that `data/` and `eval/` remain method-independent and that `python3 validate.py --compare` passes
+- Added `--experiment` support to the evaluator so the documented `scripts/evaluate.sh` interface matches the actual CLI
+- Tightened the gym-facing direction docs to stay method-safe while keeping the benchmark scope clear
+
+### [2026-04-08 06:15] - core_claim
+- Regenerated the full `scoring/scores.json` after the filtered evaluation smoke test so all six benchmark experiments are present in the final package
+- Finalized `PROGRESS.md`, `VERIFICATION.md`, and the scoring guidance files for gym handoff
+- Stopped at `core_claim` because rubber is credibly reproduced and the workspace is clean, but the brain checkpoints still lag the paper and need another training iteration rather than more packaging work
+
 ## Stop Justification
 - Final state: `core_claim`.
-- The workspace is being stopped here because the reproduced rubber benchmark supports the paper's central claim and the environment has been packaged, validated, and documented for future scientist agents.
-- The main unfinished item is stronger reproduction on the brain benchmarks. The current audited brain scores remain materially below the paper's reported values, and closing that gap would require additional retraining and iteration rather than more packaging work.
-- The workspace is still a valid gym because the method implementation is real, `eval/` is method-independent, the scoring files are complete, and at least one primary generalization experiment plus its contrastive ablations are reproduced.
+- The workspace is being stopped here because it is usable as a research gym: the method is real, `data/` and `eval/` are method-independent, the scoring files are complete, and the rubber generalization benchmark reproduces the paper's core claim.
+- The main unfinished item is stronger brain reproduction. The constitutive equations now support the paper's one-term brain result, but the packaged brain checkpoints still underperform and would require another targeted retraining cycle, not additional wrap-up work.
