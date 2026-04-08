@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from method.gicann import GICANN
 from data.load_data import (
     get_rubber_dataset, get_brain_dataset,
-    compute_r2
+    compute_r2, extract_observed_stress
 )
 
 
@@ -89,9 +89,9 @@ def train_model(model, train_ds, test_ds, epochs=5000, lr=0.001,
                     else:
                         pred = model(F_train[idx_t])
                     tgt = S_train[idx_t]
-                    pred_flat = pred.detach().cpu().numpy().flatten()
-                    tgt_flat = tgt.cpu().numpy().flatten()
-                    r2_train[mode_name] = float(compute_r2(pred_flat, tgt_flat))
+                    pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).detach().cpu().numpy()
+                    tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+                    r2_train[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
                 for mode_name in test_mode_names:
                     indices = test_ds.mode_indices[mode_name]
@@ -101,9 +101,9 @@ def train_model(model, train_ds, test_ds, epochs=5000, lr=0.001,
                     else:
                         pred = model(F_test[idx_t])
                     tgt = S_test[idx_t]
-                    pred_flat = pred.detach().cpu().numpy().flatten()
-                    tgt_flat = tgt.cpu().numpy().flatten()
-                    r2_test[mode_name] = float(compute_r2(pred_flat, tgt_flat))
+                    pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).detach().cpu().numpy()
+                    tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+                    r2_test[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
                 avg_r2 = np.mean(list(r2_train.values()) + list(r2_test.values()))
                 alpha_info = {k: round(v, 4)
@@ -137,9 +137,9 @@ def train_model(model, train_ds, test_ds, epochs=5000, lr=0.001,
             else:
                 pred = model(F_train[idx_t])
             tgt = S_train[idx_t]
-            pred_flat = pred.cpu().numpy().flatten()
-            tgt_flat = tgt.cpu().numpy().flatten()
-            r2_train_final[mode_name] = float(compute_r2(pred_flat, tgt_flat))
+            pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
+            tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+            r2_train_final[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
         for mode_name in test_mode_names:
             indices = test_ds.mode_indices[mode_name]
@@ -149,9 +149,9 @@ def train_model(model, train_ds, test_ds, epochs=5000, lr=0.001,
             else:
                 pred = model(F_test[idx_t])
             tgt = S_test[idx_t]
-            pred_flat = pred.cpu().numpy().flatten()
-            tgt_flat = tgt.cpu().numpy().flatten()
-            r2_test_final[mode_name] = float(compute_r2(pred_flat, tgt_flat))
+            pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
+            tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+            r2_test_final[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
     avg_r2 = np.mean(list(r2_train_final.values()) + list(r2_test_final.values()))
     final_params = model.get_parameters_dict()

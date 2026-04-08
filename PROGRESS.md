@@ -3,16 +3,16 @@
 ## Audit Status
 
 - The implementation is a real GI-CANN / SI-CANN reproduction, not a surrogate MLP. It contains trainable generalized exponents, the paper's three strain-energy branches, and closed-form stress equations for the paper's loading modes.
-- The previous packaging was not trustworthy as delivered. `eval/evaluate.py` could not reload SI-CANN checkpoints and the old `scores.json` schema did not mirror `reference.json`.
-- This turn fixes the evaluator and regenerates `scoring/scores.json` from the shipped checkpoints. The resulting file should be treated as the authoritative audited score report until fresh checkpoints are retrained.
+- The previous packaged brain checkpoints were not trustworthy after audit. The constitutive code had mode-specific stress bugs that especially damaged the brain compression fit.
+- This turn fixes the constitutive path, keeps the existing rubber `core_claim`, and prepares a targeted submission to retrain the brain GI-CANN checkpoints under the corrected formulas.
 
-## Final Status
+## Current Status
 
 - Milestone retained: `core_claim`
 - Ready for gym use: yes
-- Final verification completed without any new training runs
 - `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
-- Benchmark-facing documentation now avoids leaking the paper's exact implementation into the problem definition
+- Benchmark-facing documentation avoids leaking the paper's exact implementation into the problem definition
+- A new submission is queued to retrain the brain GI-CANN negative and combined models only
 
 ## Implementation Complete
 
@@ -37,7 +37,7 @@
 
 **Verified core claim**: GI-CANN discovers α*≈1.677 for rubber and achieves avg R²≈0.999 on the held-out pure-shear benchmark.
 
-### Brain — not reproduced
+### Brain — shipped checkpoints not reproduced
 | Config | Reference avg_r2 | Our avg_r2 | Gap |
 |--------|-----------------|------------|-----|
 | GI-CANN combined (α+≈1.5, α-≈-18) | 0.966 | **0.621** | -0.345 |
@@ -47,7 +47,16 @@
 | SI-CANN negative (α=-2) | 0.610 | **-0.506** | -1.12 |
 | SI-CANN combined (α=-2) | 0.617 | **-0.502** | -1.12 |
 
-**Current audited status**: the shipped brain checkpoints do not support the paper's claim. After the formula corrections made in this workspace, the existing brain checkpoints score poorly and need retraining before any higher milestone can be claimed.
+**Current audited status**: the shipped brain checkpoints do not support the paper's claim. After the constitutive fixes made in this workspace, the existing brain checkpoints need retraining before any higher milestone can be claimed.
+
+### Brain — corrected constitutive check
+
+- Exact paper-style one-term GI-CANN brain negative model (`alpha_minus=-18.016`, `w_id_minus=0.009`) now scores:
+  - `ut`: 0.9328
+  - `uc`: 0.9795
+  - `ss`: 0.9700
+  - `avg_r2`: **0.9608**
+- This is close to the paper's reported `0.966` and shows the remaining failure is in checkpoint training/selection rather than in the constitutive equations themselves.
 
 ## Current Turn Fixes
 
@@ -57,6 +66,9 @@
 4. `environment/setup.sh`: switched to `uv pip install --system` as required by the environment protocol.
 5. `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `scripts/run.sh`: aligned all entrypoints on the current `run_all_training.py` trainer so the packaged environment no longer mixes old 5k-epoch scripts with the newer robust training path.
 6. `scoring/TARGETS.md` and `scoring/CONSTRAINTS.md`: corrected the target/constraint definitions so they match the paper’s actual core experiments and the implemented Eq. (13)-style GI-CANN branches.
+7. `method/gicann.py` and `eval/models.py`: fixed deformation-mode dispatch so brain compression is no longer misclassified near `lambda=1`.
+8. `method/gicann.py`, `method/sicann.py`, and `eval/models.py`: fixed diagonal loading stress computation to use the mode's actual principal-stretch ordering instead of sorted singular values.
+9. `data/load_data.py`, `method/gicann.py`, `method/train.py`, `run_all_training.py`, and `eval/evaluate.py`: switched loss and R² reporting to the observed stress component (`sigma_11` for UT/UC/BT/PS, `sigma_12` for SS) instead of flattening mostly-zero tensors.
 
 ## Upstream Code Release
 
@@ -68,18 +80,13 @@
 - `python3 validate.py --compare` passes.
 - `eval/` remains import-separated from `method/`.
 - Rubber GI-CANN positive-mode reproduction is still strong enough to justify `core_claim`.
+- The corrected implementation reproduces the paper's brain one-term negative constitutive behavior when evaluated at the paper's reported parameters.
 
 ## What Remains
 
-- Retrain the existing checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
-- Re-attempt the brain negative and combined settings after retraining.
+- Retrain the existing brain GI-CANN checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
+- Re-attempt the brain negative and combined settings with the targeted job in `scripts/run.sh`.
 - Improve the weak brain-benchmark scores if additional compute becomes available.
-
-## Current Blocker
-
-- Multiple post-audit submission attempts were blocked before job launch by external container-build failures, consistently reported as `registry response malformed` while fetching OCI image metadata.
-- I tried Docker Hub, public ECR, Microsoft MCR, Quay, Apptainer library bootstrap, and yum bootstrap. The failures were all infrastructure-facing rather than method/eval code failures, and there is no local `.sif` / `localimage` fallback available on this machine.
-- Given the existing audited rubber results, the workspace remains valid at `core_claim`, but higher coverage now depends on the build system succeeding rather than further local code changes.
 
 ## Wrap-up Notes
 
@@ -106,12 +113,15 @@
 1. **scoring/reference.json**: Added alpha_star to all experiment metrics for validation
 2. **eval/models.py**: Created minimal model class for import separation (eval/ → method/)
 3. **scoring/EXPERIMENTS.md**: Filled in all 6 experiment descriptions
+4. **Mode detection**: fixed brain compression misclassification by deriving the loading mode from the actual deformation-gradient structure
+5. **Principal-stretch mapping**: fixed diagonal stress evaluation to preserve the mode's physical axial stretch ordering
+6. **Observed-stress loss**: replaced full-tensor MSE/R² with mode-specific observed stress components
 
 ## Key Insights
 
 1. **Rubber: core claim reproduced** — α*≈1.676 discovered, R²≈0.999 ✓
-2. **Brain SI-CANN α=-2: broken** — formula produces near-zero stress, optimizer converges to constant prediction (avg_r2≈-0.5)
-3. **Brain GI-CANN warm-start: partial** — α≈-18 gives r2_ut=0.90, r2_ss=0.76, but r2_uc=0.20 (avg_r2=0.62 vs ref 0.97)
-4. **Reference discrepancy** — Reference brain SI-CANN (R²=0.61) cannot be reproduced; suggests different stress formulation or data
+2. **Brain constitutive path was wrong, not hopeless** — the corrected paper-style one-term brain model reaches avg R²≈0.961 locally
+3. **Brain checkpoint failure is now isolated to optimization/bookkeeping** — the shipped checkpoints learn the wrong branch structure relative to the paper
+4. **Reference discrepancy on brain SI-CANN remains** — the fixed GI-CANN path is now credible, but SI-CANN still needs separate scrutiny
 5. **LN branch stability** — w_ln1 ≤ 0 clamp prevents ln(1-w_ln1·(J-3)) singularity for rubber BT
 6. **No grad clip for brain GI-CANN** — gradient clipping of 0.5 blocks the exp branch from growing, which is needed to balance large α⁻ stress contributions

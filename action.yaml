@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
+action: submit
 gpus: 1
-test: false
+test: true
 milestone: core_claim
-notes: "Verification complete: method/eval separation is clean, gym-facing docs were de-leaked, and scoring coefficients were tightened to emphasize held-out generalization while preserving the verified core_claim milestone."
+notes: "Targeted brain GI-CANN recovery run after fixing mode dispatch, diagonal stretch ordering, and observed-stress loss. Retrains brain negative+combined checkpoints and re-evaluates all checkpoints."

@@ -22,8 +22,7 @@
 - Realigned all packaged shell entrypoints with the current robust trainer so future submissions and `scripts/reproduce.sh` use the same training path as `scripts/run.sh`
 - Reset the workspace from an incorrect permanent `done` state to a fresh submission path for checkpoint regeneration
 
-## Stop Justification
-- Final state: `core_claim`.
-- The workspace is being stopped here because the reproduced rubber benchmark supports the paper's central claim and the environment has been packaged, validated, and documented for future scientist agents.
-- The main unfinished item is stronger reproduction on the brain benchmarks. The current audited brain scores remain materially below the paper's reported values, and closing that gap would require additional retraining and iteration rather than more packaging work.
-- The workspace is still a valid gym because the method implementation is real, `eval/` is method-independent, the scoring files are complete, and at least one primary generalization experiment plus its contrastive ablations are reproduced.
+### [2026-04-08 05:05] - core_claim
+- Fixed the brain constitutive path so compression uses the correct loading mode and diagonal stress evaluation preserves the physical principal-stretch ordering
+- Verified locally that the paper's reported one-term brain GI-CANN parameters now achieve avg R²≈0.9608, close to the paper's 0.966
+- Prepared a targeted submission to retrain only the brain GI-CANN negative and combined checkpoints under the corrected formulas

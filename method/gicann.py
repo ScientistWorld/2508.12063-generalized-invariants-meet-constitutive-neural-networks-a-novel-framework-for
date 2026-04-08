@@ -13,20 +13,16 @@ import torch
 import torch.nn as nn
 import numpy as np
 
+from data.load_data import extract_observed_stress
+
 
 def get_principal_stretches(F):
-    """Get principal stretches (eigenvalues of F) for a batch of deformation gradients.
+    """Return stretches in the loading-order convention used by the paper.
 
-    Uses SVD: F = USV^T, singular values = principal stretches.
-
-    For general 3D deformations (UT, UC, BT, PS), SVD = B-eigenvalues.
-    For SS (simple shear), SVD differs from B-eigenvalues; see get_ss_b_eigenvalues.
-
-    Args:
-        F: (batch, 3, 3) deformation gradients
-
-    Returns:
-        l1, l2, l3: (batch,) principal stretch tensors
+    For the paper's diagonal loading modes, the constitutive equations use the
+    ordered stretches directly from ``F``. Sorting singular values breaks
+    uniaxial compression by swapping the axial and transverse stretches.
+    For non-diagonal deformations such as simple shear, fall back to SVD.
     """
     batch = F.shape[0]
     l1 = torch.zeros(batch, device=F.device, dtype=F.dtype)
@@ -35,6 +31,12 @@ def get_principal_stretches(F):
 
     for i in range(batch):
         Fi = F[i]
+        off_diag = Fi - torch.diag(torch.diagonal(Fi))
+        if torch.all(torch.abs(off_diag) < 1e-10):
+            l1[i] = torch.abs(Fi[0, 0])
+            l2[i] = torch.abs(Fi[1, 1])
+            l3[i] = torch.abs(Fi[2, 2])
+            continue
         try:
             _, sv_s, _ = torch.linalg.svd(Fi, full_matrices=False)
             l1[i] = sv_s[0]
@@ -48,11 +50,11 @@ def get_principal_stretches(F):
             l2[i] = torch.sqrt(eigvals[1])
             l3[i] = torch.sqrt(eigvals[0])
 
-    # Ensure positive
-    l1 = torch.clamp(l1, min=1e-8)
-    l2 = torch.clamp(l2, min=1e-8)
-    l3 = torch.clamp(l3, min=1e-8)
-    return l1, l2, l3
+    return (
+        torch.clamp(l1, min=1e-8),
+        torch.clamp(l2, min=1e-8),
+        torch.clamp(l3, min=1e-8),
+    )
 
 
 def get_ss_b_eigenvalues(F, gamma):
@@ -104,17 +106,28 @@ def detect_deformation_mode(l1, l2, l3, F=None):
     modes = []
 
     for i in range(batch):
+        if F is not None:
+            Fi = F[i]
+            if (abs(Fi[0, 1]) > 1e-10 or abs(Fi[1, 0]) > 1e-10 or
+                abs(Fi[0, 2]) > 1e-10 or abs(Fi[2, 0]) > 1e-10):
+                modes.append('ss')
+                continue
+            if abs(Fi[1, 1] - 1.0) < 1e-10:
+                modes.append('ps')
+                continue
+            if abs(Fi[0, 0] - Fi[1, 1]) < 1e-10:
+                modes.append('bt')
+                continue
+            if abs(Fi[1, 1] - Fi[2, 2]) < 1e-10:
+                if Fi[0, 0] >= 1.0:
+                    modes.append('ut')
+                else:
+                    modes.append('uc')
+                continue
+
         l1_i = l1[i].item()
         l2_i = l2[i].item()
         l3_i = l3[i].item()
-
-        # Check simple shear first (off-diagonal components)
-        if F is not None:
-            Fi = F[i]
-            if (abs(Fi[0, 1]) > 1e-6 or abs(Fi[1, 0]) > 1e-6 or
-                abs(Fi[0, 2]) > 1e-6 or abs(Fi[2, 0]) > 1e-6):
-                modes.append('ss')
-                continue
 
         # Ratios
         r23 = abs(l2_i - l3_i) / max(l2_i, l3_i, 1e-8)
@@ -132,7 +145,7 @@ def detect_deformation_mode(l1, l2, l3, F=None):
             modes.append('ps')
         else:
             # Default
-            modes.append('ut')
+            modes.append('ut' if l1_i >= 1.0 else 'uc')
 
     return modes
 
@@ -295,10 +308,10 @@ class GICANN(nn.Module):
 
         for mode, indices in mode_groups.items():
             indices_t = torch.tensor(indices, device=F.device, dtype=torch.long)
-            l1_m = l1[indices_t]
-            l2_m = l2[indices_t]
-            l3_m = l3[indices_t]
             F_m = F[indices_t]
+            l1_m = F_m[:, 0, 0]
+            l2_m = F_m[:, 1, 1]
+            l3_m = F_m[:, 2, 2]
 
             if mode == 'ss' and gamma_override is not None:
                 gamma_m = gamma_override[indices_t]
@@ -455,7 +468,11 @@ class GICANN(nn.Module):
     def loss(self, F, S_target, gamma=None):
         """Compute loss = MSE(stress) + L1 regularization."""
         S_pred = self.compute_stress(F, gamma_override=gamma)
-        mse = torch.mean((S_pred - S_target) ** 2)
+        l1, l2, l3 = get_principal_stretches(F)
+        mode_names = detect_deformation_mode(l1, l2, l3, F)
+        pred_obs = extract_observed_stress(S_pred, mode_names)
+        target_obs = extract_observed_stress(S_target, mode_names)
+        mse = torch.mean((pred_obs - target_obs) ** 2)
         l1_loss = self.r * sum(torch.sum(torch.abs(w)) for w in self.get_strain_energy_weights())
         return mse + l1_loss, mse
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Fresh checkpoint refresh using the current robust trainer and evaluator.
+# Targeted retraining after fixing the mode-specific stress computation.
 
 set -e
 
@@ -7,21 +7,26 @@ cd /home/user
 mkdir -p logs checkpoints scoring
 
 echo "========================================="
-echo "Full GI-CANN/SI-CANN checkpoint refresh"
+echo "Brain GI-CANN recovery run"
 echo "========================================="
 
-rm -f checkpoints/*.pt checkpoints/training_summary.json scoring/scores.json
+rm -f \
+  checkpoints/brain_negative.pt \
+  checkpoints/brain_combined.pt \
+  checkpoints/training_summary.json \
+  scoring/scores.json
 
 python3 run_all_training.py \
   --device cuda \
-  --materials rubber,brain \
-  --modes positive,negative,combined \
-  --families gi,si \
+  --materials brain \
+  --modes negative,combined \
+  --families gi \
+  --epochs 30000 \
   --grad-clip 0.0 \
-  2>&1 | tee logs/full_refresh.log
+  2>&1 | tee logs/brain_gicann_recovery.log
 
 echo ""
-echo "--- Evaluating results ---"
+echo "--- Evaluating all checkpoints ---"
 bash scripts/evaluate.sh
 
 echo ""

@@ -67,12 +67,21 @@ class _MinimalCANNBase(nn.Module):
             if F is not None:
                 Fi = F[i]
                 if (
-                    abs(Fi[0, 1]) > 1e-6
-                    or abs(Fi[1, 0]) > 1e-6
-                    or abs(Fi[0, 2]) > 1e-6
-                    or abs(Fi[2, 0]) > 1e-6
+                    abs(Fi[0, 1]) > 1e-10
+                    or abs(Fi[1, 0]) > 1e-10
+                    or abs(Fi[0, 2]) > 1e-10
+                    or abs(Fi[2, 0]) > 1e-10
                 ):
                     modes.append("ss")
+                    continue
+                if abs(Fi[1, 1] - 1.0) < 1e-10:
+                    modes.append("ps")
+                    continue
+                if abs(Fi[0, 0] - Fi[1, 1]) < 1e-10:
+                    modes.append("bt")
+                    continue
+                if abs(Fi[1, 1] - Fi[2, 2]) < 1e-10:
+                    modes.append("ut" if Fi[0, 0] >= 1.0 else "uc")
                     continue
 
             l1_i = l1[i].item()
@@ -85,11 +94,11 @@ class _MinimalCANNBase(nn.Module):
             if r12 < 0.05:
                 modes.append("bt")
             elif r23 < 0.05:
-                modes.append("ut")
+                modes.append("ut" if l1_i >= 1.0 else "uc")
             elif r2_1 < 0.05:
                 modes.append("ps")
             else:
-                modes.append("ut")
+                modes.append("ut" if l1_i >= 1.0 else "uc")
         return modes
 
     def _stress_uniaxial(self, l1, l2, l3):
@@ -200,9 +209,10 @@ class _MinimalCANNBase(nn.Module):
 
         for mode, indices in mode_groups.items():
             indices_t = torch.tensor(indices, device=F.device, dtype=torch.long)
-            l1_m = l1[indices_t]
-            l2_m = l2[indices_t]
-            l3_m = l3[indices_t]
+            F_m = F[indices_t]
+            l1_m = F_m[:, 0, 0]
+            l2_m = F_m[:, 1, 1]
+            l3_m = F_m[:, 2, 2]
 
             if mode == "ss" and gamma_override is not None:
                 gamma_m = gamma_override[indices_t]

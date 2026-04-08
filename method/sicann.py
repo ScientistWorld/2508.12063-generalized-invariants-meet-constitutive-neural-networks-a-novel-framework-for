@@ -120,10 +120,10 @@ class SICANN(nn.Module):
 
         for mode in set(modes):
             indices = [i for i, m in enumerate(modes) if m == mode]
-            l1_m = l1[indices]
-            l2_m = l2[indices]
-            l3_m = l3[indices]
             F_m = F[indices]
+            l1_m = F_m[:, 0, 0]
+            l2_m = F_m[:, 1, 1]
+            l3_m = F_m[:, 2, 2]
 
             alpha_p = 2.0
             alpha_n = -2.0

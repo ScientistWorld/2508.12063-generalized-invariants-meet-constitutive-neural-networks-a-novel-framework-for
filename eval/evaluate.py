@@ -17,7 +17,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from data.load_data import get_rubber_dataset, get_brain_dataset, compute_r2
+from data.load_data import (
+    get_rubber_dataset,
+    get_brain_dataset,
+    compute_r2,
+    extract_observed_stress,
+)
 from eval.models import MinimalGICANN, MinimalSICANN
 
 
@@ -98,8 +103,9 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
                 else:
                     pred = model(F_train[idx_t])
                 tgt = S_train[idx_t]
-                r2_train[mode_name] = float(compute_r2(
-                    pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
+                pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
+                tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+                r2_train[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
             for mode_name in test_modes:
                 indices = test_ds.mode_indices[mode_name]
@@ -109,8 +115,9 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
                 else:
                     pred = model(F_test[idx_t])
                 tgt = S_test[idx_t]
-                r2_test[mode_name] = float(compute_r2(
-                    pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
+                pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
+                tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+                r2_test[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
         avg_r2 = float(np.mean(list(r2_train.values()) + list(r2_test.values())))
 
