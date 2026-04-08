@@ -133,7 +133,7 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
     }
 
 
-def build_scores_json(checkpoint_results, output_path):
+def build_scores_json(checkpoint_results, output_path, experiments_filter=None):
     """Build scoring/scores.json from evaluation results.
 
     Output format mirrors reference.json:
@@ -216,6 +216,12 @@ def build_scores_json(checkpoint_results, output_path):
                 'alpha_star': round(float(alpha_star), 4),
             }
 
+    if experiments_filter:
+        exp_data = {
+            name: info for name, info in exp_data.items()
+            if name in experiments_filter
+        }
+
     # Wrap in "experiments" key
     scores = {"experiments": exp_data}
 
@@ -233,6 +239,12 @@ def main():
     parser.add_argument('--checkpoints-dir', type=str, default='checkpoints')
     parser.add_argument('--scores-json', type=str, default='scoring/scores.json')
     parser.add_argument('--device', type=str, default='cpu')
+    parser.add_argument(
+        '--experiment',
+        type=str,
+        default=None,
+        help='Optional experiment name or comma-separated list of experiment names to keep in scores.json',
+    )
     args = parser.parse_args()
 
     results = []
@@ -265,7 +277,12 @@ def main():
                     print(f"  ERROR: {e}")
 
     if results:
-        scores = build_scores_json(results, args.scores_json)
+        experiments_filter = None
+        if args.experiment:
+            experiments_filter = {
+                item.strip() for item in args.experiment.split(',') if item.strip()
+            }
+        scores = build_scores_json(results, args.scores_json, experiments_filter)
         print(f"\n=== Scores Summary ===")
         experiments = scores.get('experiments', scores)
         for exp_name, exp_info in sorted(experiments.items()):

@@ -2,27 +2,27 @@
 
 ## Initial Assessment
 
-The workspace was already at a credible `core_claim`. The method implementation is a real GI-CANN/SI-CANN reproduction rather than a surrogate regressor, the folder separation between `data/`, `eval/`, and `method/` is intact, and the shipped rubber result supports the paper's central claim. The main problems were in gym packaging: several benchmark-facing markdown files leaked method details, and the scoring rubric double-counted closely related accuracy metrics.
+The workspace started at a credible `core_claim`. The method implementation is a real GI-CANN/SI-CANN reproduction rather than a surrogate regressor, the folder separation between `data/`, `eval/`, and `method/` is intact, and the reproduced rubber result still supports the claimed milestone. The remaining verification work was mostly about gym usability: checking for method leakage in benchmark-facing docs, confirming the scoring rubric is sensible for the experiments actually present in `scores.json`, and making sure the documented evaluation interface matches the actual CLI.
 
 ## Issues Found
 
-- Critical: [`briefing/evaluation.md`](/home/user/briefing/evaluation.md) leaked method details, baselines, and training hyperparameters that from-scratch scientist agents should not see.
-- Critical: [`scoring/EXPERIMENTS.md`](/home/user/scoring/EXPERIMENTS.md), [`scoring/TARGETS.md`](/home/user/scoring/TARGETS.md), [`scoring/CONSTRAINTS.md`](/home/user/scoring/CONSTRAINTS.md), and [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) exposed paper-specific architectural details instead of staying method-safe.
-- Minor: [`scoring/reference.json`](/home/user/scoring/reference.json) over-weighted duplicated accuracy signals by scoring both per-mode `R²` and `avg_r2` heavily in the same experiments.
+- Minor: [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) still used paper-specific invariant-exponent language more directly than necessary for a gym-facing “direction” document.
+- Minor: [`scoring/TARGETS.md`](/home/user/scoring/TARGETS.md) documented `bash scripts/evaluate.sh --experiment ...`, but [`eval/evaluate.py`](/home/user/eval/evaluate.py) did not actually support `--experiment`.
+- Minor: [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) advertised a configurable Python interpreter but still hardcoded `python`, which fails on this machine.
+- Minor: [`VERIFICATION.md`](/home/user/VERIFICATION.md) itself was stale and described older fixed issues rather than the current verification state.
 
 ## Fixes Applied
 
-- Rewrote [`briefing/evaluation.md`](/home/user/briefing/evaluation.md) to keep it method-agnostic and focused on datasets, held-out deformation modes, and reported metrics.
-- Rewrote [`scoring/EXPERIMENTS.md`](/home/user/scoring/EXPERIMENTS.md) so each experiment is described at a high level without naming the paper’s architecture or training recipe.
-- Tightened [`scoring/TARGETS.md`](/home/user/scoring/TARGETS.md), [`scoring/CONSTRAINTS.md`](/home/user/scoring/CONSTRAINTS.md), and [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) to preserve the benchmark’s scientific scope without leaking implementation details.
-- Adjusted [`scoring/reference.json`](/home/user/scoring/reference.json) coefficients so the two main generalization experiments emphasize held-out-mode performance and overall fit, while ablations are scored primarily through `avg_r2`. `alpha_star` remains report-only.
+- Updated [`eval/evaluate.py`](/home/user/eval/evaluate.py) and [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) so the documented `--experiment` interface now works for selected experiment evaluation.
+- Fixed [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) to honor `${PYTHON}` instead of calling a missing `python` binary directly.
+- Reworded [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) to keep the benchmark scope physics-aware and interpretable without overexposing the paper’s specific invariant-exponent framing.
+- Replaced this report with the current verification findings and judgment.
 
 ## Final Judgment
 
-The workspace is now suitable as a research gym. A future scientist can use the problem/evaluation/data side without being handed the paper’s implementation, while improve-mode agents still have a usable audited method baseline and a clearer scoring rubric.
+The workspace is suitable as a research gym. A future scientist can use the problem/evaluation/data side without importing `method/`, and the benchmark-facing markdown is sufficiently method-safe for from-scratch use. The scoring rubric is also reasonable for the experiments actually present in `scores.json`: both core generalization experiments dominate at 40% each, the held-out mode is emphasized inside each core experiment, and the four ablations collectively remain secondary at 20%.
 
 - Milestone: core_claim
 - Ready for gym use: yes
-- Confidence: medium
-- Key limitation: brain-side reproduction remains below the paper’s reported numbers, so the gym is strongest for the reproduced rubber claim and for improving the unreproduced brain setting
-<!-- Do not edit this file unless you are told to. -->
+- Confidence: high
+- Key limitation: brain-side reproduction remains below the paper’s reported numbers, so the gym is strongest as a verified rubber benchmark plus an open brain-improvement target

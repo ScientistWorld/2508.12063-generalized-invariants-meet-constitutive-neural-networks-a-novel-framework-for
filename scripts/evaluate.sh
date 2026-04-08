@@ -7,8 +7,10 @@
 # a JSON dict nested by experiment, matching the structure in scoring/reference.json.
 #
 # Usage:
-#   ./evaluate.sh                           # evaluate all checkpoints
-#   ./evaluate.sh --checkpoint ckpt.pt       # evaluate specific checkpoint
+#   ./evaluate.sh                            # evaluate all checkpoints
+#   ./evaluate.sh --checkpoint ckpt.pt       # evaluate a specific checkpoint
+#   ./evaluate.sh --experiment brain_generalization
+#                                           # keep only selected experiment(s)
 
 set -e
 
@@ -17,7 +19,7 @@ PYTHON=${PYTHON:-python3}
 
 mkdir -p scoring
 
-python eval/evaluate.py \
+${PYTHON} eval/evaluate.py \
     --checkpoints-dir checkpoints \
     --scores-json scoring/scores.json \
     "$@"

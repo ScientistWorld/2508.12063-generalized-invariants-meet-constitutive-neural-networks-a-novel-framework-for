@@ -6,16 +6,16 @@ Future agents must work within the paper's problem space and a closely related a
 
 **Domain**: Hyperelastic constitutive modeling for soft materials.
 
-**Challenge**: Discovering appropriate invariant exponents α that characterize material behavior without prior knowledge.
+**Challenge**: Discovering compact constitutive descriptors that characterize material behavior without assuming the best formulation in advance.
 
-**Materials**: Rubber (stretch-dominated, prefers positive α) and brain tissue (shear-sensitive, paper claims prefers negative α).
+**Materials**: Rubber-like elastomers and soft brain tissue, with different generalization behavior across loading modes.
 
 ## Approach Family
 
 Work within physics-aware constitutive model discovery for isotropic incompressible hyperelasticity.
 
 Suitable directions include:
-1. Better invariant choices or invariant parameterizations
+1. Better deformation descriptors or constitutive parameterizations
 2. Better compact constitutive-law representations
 3. Better training or regularization for cross-mode generalization
 4. Better ways to preserve interpretability while improving held-out stress prediction
@@ -29,7 +29,7 @@ Suitable directions include:
 
 While staying within compact physics-aware constitutive modeling, future agents can:
 
-1. **Invariant design**: Different invariant families or parameterizations with the same benchmark protocol
+1. **Constitutive descriptor design**: Different compact descriptor families or parameterizations with the same benchmark protocol
 2. **Initialization strategies**: Better warm-starts for difficult exponent regimes
 3. **Regularization**: Sparsity or smoothness constraints that improve transfer
 4. **Training stability**: Alternative optimizers, schedules, or stabilization methods

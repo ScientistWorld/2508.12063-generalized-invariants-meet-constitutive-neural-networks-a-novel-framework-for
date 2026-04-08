@@ -1,8 +1,6 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
-gpus: 1
-test: true
+action: done
 milestone: core_claim
-notes: "Targeted brain GI-CANN recovery run after fixing mode dispatch, diagonal stretch ordering, and observed-stress loss. Retrains brain negative+combined checkpoints and re-evaluates all checkpoints."
+notes: "Final verification passed: gym-facing docs are method-safe, evaluate.sh now supports --experiment as documented, and the workspace is ready at core_claim."

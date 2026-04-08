@@ -26,3 +26,8 @@
 - Fixed the brain constitutive path so compression uses the correct loading mode and diagonal stress evaluation preserves the physical principal-stretch ordering
 - Verified locally that the paper's reported one-term brain GI-CANN parameters now achieve avg R²≈0.9608, close to the paper's 0.966
 - Prepared a targeted submission to retrain only the brain GI-CANN negative and combined checkpoints under the corrected formulas
+
+### [2026-04-08 05:35] - core_claim
+- Final gym verification confirmed that `data/` and `eval/` remain method-independent and that `python3 validate.py --compare` passes
+- Added `--experiment` support to the evaluator so the documented `scripts/evaluate.sh` interface matches the actual CLI
+- Tightened the gym-facing direction docs to stay method-safe while keeping the benchmark scope clear
