@@ -5,17 +5,10 @@
 # The container packages everything needed to run GI-CANN training and evaluation.
 # The workspace is bind-mounted at /home/user at runtime.
 
-Bootstrap: yum
-OSVersion: 9
-MirrorURL: https://dl.rockylinux.org/pub/rocky/%{OSVERSION}/BaseOS/$basearch/os/
-Include: dnf rocky-release
+Bootstrap: docker
+From: ghcr.io/astral-sh/uv:python3.10-bookworm-slim
 
 %post
-    dnf install -y --setopt=install_weak_deps=False \
-        python3 python3-pip \
-        vim nano less curl wget git tmux ca-certificates && \
-    dnf clean all
-
     mkdir -p /home/user/data /home/user/checkpoints /home/user/scoring
     chmod 755 /home/user
 
