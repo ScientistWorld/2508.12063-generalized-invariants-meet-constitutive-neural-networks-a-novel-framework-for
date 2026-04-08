@@ -5,8 +5,10 @@
 # The container packages everything needed to run GI-CANN training and evaluation.
 # The workspace is bind-mounted at /home/user at runtime.
 
-Bootstrap: docker
-From: quay.io/rockylinux/rockylinux:9
+Bootstrap: yum
+OSVersion: 9
+MirrorURL: https://dl.rockylinux.org/pub/rocky/%{OSVERSION}/BaseOS/$basearch/os/
+Include: dnf rocky-release
 
 %post
     dnf install -y --setopt=install_weak_deps=False \
