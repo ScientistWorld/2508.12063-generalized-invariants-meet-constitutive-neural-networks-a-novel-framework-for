@@ -1,4 +1,8 @@
-# End-of-turn action file.
-action: done
-milestone: core_claim
-notes: "Wrap-up complete. Core claim reproduced: GI-CANN for rubber (R²=0.999, α*≈1.677). Brain NOT reproduced (R²=0.14-0.62 vs ref 0.966) — α⁻ stress formula incompatible with brain UT/UC data. All validation checks passed, documentation complete."
+# IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
+# Do NOT sleep, poll, or wait for jobs. The system reads this file
+# only after your turn ends. Sleeping blocks the entire pipeline.
+action: pending
+gpus: 1
+test: false
+milestone: method_runs
+notes: ""
