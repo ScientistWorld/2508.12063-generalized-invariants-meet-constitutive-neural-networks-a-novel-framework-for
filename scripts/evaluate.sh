@@ -19,4 +19,5 @@ mkdir -p scoring
 
 python eval/evaluate.py \
     --checkpoints-dir checkpoints \
-    --scores-json scoring/scores.json
+    --scores-json scoring/scores.json \
+    "$@"

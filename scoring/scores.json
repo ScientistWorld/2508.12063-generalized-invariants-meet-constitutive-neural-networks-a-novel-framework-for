@@ -1,99 +1,111 @@
 {
   "experiments": {
     "brain_combined_ablation": {
-      "GI-CANN_J\u03b1+J\u03b1-": {
-        "r2_ut": 0.9026,
-        "r2_uc": 0.2028,
-        "r2_ss": 0.7565,
-        "avg_r2": 0.6206,
-        "alpha_star": -18.0
-      },
-      "SI-CANN_J\u03b1+J\u03b1-": {
-        "r2_ut": -0.2732,
-        "r2_uc": 0.0186,
-        "r2_ss": -1.2519,
-        "avg_r2": -0.5022,
-        "alpha_star": -2.0
+      "results": {
+        "GI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": 0.9026,
+          "r2_uc": 0.2028,
+          "r2_ss": 0.7565,
+          "avg_r2": 0.6206,
+          "alpha_star": -18.0
+        },
+        "SI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": -0.2732,
+          "r2_uc": 0.0186,
+          "r2_ss": -1.2519,
+          "avg_r2": -0.5022,
+          "alpha_star": -2.0
+        }
       }
     },
     "brain_generalization": {
-      "GI-CANN": {
-        "r2_ut": -0.5345,
-        "r2_uc": 0.3875,
-        "r2_ss": 0.5703,
-        "avg_r2": 0.1411,
-        "alpha_star": -18.05
-      },
-      "SI-CANN": {
-        "r2_ut": -0.2741,
-        "r2_uc": 0.0191,
-        "r2_ss": -1.2638,
-        "avg_r2": -0.5063,
-        "alpha_star": -2.0
+      "results": {
+        "GI-CANN": {
+          "r2_ut": -0.5345,
+          "r2_uc": 0.3875,
+          "r2_ss": 0.5703,
+          "avg_r2": 0.1411,
+          "alpha_star": -18.05
+        },
+        "SI-CANN": {
+          "r2_ut": -0.2741,
+          "r2_uc": 0.0191,
+          "r2_ss": -1.2638,
+          "avg_r2": -0.5063,
+          "alpha_star": -2.0
+        }
       }
     },
     "brain_positive_ablation": {
-      "GI-CANN_J\u03b1+": {
-        "r2_ut": -0.5501,
-        "r2_uc": 0.1059,
-        "r2_ss": -0.1921,
-        "avg_r2": -0.2121,
-        "alpha_star": 0.0
-      },
-      "SI-CANN_J\u03b1+": {
-        "r2_ut": -0.1083,
-        "r2_uc": -0.0628,
-        "r2_ss": -0.1566,
-        "avg_r2": -0.1092,
-        "alpha_star": 2.0
+      "results": {
+        "GI-CANN_J\u03b1+": {
+          "r2_ut": -0.5501,
+          "r2_uc": 0.1059,
+          "r2_ss": -0.1921,
+          "avg_r2": -0.2121,
+          "alpha_star": 0.0
+        },
+        "SI-CANN_J\u03b1+": {
+          "r2_ut": -0.1083,
+          "r2_uc": -0.0628,
+          "r2_ss": -0.1566,
+          "avg_r2": -0.1092,
+          "alpha_star": 2.0
+        }
       }
     },
     "rubber_combined_ablation": {
-      "GI-CANN_J\u03b1+J\u03b1-": {
-        "r2_ut": 0.9977,
-        "r2_bt": 0.9996,
-        "r2_ps": 0.9967,
-        "avg_r2": 0.998,
-        "alpha_star": 3.8613
-      },
-      "SI-CANN_J\u03b1+J\u03b1-": {
-        "r2_ut": 0.9503,
-        "r2_bt": 0.9973,
-        "r2_ps": 0.8292,
-        "avg_r2": 0.9256,
-        "alpha_star": -2.0
+      "results": {
+        "GI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": 0.9977,
+          "r2_bt": 0.9996,
+          "r2_ps": 0.9967,
+          "avg_r2": 0.998,
+          "alpha_star": 3.8613
+        },
+        "SI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": 0.9503,
+          "r2_bt": 0.9973,
+          "r2_ps": 0.8292,
+          "avg_r2": 0.9256,
+          "alpha_star": -2.0
+        }
       }
     },
     "rubber_negative_ablation": {
-      "GI-CANN_J\u03b1-": {
-        "r2_ut": 0.3261,
-        "r2_bt": 0.6956,
-        "r2_ps": 0.9208,
-        "avg_r2": 0.6475,
-        "alpha_star": 0.0
-      },
-      "SI-CANN_J\u03b1-": {
-        "r2_ut": 0.229,
-        "r2_bt": 0.6663,
-        "r2_ps": 0.8228,
-        "avg_r2": 0.5727,
-        "alpha_star": -2.0
+      "results": {
+        "GI-CANN_J\u03b1-": {
+          "r2_ut": 0.3261,
+          "r2_bt": 0.6956,
+          "r2_ps": 0.9208,
+          "avg_r2": 0.6475,
+          "alpha_star": 0.0
+        },
+        "SI-CANN_J\u03b1-": {
+          "r2_ut": 0.229,
+          "r2_bt": 0.6663,
+          "r2_ps": 0.8228,
+          "avg_r2": 0.5727,
+          "alpha_star": -2.0
+        }
       }
     },
     "rubber_generalization": {
-      "GI-CANN": {
-        "r2_ut": 0.9998,
-        "r2_bt": 0.9986,
-        "r2_ps": 0.9995,
-        "avg_r2": 0.9993,
-        "alpha_star": 1.6769
-      },
-      "SI-CANN": {
-        "r2_ut": 0.9969,
-        "r2_bt": 0.9768,
-        "r2_ps": 0.9981,
-        "avg_r2": 0.9906,
-        "alpha_star": 2.0
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.9998,
+          "r2_bt": 0.9986,
+          "r2_ps": 0.9995,
+          "avg_r2": 0.9993,
+          "alpha_star": 1.6769
+        },
+        "SI-CANN": {
+          "r2_ut": 0.9969,
+          "r2_bt": 0.9768,
+          "r2_ps": 0.9981,
+          "avg_r2": 0.9906,
+          "alpha_star": 2.0
+        }
       }
     }
   }

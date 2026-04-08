@@ -1,5 +1,7 @@
 # Optimization Targets
 
+Note: after the April 8 audit, `scoring/scores.json` was regenerated through the patched evaluator. Treat the current `scores.json` file as authoritative for audited numbers; some narrative text below still reflects pre-audit checkpoint summaries and should be refreshed after the next retraining run.
+
 This document defines what future agents should optimize to improve upon the GI-CANN reproduction.
 
 ## Primary Targets

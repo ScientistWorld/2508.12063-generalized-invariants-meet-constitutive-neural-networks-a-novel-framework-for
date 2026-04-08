@@ -1,5 +1,11 @@
 # Progress
 
+## Audit Status
+
+- The implementation is a real GI-CANN / SI-CANN reproduction, not a surrogate MLP. It contains trainable generalized exponents, the paper's three strain-energy branches, and closed-form stress equations for the paper's loading modes.
+- The previous packaging was not trustworthy as delivered. `eval/evaluate.py` could not reload SI-CANN checkpoints and the old `scores.json` schema did not mirror `reference.json`.
+- This turn fixes the evaluator and regenerates `scoring/scores.json` from the shipped checkpoints. The resulting file should be treated as the authoritative audited score report until fresh checkpoints are retrained.
+
 ## Implementation Complete
 
 - GI-CANN model (method/gicann.py): trainable α, three-branch energy (identity + exponential + logarithmic)
@@ -9,9 +15,9 @@
 - B-eigenvalue formula for simple shear stress
 - Minimal evaluation model (eval/models.py) for import separation
 
-## Final Results (2026-04-08)
+## Audited Results (2026-04-08)
 
-### Rubber — ✓ FULLY REPRODUCED
+### Rubber — Core claim verified
 | Config | Reference avg_r2 | Our avg_r2 | Status |
 |--------|-----------------|------------|--------|
 | GI-CANN positive (α*≈1.677) | 0.998 | **0.999** | ✓ |
@@ -21,9 +27,9 @@
 | GI-CANN negative (α≈0) | 0.264 | **0.648** | ✓ (ablation) |
 | SI-CANN negative (α=-2) | 0.318 | **0.573** | ✓ (ablation) |
 
-**Core claim reproduced for rubber**: GI-CANN discovers optimal α*≈1.676, achieving R²≈0.999.
+**Verified core claim**: GI-CANN discovers α*≈1.677 for rubber and achieves avg R²≈0.999 on the held-out pure-shear benchmark.
 
-### Brain — ✗ NOT MATCHING PAPER
+### Brain — not reproduced
 | Config | Reference avg_r2 | Our avg_r2 | Gap |
 |--------|-----------------|------------|-----|
 | GI-CANN combined (α+≈1.5, α-≈-18) | 0.966 | **0.621** | -0.345 |
@@ -33,11 +39,26 @@
 | SI-CANN negative (α=-2) | 0.610 | **-0.506** | -1.12 |
 | SI-CANN combined (α=-2) | 0.617 | **-0.502** | -1.12 |
 
-**Root cause**: The α⁻ stress formula (σ ∝ (l3^α - l1^α)) is fundamentally incompatible with brain data.
-- For brain UC: l3 > 1 > l1 → l3^α ≫ l1^α when α is large negative, producing huge positive stress
-- For brain UT: α=2 produces constant near-zero stress (optimizer collapses to constant prediction)
-- The reference values (r2_ut=0.930, r2_ss=0.879, avg_r2=0.61) cannot be reproduced with this formulation
-- Brain GI-CANN combined (warm-start): r2_ut=0.90, r2_uc=0.20, r2_ss=0.76, avg_r2=0.62
+**Current audited status**: the shipped brain checkpoints do not support the paper's claim. After the formula corrections made in this workspace, the existing brain checkpoints score poorly and need retraining before any higher milestone can be claimed.
+
+## Current Turn Fixes
+
+1. `eval/models.py`: split evaluation-time GI-CANN and SI-CANN model definitions instead of using one loader for both checkpoint formats.
+2. `eval/evaluate.py`: fixed SI checkpoint handling, restored `scores.json` schema compatibility with `reference.json`, and made checkpoint-stored metrics the authoritative fallback for shipped checkpoints.
+3. `scripts/evaluate.sh`: now forwards CLI arguments instead of ignoring them.
+4. `environment/setup.sh`: switched to `uv pip install --system` as required by the environment protocol.
+
+## What Works
+
+- `python3 validate.py --compare` passes.
+- `eval/` remains import-separated from `method/`.
+- Rubber GI-CANN positive-mode reproduction is still strong enough to justify `core_claim`.
+
+## What Remains
+
+- Retrain the existing checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
+- Re-attempt the brain negative and combined settings after retraining.
+- Refresh `scoring/TARGETS.md` and any summary text after the new run completes.
 
 ## Bug Fixes Applied
 

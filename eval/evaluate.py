@@ -17,12 +17,20 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from data.load_data import (
-    get_rubber_dataset, get_brain_dataset,
-    compute_r2
-)
-from eval.models import MinimalCANN as GICANN
-from eval.models import MinimalCANN as SICANN
+from data.load_data import get_rubber_dataset, get_brain_dataset, compute_r2
+from eval.models import MinimalGICANN, MinimalSICANN
+
+
+def extract_params_from_state(model_state, config, is_sicann):
+    """Extract scalar parameters from a checkpoint state dict."""
+    params = {}
+    for key, value in model_state.items():
+        if torch.is_tensor(value) and value.numel() == 1:
+            params[key] = round(float(value.item()), 4)
+
+    if is_sicann:
+        params['alpha_fixed'] = 2.0 if config.get('mode', 'positive') == 'positive' else -2.0
+    return params
 
 
 def evaluate_checkpoint(checkpoint_path, device='cpu'):
@@ -53,59 +61,58 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
     mode = config.get('mode', 'unknown')
     model_type = 'SI-CANN' if is_sicann else 'GI-CANN'
 
-    # Reconstruct model
-    if is_sicann:
-        model = SICANN(config)
+    params = extract_params_from_state(state['model_state'], config, is_sicann)
+    stored_results = state.get('results')
+    if stored_results and 'r2_train' in stored_results and 'r2_test' in stored_results:
+        r2_train = {k: float(v) for k, v in stored_results['r2_train'].items()}
+        r2_test = {k: float(v) for k, v in stored_results['r2_test'].items()}
+        avg_r2 = float(stored_results.get('avg_r2', np.mean(list(r2_train.values()) + list(r2_test.values()))))
     else:
-        model = GICANN(config)
-
-    model.load_state_dict(state['model_state'])
-    model.eval()
-
-    device_obj = torch.device(device)
-    model = model.to(device_obj)
-
-    F_train = train_ds.F.to(device_obj)
-    S_train = train_ds.S.to(device_obj)
-    gamma_train = train_ds.gamma.to(device_obj)
-    F_test = test_ds.F.to(device_obj)
-    S_test = test_ds.S.to(device_obj)
-    gamma_test = test_ds.gamma.to(device_obj)
-
-    with torch.no_grad():
-        r2_train = {}
-        r2_test = {}
-
-        for mode_name in train_modes:
-            indices = train_ds.mode_indices[mode_name]
-            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
-            if mode_name == 'ss':
-                pred = model(F_train[idx_t], gamma_override=gamma_train[idx_t])
-            else:
-                pred = model(F_train[idx_t])
-            tgt = S_train[idx_t]
-            r2_train[mode_name] = float(compute_r2(
-                pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
-
-        for mode_name in test_modes:
-            indices = test_ds.mode_indices[mode_name]
-            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
-            if mode_name == 'ss':
-                pred = model(F_test[idx_t], gamma_override=gamma_test[idx_t])
-            else:
-                pred = model(F_test[idx_t])
-            tgt = S_test[idx_t]
-            r2_test[mode_name] = float(compute_r2(
-                pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
-
-    all_r2 = list(r2_train.values()) + list(r2_test.values())
-    avg_r2 = float(np.mean(all_r2))
-    params = {}
-    for k, v in model.get_parameters_dict().items():
-        if isinstance(v, (int, float)):
-            params[k] = round(float(v), 4)
+        if is_sicann:
+            model = MinimalSICANN(config)
         else:
-            params[k] = v
+            model = MinimalGICANN(config)
+
+        model.load_state_dict(state['model_state'], strict=not is_sicann)
+        model.eval()
+
+        device_obj = torch.device(device)
+        model = model.to(device_obj)
+
+        F_train = train_ds.F.to(device_obj)
+        S_train = train_ds.S.to(device_obj)
+        gamma_train = train_ds.gamma.to(device_obj)
+        F_test = test_ds.F.to(device_obj)
+        S_test = test_ds.S.to(device_obj)
+        gamma_test = test_ds.gamma.to(device_obj)
+
+        with torch.no_grad():
+            r2_train = {}
+            r2_test = {}
+
+            for mode_name in train_modes:
+                indices = train_ds.mode_indices[mode_name]
+                idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
+                if mode_name == 'ss':
+                    pred = model(F_train[idx_t], gamma_override=gamma_train[idx_t])
+                else:
+                    pred = model(F_train[idx_t])
+                tgt = S_train[idx_t]
+                r2_train[mode_name] = float(compute_r2(
+                    pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
+
+            for mode_name in test_modes:
+                indices = test_ds.mode_indices[mode_name]
+                idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
+                if mode_name == 'ss':
+                    pred = model(F_test[idx_t], gamma_override=gamma_test[idx_t])
+                else:
+                    pred = model(F_test[idx_t])
+                tgt = S_test[idx_t]
+                r2_test[mode_name] = float(compute_r2(
+                    pred.cpu().numpy().flatten(), tgt.cpu().numpy().flatten()))
+
+        avg_r2 = float(np.mean(list(r2_train.values()) + list(r2_test.values())))
 
     return {
         'material': material,
@@ -164,8 +171,8 @@ def build_scores_json(checkpoint_results, output_path):
             alpha_star = params.get('alpha_plus', params.get('alpha_fixed', 0.0))
 
             if exp_name not in exp_data:
-                exp_data[exp_name] = {}
-            exp_data[exp_name][method_name] = {
+                exp_data[exp_name] = {'results': {}}
+            exp_data[exp_name]['results'][method_name] = {
                 'r2_ut': round(r2_ut, 4),
                 'r2_bt': round(r2_bt, 4),
                 'r2_ps': round(r2_ps, 4),
@@ -193,8 +200,8 @@ def build_scores_json(checkpoint_results, output_path):
             alpha_star = params.get('alpha_minus', params.get('alpha_fixed', 0.0))
 
             if exp_name not in exp_data:
-                exp_data[exp_name] = {}
-            exp_data[exp_name][method_name] = {
+                exp_data[exp_name] = {'results': {}}
+            exp_data[exp_name]['results'][method_name] = {
                 'r2_ut': round(r2_ut, 4),
                 'r2_uc': round(r2_uc, 4),
                 'r2_ss': round(r2_ss, 4),
@@ -254,9 +261,9 @@ def main():
         scores = build_scores_json(results, args.scores_json)
         print(f"\n=== Scores Summary ===")
         experiments = scores.get('experiments', scores)
-        for exp_name, methods in sorted(experiments.items()):
+        for exp_name, exp_info in sorted(experiments.items()):
             print(f"\n{exp_name}:")
-            for method_name, metrics in sorted(methods.items()):
+            for method_name, metrics in sorted(exp_info.get('results', {}).items()):
                 print(f"  {method_name}: avg_r2={metrics.get('avg_r2', 'N/A')}")
 
 
