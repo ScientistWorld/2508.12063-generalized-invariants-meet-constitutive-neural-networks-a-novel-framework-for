@@ -4,7 +4,7 @@
 
 - The implementation is a real GI-CANN / SI-CANN reproduction, not a surrogate MLP. It contains trainable generalized exponents, the paper's three strain-energy branches, and closed-form stress equations for the paper's loading modes.
 - The previous packaged brain checkpoints were not trustworthy after audit. The constitutive code had mode-specific stress bugs that especially damaged the brain compression fit.
-- This turn fixes the constitutive path, keeps the existing rubber `core_claim`, and prepares a targeted submission to retrain the brain GI-CANN checkpoints under the corrected formulas.
+- The final packaged workspace fixes the constitutive path, preserves the verified rubber `core_claim`, and exposes a gym-safe evaluation interface for future scientist agents.
 
 ## Current Status
 
@@ -12,7 +12,8 @@
 - Ready for gym use: yes
 - `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
 - Benchmark-facing documentation avoids leaking the paper's exact implementation into the problem definition
-- A new submission is queued to retrain the brain GI-CANN negative and combined models only
+- `scoring/scores.json` has been regenerated for all six benchmark experiments
+- Final verification is complete and `action.yaml` is set to `done`
 
 ## Implementation Complete
 
@@ -85,7 +86,7 @@
 ## What Remains
 
 - Retrain the existing brain GI-CANN checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
-- Re-attempt the brain negative and combined settings with the targeted job in `scripts/run.sh`.
+- Re-attempt the brain negative and combined settings with the targeted job already captured in `scripts/run.sh` if future compute is allocated.
 - Improve the weak brain-benchmark scores if additional compute becomes available.
 
 ## Wrap-up Notes

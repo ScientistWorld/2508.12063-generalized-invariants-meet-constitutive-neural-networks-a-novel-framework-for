@@ -31,3 +31,13 @@
 - Final gym verification confirmed that `data/` and `eval/` remain method-independent and that `python3 validate.py --compare` passes
 - Added `--experiment` support to the evaluator so the documented `scripts/evaluate.sh` interface matches the actual CLI
 - Tightened the gym-facing direction docs to stay method-safe while keeping the benchmark scope clear
+
+### [2026-04-08 06:15] - core_claim
+- Regenerated the full `scoring/scores.json` after the filtered evaluation smoke test so all six benchmark experiments are present in the final package
+- Finalized `PROGRESS.md`, `VERIFICATION.md`, and the scoring guidance files for gym handoff
+- Stopped at `core_claim` because rubber is credibly reproduced and the workspace is clean, but the brain checkpoints still lag the paper and need another training iteration rather than more packaging work
+
+## Stop Justification
+- Final state: `core_claim`.
+- The workspace is being stopped here because it is usable as a research gym: the method is real, `data/` and `eval/` are method-independent, the scoring files are complete, and the rubber generalization benchmark reproduces the paper's core claim.
+- The main unfinished item is stronger brain reproduction. The constitutive equations now support the paper's one-term brain result, but the packaged brain checkpoints still underperform and would require another targeted retraining cycle, not additional wrap-up work.
