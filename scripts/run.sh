@@ -1,10 +1,6 @@
 #!/bin/bash
-# Job script for GI-CANN hyperelastic materials reproduction.
-#
-# Fixes in this run:
-# - Rubber combined SI-CANN: clamp LN and negative-ID branches to prevent divergence
-# - Brain models: reduced L1 (0.01→0.001), exp branch warm-start for all configs
-# - Brain GI-CANN: all branches (id/exp/ln) initialized for negative mode
+# Job script for brain-only GI-CANN/SI-CANN retraining after correcting
+# the mode-specific stress equations to match Eqs. (15)–(18) in the paper.
 
 set -e
 
@@ -12,10 +8,18 @@ cd /home/user
 mkdir -p logs checkpoints
 
 echo "========================================="
-echo "GI-CANN Training Run (with fixes)"
+echo "Brain-only GI-CANN/SI-CANN retraining"
 echo "========================================="
 
-python3 run_all_training.py --epochs 30000 --lr 0.001 --device cuda --grad-clip 0.5 2>&1 | tee logs/training.log
+rm -f checkpoints/brain*.pt checkpoints/*brain*.pt
+
+python3 run_all_training.py \
+  --device cuda \
+  --materials brain \
+  --modes positive,negative,combined \
+  --families gi,si \
+  --grad-clip 0.0 \
+  2>&1 | tee logs/brain_retrain.log
 
 echo ""
 echo "--- Evaluating results ---"

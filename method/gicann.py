@@ -331,8 +331,8 @@ class GICANN(nn.Module):
     def _stress_uniaxial(self, l1, l2, l3, mode):
         """Compute Cauchy stress for uniaxial deformation.
 
-        Formula: σ_11 = Σ_branch α_branch * dψ_branch/dJ * (l1^α_branch - l3^α_branch)
-        Other components: 0
+        Paper Eq. (15):
+        σ_11 = α (∂ψ/∂J_α) (λ_1^α - λ_1^(-α/2))
         """
         batch = l1.shape[0]
         sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
@@ -348,17 +348,12 @@ class GICANN(nn.Module):
             dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
         if self.mode == 'combined':
-            # Positive alpha: l1 > 1 > l3 → l1^α > l3^α → positive stress (correct for tension)
-            # Negative alpha: for UT/UC where l3 > 1 > l1 → l3^α < l1^α, so (l3^α - l1^α) < 0
-            # Combined: negative alpha term gives positive contribution for UT/UC
             s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
-                   self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus))
+                   self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus))
         elif self.mode == 'positive':
             s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
         else:  # negative
-            # For negative alpha: to get positive stress for l1>l3 and negative stress for l1<l3,
-            # we need (l3^alpha - l1^alpha) since both are positive but l1^alpha < l3^alpha when l1<1.
-            s11 = self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus)
+            s11 = self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus)
 
         sigma[:, 0, 0] = s11
         return sigma
@@ -366,7 +361,8 @@ class GICANN(nn.Module):
     def _stress_equibiaxial(self, l1, l2, l3):
         """Compute Cauchy stress for equibiaxial deformation.
 
-        Formula: σ_11 = σ_22 = Σ_branch α * dψ/dJ * (l1^α - l3^α)
+        Paper Eq. (16):
+        σ_11 = α (∂ψ/∂J_α) (λ_1^α - λ_1^(-2α))
         """
         batch = l1.shape[0]
         sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
@@ -382,16 +378,12 @@ class GICANN(nn.Module):
             dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
         if self.mode == 'combined':
-            # Positive alpha: l1 > 1 > l3 → l1^α > l3^α → positive stress (correct for tension)
-            # Negative alpha: for UT/UC where l3 > 1 > l1 → l3^α < l1^α, so (l3^α - l1^α) < 0
-            # Combined: negative alpha term gives positive contribution for UT/UC
             s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
-                   self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus))
+                   self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus))
         elif self.mode == 'positive':
             s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
         else:  # negative
-            # Same sign correction as uniaxial: for negative alpha, stress formula uses (l3^alpha - l1^alpha)
-            s11 = self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus)
+            s11 = self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus)
 
         sigma[:, 0, 0] = s11
         sigma[:, 1, 1] = s11
@@ -400,54 +392,49 @@ class GICANN(nn.Module):
     def _stress_simple_shear(self, l1, l2, l3, gamma):
         """Compute Cauchy stress for simple shear deformation.
 
-        Uses B-eigenvalues (eigenvalues of B = FF^T) instead of SVD singular values.
-        For SS with F = [[1, γ, 0], [0, 1, 0], [0, 0, 1]]:
-        - B-eigenvalues: l1_B = √(1+γ), l2_B = 1, l3_B = √(1-γ)
-        - B-eigenvalues differ from SVD singular values for SS.
-
-        J_α for SS: J_α = (1+γ)^(α/2) + 1 + (1-γ)^(α/2)
-        dJ_α/dγ = (α/2)[(1+γ)^((α-2)/2) - (1-γ)^((α-2)/2)]
-
-        σ_12 = dψ/dJ * dJ_α/dγ * 2/√(γ²+4)
-             = α * dψ/dJ * [(1+γ)^((α-1)/2) - (1-γ)^((α-1)/2)] / √(γ²+4)
+        Paper Eq. (18):
+        λ_± = (sqrt(γ² + 4) ± γ) / 2
+        J_α = λ_+^α + 1 + λ_-^α
+        σ_12 = (α / 2^α) (∂ψ/∂J_α)
+              * [ (γ + sqrt(γ²+4))^α - (-γ + sqrt(γ²+4))^α ] / sqrt(γ²+4)
         """
         batch = l1.shape[0]
         sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
 
         gamma = gamma.view(batch)
-        sqrt_term = torch.sqrt(gamma ** 2 + 4.0)  # √(γ² + 4)
-
-        # B-eigenvalues for SS
-        l1_B = torch.sqrt(1.0 + gamma)  # = √(1+γ)
-        l3_B = torch.sqrt(torch.clamp(1.0 - gamma, min=1e-8))  # = √(1-γ)
-        l2_B = torch.ones(batch, dtype=l1.dtype, device=l1.device)  # = 1
+        sqrt_term = torch.sqrt(gamma ** 2 + 4.0)
+        lambda_plus = 0.5 * (sqrt_term + gamma)
+        lambda_minus = 0.5 * (sqrt_term - gamma)
+        ones = torch.ones(batch, dtype=l1.dtype, device=l1.device)
 
         if self.mode in ('positive', 'combined'):
-            J_minus_3_plus = l1_B ** self.alpha_plus + l2_B ** self.alpha_plus + l3_B ** self.alpha_plus - 3.0
+            J_minus_3_plus = lambda_plus ** self.alpha_plus + ones + lambda_minus ** self.alpha_plus - 3.0
             dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
 
         if self.mode in ('negative', 'combined'):
-            J_minus_3_minus = l1_B ** self.alpha_minus + l2_B ** self.alpha_minus + l3_B ** self.alpha_minus - 3.0
+            J_minus_3_minus = lambda_plus ** self.alpha_minus + ones + lambda_minus ** self.alpha_minus - 3.0
             dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
         if self.mode == 'combined':
-            # For positive alpha:
-            # σ_12 = α * dψ/dJ * [(1+γ)^((α-1)/2) - (1-γ)^((α-1)/2)] / √(γ²+4)
-            # For γ = 0: the term is 0 → σ_12 = 0 ✓
-            s12_pos = (self.alpha_plus * dpsi_plus *
-                       (l1_B ** (self.alpha_plus - 1.0) - l3_B ** (self.alpha_plus - 1.0)) / sqrt_term)
-            # For negative alpha (use absolute value for the exponent):
-            # σ_12 = |α| * dψ/dJ * [(1+γ)^((|α|-1)/2) + (1-γ)^((|α|-1)/2)] / √(γ²+4)
-            s12_neg = (torch.abs(self.alpha_minus) * dpsi_minus *
-                       (l1_B ** (torch.abs(self.alpha_minus) - 1.0) + l3_B ** (torch.abs(self.alpha_minus) - 1.0)) / sqrt_term)
+            s12_pos = (
+                (self.alpha_plus / (2.0 ** self.alpha_plus)) * dpsi_plus *
+                ((gamma + sqrt_term) ** self.alpha_plus - (-gamma + sqrt_term) ** self.alpha_plus) / sqrt_term
+            )
+            s12_neg = (
+                (self.alpha_minus / (2.0 ** self.alpha_minus)) * dpsi_minus *
+                ((gamma + sqrt_term) ** self.alpha_minus - (-gamma + sqrt_term) ** self.alpha_minus) / sqrt_term
+            )
             s12 = s12_pos + s12_neg
         elif self.mode == 'positive':
-            s12 = (self.alpha_plus * dpsi_plus *
-                   (l1_B ** (self.alpha_plus - 1.0) - l3_B ** (self.alpha_plus - 1.0)) / sqrt_term)
+            s12 = (
+                (self.alpha_plus / (2.0 ** self.alpha_plus)) * dpsi_plus *
+                ((gamma + sqrt_term) ** self.alpha_plus - (-gamma + sqrt_term) ** self.alpha_plus) / sqrt_term
+            )
         else:  # negative
-            # σ_12 = |α| * dψ/dJ * [(1+γ)^((|α|-1)/2) + (1-γ)^((|α|-1)/2)] / √(γ²+4)
-            s12 = (torch.abs(self.alpha_minus) * dpsi_minus *
-                   (l1_B ** (torch.abs(self.alpha_minus) - 1.0) + l3_B ** (torch.abs(self.alpha_minus) - 1.0)) / sqrt_term)
+            s12 = (
+                (self.alpha_minus / (2.0 ** self.alpha_minus)) * dpsi_minus *
+                ((gamma + sqrt_term) ** self.alpha_minus - (-gamma + sqrt_term) ** self.alpha_minus) / sqrt_term
+            )
 
         sigma[:, 0, 1] = s12
         sigma[:, 1, 0] = s12

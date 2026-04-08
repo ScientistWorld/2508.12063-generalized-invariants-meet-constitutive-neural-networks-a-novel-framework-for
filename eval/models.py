@@ -165,11 +165,11 @@ class MinimalCANN(nn.Module):
 
         if self.mode == 'combined':
             s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
-                   self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus))
+                   self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus))
         elif self.mode == 'positive':
             s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
         else:
-            s11 = self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus)
+            s11 = self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus)
 
         sigma[:, 0, 0] = s11
         return sigma
@@ -190,11 +190,11 @@ class MinimalCANN(nn.Module):
 
         if self.mode == 'combined':
             s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
-                   self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus))
+                   self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus))
         elif self.mode == 'positive':
             s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
         else:
-            s11 = self.alpha_minus * dpsi_minus * (l3 ** self.alpha_minus - l1 ** self.alpha_minus)
+            s11 = self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus)
 
         sigma[:, 0, 0] = s11
         sigma[:, 1, 1] = s11
@@ -207,31 +207,38 @@ class MinimalCANN(nn.Module):
 
         gamma = gamma.view(batch)
         sqrt_term = torch.sqrt(gamma ** 2 + 4.0)
-
-        l1_B = torch.sqrt(1.0 + gamma)
-        l3_B = torch.sqrt(torch.clamp(1.0 - gamma, min=1e-8))
-        l2_B = torch.ones(batch, dtype=l1.dtype, device=l1.device)
+        lambda_plus = 0.5 * (sqrt_term + gamma)
+        lambda_minus = 0.5 * (sqrt_term - gamma)
+        ones = torch.ones(batch, dtype=l1.dtype, device=l1.device)
 
         if self.mode in ('positive', 'combined'):
-            J_minus_3_plus = l1_B ** self.alpha_plus + l2_B ** self.alpha_plus + l3_B ** self.alpha_plus - 3.0
+            J_minus_3_plus = lambda_plus ** self.alpha_plus + ones + lambda_minus ** self.alpha_plus - 3.0
             dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
 
         if self.mode in ('negative', 'combined'):
-            J_minus_3_minus = l1_B ** self.alpha_minus + l2_B ** self.alpha_minus + l3_B ** self.alpha_minus - 3.0
+            J_minus_3_minus = lambda_plus ** self.alpha_minus + ones + lambda_minus ** self.alpha_minus - 3.0
             dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
 
         if self.mode == 'combined':
-            s12_pos = (self.alpha_plus * dpsi_plus *
-                       (l1_B ** (self.alpha_plus - 1.0) - l3_B ** (self.alpha_plus - 1.0)) / sqrt_term)
-            s12_neg = (torch.abs(self.alpha_minus) * dpsi_minus *
-                       (l1_B ** (torch.abs(self.alpha_minus) - 1.0) + l3_B ** (torch.abs(self.alpha_minus) - 1.0)) / sqrt_term)
+            s12_pos = (
+                (self.alpha_plus / (2.0 ** self.alpha_plus)) * dpsi_plus *
+                ((gamma + sqrt_term) ** self.alpha_plus - (-gamma + sqrt_term) ** self.alpha_plus) / sqrt_term
+            )
+            s12_neg = (
+                (self.alpha_minus / (2.0 ** self.alpha_minus)) * dpsi_minus *
+                ((gamma + sqrt_term) ** self.alpha_minus - (-gamma + sqrt_term) ** self.alpha_minus) / sqrt_term
+            )
             s12 = s12_pos + s12_neg
         elif self.mode == 'positive':
-            s12 = (self.alpha_plus * dpsi_plus *
-                   (l1_B ** (self.alpha_plus - 1.0) - l3_B ** (self.alpha_plus - 1.0)) / sqrt_term)
+            s12 = (
+                (self.alpha_plus / (2.0 ** self.alpha_plus)) * dpsi_plus *
+                ((gamma + sqrt_term) ** self.alpha_plus - (-gamma + sqrt_term) ** self.alpha_plus) / sqrt_term
+            )
         else:
-            s12 = (torch.abs(self.alpha_minus) * dpsi_minus *
-                   (l1_B ** (torch.abs(self.alpha_minus) - 1.0) + l3_B ** (torch.abs(self.alpha_minus) - 1.0)) / sqrt_term)
+            s12 = (
+                (self.alpha_minus / (2.0 ** self.alpha_minus)) * dpsi_minus *
+                ((gamma + sqrt_term) ** self.alpha_minus - (-gamma + sqrt_term) ** self.alpha_minus) / sqrt_term
+            )
 
         sigma[:, 0, 1] = s12
         sigma[:, 1, 0] = s12

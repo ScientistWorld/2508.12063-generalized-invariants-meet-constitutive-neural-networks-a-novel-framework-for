@@ -171,34 +171,36 @@ class SICANN(nn.Module):
                     gamma = F_m[:, 0, 1]
 
                 gamma = gamma.type_as(l1_m)
-                sqrt_term = torch.sqrt(gamma ** 2 + 4.0)  # s = √(γ² + 4)
-
-                # B-eigenvalues for SS: l1_B = √(1+γ), l3_B = √(1-γ)
-                l1_B = torch.sqrt(1.0 + gamma)
-                l3_B = torch.sqrt(torch.clamp(1.0 - gamma, min=1e-8))
-                l2_B = torch.ones_like(gamma)
+                sqrt_term = torch.sqrt(gamma ** 2 + 4.0)
+                lambda_plus = 0.5 * (sqrt_term + gamma)
+                lambda_minus = 0.5 * (sqrt_term - gamma)
+                ones = torch.ones_like(gamma)
 
                 if self.mode == 'combined':
-                    dpsi_p = self.dpsi_dJ(l1_B, l2_B, l3_B, 'plus')
-                    # σ_12 = α * dψ/dJ * [(1+γ)^((α-1)/2) - (1-γ)^((α-1)/2)] / √(γ²+4)
-                    term_p = (l1_B ** (alpha_p - 1.0) - l3_B ** (alpha_p - 1.0)) / sqrt_term
-                    sigma12 = alpha_p * dpsi_p * term_p
+                    dpsi_p = self.dpsi_dJ(lambda_plus, ones, lambda_minus, 'plus')
+                    sigma12 = (
+                        (alpha_p / (2.0 ** alpha_p)) * dpsi_p *
+                        ((gamma + sqrt_term) ** alpha_p - (-gamma + sqrt_term) ** alpha_p) / sqrt_term
+                    )
 
-                    dpsi_n = self.dpsi_dJ(l1_B, l2_B, l3_B, 'minus')
-                    # For negative alpha: σ_12 = |α| * dψ/dJ * [(1+γ)^((|α|-1)/2) + (1-γ)^((|α|-1)/2)] / √(γ²+4)
-                    term_n = (l1_B ** (alpha_n - 1.0) + l3_B ** (alpha_n - 1.0)) / sqrt_term
-                    # alpha_n is negative, so |α| * term_n uses abs(alpha_n)
-                    sigma12 = sigma12 + abs(alpha_n) * dpsi_n * term_n
+                    dpsi_n = self.dpsi_dJ(lambda_plus, ones, lambda_minus, 'minus')
+                    sigma12 = sigma12 + (
+                        (alpha_n / (2.0 ** alpha_n)) * dpsi_n *
+                        ((gamma + sqrt_term) ** alpha_n - (-gamma + sqrt_term) ** alpha_n) / sqrt_term
+                    )
 
                 elif self.mode == 'positive':
-                    dpsi = self.dpsi_dJ(l1_B, l2_B, l3_B, 'plus')
-                    term = (l1_B ** (alpha_p - 1.0) - l3_B ** (alpha_p - 1.0)) / sqrt_term
-                    sigma12 = alpha_p * dpsi * term
+                    dpsi = self.dpsi_dJ(lambda_plus, ones, lambda_minus, 'plus')
+                    sigma12 = (
+                        (alpha_p / (2.0 ** alpha_p)) * dpsi *
+                        ((gamma + sqrt_term) ** alpha_p - (-gamma + sqrt_term) ** alpha_p) / sqrt_term
+                    )
                 else:
-                    dpsi = self.dpsi_dJ(l1_B, l2_B, l3_B, 'minus')
-                    # σ_12 = |α| * dψ/dJ * [(1+γ)^((|α|-1)/2) + (1-γ)^((|α|-1)/2)] / √(γ²+4)
-                    term_n = (l1_B ** (alpha_n - 1.0) + l3_B ** (alpha_n - 1.0)) / sqrt_term
-                    sigma12 = abs(alpha_n) * dpsi * term_n
+                    dpsi = self.dpsi_dJ(lambda_plus, ones, lambda_minus, 'minus')
+                    sigma12 = (
+                        (alpha_n / (2.0 ** alpha_n)) * dpsi *
+                        ((gamma + sqrt_term) ** alpha_n - (-gamma + sqrt_term) ** alpha_n) / sqrt_term
+                    )
 
                 for idx, sample_idx in enumerate(indices):
                     sigma[sample_idx, 0, 1] = sigma12[idx]
