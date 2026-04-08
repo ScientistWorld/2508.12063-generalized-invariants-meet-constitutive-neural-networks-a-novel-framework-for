@@ -1,12 +1,8 @@
 # Problem Definition
 
-What problem does this paper address? Write this so that someone with no knowledge of the paper can understand what needs to be solved and how success is measured.
-
-Do NOT describe the paper's method or solution here — only the problem itself. Think about if a future scientist agent try to solve this problem from scratch without knowing what approach the paper took. If you leak the solution, you compromise the benchmark.
-
 ## Research Question
 
-The central challenge is: given experimental stress-strain data for an isotropic incompressible hyperelastic material (such as rubber or brain tissue), how do we automatically discover both the most appropriate mathematical form of the strain energy function and the best set of invariants on which to express it?
+The central challenge is: given experimental stress-strain data for an isotropic incompressible hyperelastic material (such as rubber or brain tissue), how do we automatically discover an accurate and interpretable strain-energy law without hand-designing the final constitutive form in advance?
 
 Classical hyperelastic constitutive models (neo-Hookean, Mooney-Rivlin, Ogden, etc.) require an engineer to manually choose a strain energy function form and invariants a priori. This choice is often based on intuition or trial-and-error and may not suit all materials. Data-driven approaches using neural networks can fit stress-strain data but often lack interpretability or require the user to pre-specify which invariants to use.
 

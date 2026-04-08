@@ -1,7 +1,5 @@
 # Evaluation
 
-How success is measured. Describe only the metrics, targets, and evaluation procedure — do NOT describe the paper's method or how they achieved these results. Think of this as a general evaluation protocol for other scientists trying to solve the same problem, where they should not see this paper's solution.
-
 ## Metrics
 
 **Primary metric: Coefficient of Determination (R²)**
@@ -49,4 +47,4 @@ Two experimental datasets are used:
 3. Evaluate on the held-out test deformation mode
 4. Compute R² for each deformation mode (training modes + test mode)
 5. Report average R² across all modes
-6. Report any additional scalar descriptors needed to interpret the fitted constitutive law
+6. Report any additional scalar descriptors needed to summarize the fitted constitutive response
