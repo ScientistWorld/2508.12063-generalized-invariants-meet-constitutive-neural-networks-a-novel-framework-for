@@ -6,7 +6,7 @@
 # The workspace is bind-mounted at /home/user at runtime.
 
 Bootstrap: docker
-From: nvidia/cuda:12.4.1-runtime-ubuntu22.04
+From: public.ecr.aws/ubuntu/ubuntu:22.04_stable
 
 %post
     apt-get update && \
