@@ -6,7 +6,7 @@
 # The workspace is bind-mounted at /home/user at runtime.
 
 Bootstrap: docker
-From: public.ecr.aws/ubuntu/ubuntu:22.04_stable
+From: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
 
 %post
     apt-get update && \
