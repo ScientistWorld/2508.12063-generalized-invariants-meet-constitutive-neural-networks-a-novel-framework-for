@@ -64,7 +64,10 @@ def extract_params_from_state(model_state: dict, config: dict, is_sicann: bool) 
 
 
 def evaluate_checkpoint(checkpoint_path: Path, device: str = "cpu") -> dict:
-    state = torch.load(checkpoint_path, map_location=device)
+    # These benchmark checkpoints are trusted local reproduction artifacts.
+    # PyTorch 2.6 defaults to weights_only=True, which rejects their NumPy
+    # scalar config metadata before the model state can be read.
+    state = torch.load(checkpoint_path, map_location=device, weights_only=False)
     config = state.get("config", {})
     stem = checkpoint_path.stem
     is_sicann = "sicann" in stem.lower()
