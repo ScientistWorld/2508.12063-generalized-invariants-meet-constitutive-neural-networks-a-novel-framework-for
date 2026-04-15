@@ -38,6 +38,4 @@
 - Stopped at `core_claim` because rubber is credibly reproduced and the workspace is clean, but the brain checkpoints still lag the paper and need another training iteration rather than more packaging work
 
 ## Stop Justification
-- Final state: `core_claim`.
-- The workspace is being stopped here because it is usable as a research gym: the method is real, `data/` and `eval/` are method-independent, the scoring files are complete, and the rubber generalization benchmark reproduces the paper's core claim.
-- The main unfinished item is stronger brain reproduction. The constitutive equations now support the paper's one-term brain result, but the packaged brain checkpoints still underperform and would require another targeted retraining cycle, not additional wrap-up work.
+- Completed at milestone `core_claim`.
