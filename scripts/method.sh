@@ -6,7 +6,7 @@
 
 set -e
 
-cd /home/user
+cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python3}
 
 mkdir -p checkpoints scoring

@@ -11,7 +11,7 @@
 # The only external dependency is PyTorch (installed via setup.sh).
 
 set -e
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 echo "No external downloads required."
 echo "All data (rubber and brain tissue stress-strain measurements) is embedded in data/load_data.py"

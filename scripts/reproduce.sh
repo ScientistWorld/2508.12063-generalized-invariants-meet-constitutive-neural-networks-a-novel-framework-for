@@ -1,11 +1,11 @@
 #!/bin/bash
 # End-to-end reproduction entrypoint.
 #
-# Assumes the environment is installed and the workspace is mounted at /home/user.
+# Assumes the environment is installed.
 
 set -e
 
-cd /home/user
+cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python3}
 
 bash scripts/download.sh
