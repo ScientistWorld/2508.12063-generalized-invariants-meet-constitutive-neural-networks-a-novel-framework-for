@@ -3,4 +3,4 @@
 # only after your turn ends. Sleeping blocks the entire pipeline.
 action: done
 milestone: core_claim
-notes: "Final verification passed: gym-facing docs are method-safe, evaluate.sh now supports --experiment as documented, and the workspace is ready at core_claim."
+notes: "Packaged embedded data loader, kept downloads external-free, and made scripts repo-relative for fresh clones."
