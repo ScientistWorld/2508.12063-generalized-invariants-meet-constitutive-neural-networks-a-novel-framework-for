@@ -1,35 +1,38 @@
 #!/bin/bash
-# Targeted retraining after fixing the mode-specific stress computation.
+# Designer job: produce train/test split evaluation scores.
 
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")/.."
-mkdir -p logs checkpoints scoring
+mkdir -p logs scoring
 
 echo "========================================="
-echo "Brain GI-CANN recovery run"
+echo "Train/test split evaluation"
 echo "========================================="
 
-rm -f \
-  checkpoints/brain_negative.pt \
-  checkpoints/brain_combined.pt \
-  checkpoints/training_summary.json \
-  scoring/scores.json
+echo "--- Evaluating train slice ---"
+bash scripts/evaluate_train.sh 2>&1 | tee logs/evaluate_train.log
 
-python3 run_all_training.py \
-  --device cuda \
-  --materials brain \
-  --modes negative,combined \
-  --families gi \
-  --epochs 30000 \
-  --grad-clip 0.0 \
-  2>&1 | tee logs/brain_gicann_recovery.log
+echo "--- Evaluating held-out test slice ---"
+bash scripts/evaluate_test.sh 2>&1 | tee logs/evaluate_test.log
+
+echo "--- Validating generated score files ---"
+python3 - <<'PY'
+import json
+import validate
+from pathlib import Path
+
+reference = json.loads(Path("scoring/reference.json").read_text())
+for name in ("scores_train.json", "scores_test.json"):
+    path = Path("scoring") / name
+    scores = json.loads(path.read_text())
+    errors = validate.validate_scores(scores, reference)
+    if errors:
+        raise SystemExit(f"{name} validation failed:\n" + "\n".join(errors))
+    print(f"{name}: ok")
+PY
 
 echo ""
-echo "--- Evaluating all checkpoints ---"
-bash scripts/evaluate.sh
-
-echo ""
 echo "========================================="
-echo "Done! Results in scoring/scores.json"
+echo "Done! Results in scoring/scores_train.json and scoring/scores_test.json"
 echo "========================================="

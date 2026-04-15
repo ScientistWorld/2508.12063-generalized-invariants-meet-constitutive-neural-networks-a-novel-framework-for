@@ -1,6 +1,7 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
-milestone: core_claim
-notes: "Packaged embedded data loader, kept downloads external-free, and made scripts repo-relative for fresh clones."
+action: submit
+gpus: 0
+test: true
+notes: "CPU job to run scripts/evaluate_train.sh and scripts/evaluate_test.sh on existing checkpoints and write split score files."
