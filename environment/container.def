@@ -6,7 +6,7 @@
 # The workspace is bind-mounted at /home/user at runtime.
 
 Bootstrap: docker
-From: ghcr.io/astral-sh/uv:python3.10-bookworm-slim
+From: python:3.10-slim-bookworm
 
 %post
     mkdir -p /home/user/data /home/user/checkpoints /home/user/scoring
