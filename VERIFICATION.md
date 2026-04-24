@@ -22,7 +22,9 @@ The workspace started at a credible `core_claim`. The method implementation is a
 
 The workspace is suitable as a research gym. A future scientist can use the problem/evaluation/data side without importing `method/`, and the benchmark-facing markdown is sufficiently method-safe for from-scratch use. The scoring rubric is also reasonable for the experiments actually present in `scores.json`: both core generalization experiments dominate at 40% each, the held-out mode is emphasized inside each core experiment, and the four ablations collectively remain secondary at 20%.
 
+The train/test split is now also exercised against the frozen final checkpoints rather than only designed on paper. The run produced complete `scores_train.json` and `scores_test.json` files with matching experiment/method coverage and non-identical values across slices. The main caveat is calibration rather than correctness: the alternating split yields a very small train/test gap on `rubber_generalization` (`0.9986` vs `0.9989` for GI-CANN), so the anti-shortcut signal is present but mild on the strongest rubber result. By contrast, the weak brain and ablation checkpoints remain poor on both slices, which gives future improve-mode agents room to improve but also reflects that the shipped checkpoint set is uneven across claims.
+
 - Milestone: core_claim
 - Ready for gym use: yes
 - Confidence: high
-- Key limitation: brain-side reproduction remains below the paper’s reported numbers, so the gym is strongest as a verified rubber benchmark plus an open brain-improvement target
+- Key limitation: brain-side reproduction remains below the paper’s reported numbers, and the visible/held-out gap is especially small on the strongest rubber benchmark because the split uses alternating samples from the same smooth curves

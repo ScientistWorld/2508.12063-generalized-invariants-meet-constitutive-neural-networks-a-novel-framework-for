@@ -13,7 +13,7 @@
 - `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
 - Benchmark-facing documentation avoids leaking the paper's exact implementation into the problem definition
 - `scoring/scores.json` has been regenerated for all six benchmark experiments
-- Final verification is complete and `action.yaml` is set to `done`
+- Split evaluation is complete and `scoring/scores_train.json` / `scoring/scores_test.json` are populated from a real compute run
 
 ## Implementation Complete
 
@@ -70,6 +70,22 @@
 7. `method/gicann.py` and `eval/models.py`: fixed deformation-mode dispatch so brain compression is no longer misclassified near `lambda=1`.
 8. `method/gicann.py`, `method/sicann.py`, and `eval/models.py`: fixed diagonal loading stress computation to use the mode's actual principal-stretch ordering instead of sorted singular values.
 9. `data/load_data.py`, `method/gicann.py`, `method/train.py`, `run_all_training.py`, and `eval/evaluate.py`: switched loss and R² reporting to the observed stress component (`sigma_11` for UT/UC/BT/PS, `sigma_12` for SS) instead of flattening mostly-zero tensors.
+
+## Train/Test Split Baseline (2026-04-24)
+
+- The split evaluation now runs end-to-end on CPU and writes validated `scores_train.json` and `scores_test.json`.
+- Coverage is complete: all 6 experiments appear in both files, and all train/test method identifier sets match exactly.
+- The main rubber generalization benchmark is stable across slices:
+  - GI-CANN: train `avg_r2=0.9986`, test `avg_r2=0.9989`
+  - SI-CANN: train `avg_r2=0.9841`, test `avg_r2=0.9830`
+- The split is not copy-pasted: every experiment differs numerically between train and test, though the rubber core benchmark gap is very small because the alternating split preserves the same smooth curve regime on both slices.
+- The frozen brain checkpoints and some ablation checkpoints remain poor on both slices, with strongly negative R² values. This is a property of the current shipped checkpoints rather than a train/test script bug.
+
+## Evaluation Packaging Fixes (2026-04-24)
+
+1. `eval/models.py`: aligned the evaluation-only constitutive reconstruction with the paper implementation so diagonal loading keeps the physical principal-stretch ordering and SI-CANN stress computation matches the method code.
+2. `eval/train/evaluate.py`, `eval/test/evaluate.py`, and `eval/evaluate.py`: added NumPy pickle-compatibility aliases so the frozen checkpoints deserialize correctly inside the container.
+3. `scripts/run.sh`: added split validation for experiment coverage and train/test method-set equality before accepting the generated score files.
 
 ## Upstream Code Release
 

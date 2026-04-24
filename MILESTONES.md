@@ -42,5 +42,10 @@
 - Patched all evaluation entry points to install backward-compatible NumPy module aliases before `torch.load`, preserving the frozen method artifacts while unblocking benchmark scoring
 - Kept the milestone at `core_claim`; this turn advances evaluation robustness but does not change the reproduced method quality
 
+### [2026-04-24 00:15] - core_claim
+- Completed the real train/test split evaluation and produced validated `scoring/scores_train.json` and `scoring/scores_test.json` with matching experiment/method coverage
+- Verified that the split is not a copy-paste bug: every experiment differs numerically across slices, although the strongest rubber benchmark has only a very small gap because the alternating split stays on the same smooth curve family
+- Closed the design phase at `core_claim` because the evaluation artifact is now complete and usable, with the main caveat that the shipped brain checkpoints remain weak on both slices
+
 ## Stop Justification
 - Completed at milestone `core_claim`.
