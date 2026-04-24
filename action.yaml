@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Run evaluate_train.sh and evaluate_test.sh on all checkpoints, validate scores_train.json and scores_test.json, and populate the split baseline from a real compute run."
+notes: "Retry evaluation submission after verifying local container_build.log and setup.log both returned 0; run evaluate_train.sh and evaluate_test.sh and validate the split score files."
