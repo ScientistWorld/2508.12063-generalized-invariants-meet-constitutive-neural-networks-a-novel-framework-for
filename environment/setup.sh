@@ -6,11 +6,10 @@
 # job submissions without rebuilding the container.
 #
 # IMPORTANT: Install into the SYSTEM Python, not a virtual environment.
-# Use: uv pip install --system <packages>
 
 set -e
 
 # Minimal runtime dependencies for this reproduction.
-uv pip install --system \
+python3 -m pip install --break-system-packages \
   numpy \
   torch
