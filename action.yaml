@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Retry after deleting stale ignored logs/setup.log and logs/container_build.log so the scheduler regenerates fresh environment logs; then install numpy/torch and run the train/test evaluation scripts."
+notes: "Force a fresh environment setup hash after the missing-log retry by changing setup.sh invocation flags; then install numpy/torch and run the train/test evaluation scripts."

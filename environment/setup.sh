@@ -10,6 +10,6 @@
 set -e
 
 # Minimal runtime dependencies for this reproduction.
-python3 -m pip install --break-system-packages \
+python3 -m pip install --disable-pip-version-check --no-input --break-system-packages \
   numpy \
   torch
