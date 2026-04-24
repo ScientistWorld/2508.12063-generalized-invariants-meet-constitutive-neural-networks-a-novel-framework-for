@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Force a fresh environment setup hash after the missing-log retry by changing setup.sh invocation flags; then install numpy/torch and run the train/test evaluation scripts."
+notes: "Install numpy/torch via Ubuntu apt in container.def and keep setup.sh as a no-op to bypass the broken uv wrapper path; evaluators now fall back when torch.load lacks weights_only, then run train/test scoring."

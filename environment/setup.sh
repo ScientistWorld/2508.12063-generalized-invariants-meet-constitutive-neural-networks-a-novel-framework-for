@@ -9,7 +9,6 @@
 
 set -e
 
-# Minimal runtime dependencies for this reproduction.
-python3 -m pip install --disable-pip-version-check --no-input --break-system-packages \
-  numpy \
-  torch
+# Runtime dependencies are installed in container.def via apt to avoid the
+# broken uv/pip wrapper path used by the scheduler's setup phase.
+:
