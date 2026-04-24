@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Evaluation-only model definitions reconstructed from checkpoints.
 
-These classes live in ``eval/`` to preserve the required import separation:
-evaluation code must not import from ``method/``.
+These classes intentionally mirror the paper implementation in ``method/``
+without importing it, so ``eval/`` stays separated from training code while
+still scoring the actual constitutive law described by the paper.
 """
 
 import torch
@@ -42,6 +43,12 @@ class _MinimalCANNBase(nn.Module):
 
         for i in range(batch):
             Fi = F[i]
+            off_diag = Fi - torch.diag(torch.diagonal(Fi))
+            if torch.all(torch.abs(off_diag) < 1e-10):
+                l1[i] = torch.abs(Fi[0, 0])
+                l2[i] = torch.abs(Fi[1, 1])
+                l3[i] = torch.abs(Fi[2, 2])
+                continue
             try:
                 _, sv_s, _ = torch.linalg.svd(Fi, full_matrices=False)
                 l1[i] = sv_s[0]
@@ -217,7 +224,8 @@ class _MinimalCANNBase(nn.Module):
             if mode == "ss" and gamma_override is not None:
                 gamma_m = gamma_override[indices_t]
             elif mode == "ss":
-                gamma_m = F[indices_t, 0, 1]
+                gamma_m = F_m[:, 0, 1] + F_m[:, 1, 0]
+                gamma_m = gamma_m / 2.0
             else:
                 gamma_m = None
 
@@ -307,3 +315,106 @@ class MinimalSICANN(_MinimalCANNBase):
         for n, p in self.named_parameters():
             params[n] = p.item()
         return params
+
+    def _dpsi_fixed(self, l1, l2, l3, branch):
+        alpha = 2.0 if branch == "plus" else -2.0
+        J_minus_3 = l1**alpha + l2**alpha + l3**alpha - 3.0
+        return self._dpsi_dJ(J_minus_3, branch)
+
+    def compute_stress(self, F, gamma_override=None):
+        l1, l2, l3 = self._get_principal_stretches(F)
+        modes = self._detect_deformation_mode(l1, l2, l3, F)
+        sigma = torch.zeros((F.shape[0], 3, 3), dtype=F.dtype, device=F.device)
+
+        for mode in set(modes):
+            indices = [i for i, detected_mode in enumerate(modes) if detected_mode == mode]
+            indices_t = torch.tensor(indices, device=F.device, dtype=torch.long)
+            F_m = F[indices_t]
+            l1_m = F_m[:, 0, 0]
+            l2_m = F_m[:, 1, 1]
+            l3_m = F_m[:, 2, 2]
+            alpha_p = 2.0
+            alpha_n = -2.0
+
+            if mode in ("ut", "uc", "ps"):
+                if self.mode == "combined":
+                    dpsi_p = self._dpsi_fixed(l1_m, l2_m, l3_m, "plus")
+                    dpsi_n = self._dpsi_fixed(l1_m, l2_m, l3_m, "minus")
+                    sigma11 = alpha_p * dpsi_p * (l1_m**alpha_p - l3_m**alpha_p)
+                    sigma11 = sigma11 + alpha_n * dpsi_n * (l1_m**alpha_n - l3_m**alpha_n)
+                elif self.mode == "positive":
+                    dpsi = self._dpsi_fixed(l1_m, l2_m, l3_m, "plus")
+                    sigma11 = alpha_p * dpsi * (l1_m**alpha_p - l3_m**alpha_p)
+                else:
+                    dpsi = self._dpsi_fixed(l1_m, l2_m, l3_m, "minus")
+                    sigma11 = alpha_n * dpsi * (l1_m**alpha_n - l3_m**alpha_n)
+
+                for idx, sample_idx in enumerate(indices):
+                    sigma[sample_idx, 0, 0] = sigma11[idx]
+
+            elif mode == "bt":
+                if self.mode == "combined":
+                    dpsi_p = self._dpsi_fixed(l1_m, l2_m, l3_m, "plus")
+                    dpsi_n = self._dpsi_fixed(l1_m, l2_m, l3_m, "minus")
+                    sigma11 = alpha_p * dpsi_p * (l1_m**alpha_p - l3_m**alpha_p)
+                    sigma11 = sigma11 + alpha_n * dpsi_n * (l1_m**alpha_n - l3_m**alpha_n)
+                elif self.mode == "positive":
+                    dpsi = self._dpsi_fixed(l1_m, l2_m, l3_m, "plus")
+                    sigma11 = alpha_p * dpsi * (l1_m**alpha_p - l3_m**alpha_p)
+                else:
+                    dpsi = self._dpsi_fixed(l1_m, l2_m, l3_m, "minus")
+                    sigma11 = alpha_n * dpsi * (l1_m**alpha_n - l3_m**alpha_n)
+
+                for idx, sample_idx in enumerate(indices):
+                    sigma[sample_idx, 0, 0] = sigma11[idx]
+                    sigma[sample_idx, 1, 1] = sigma11[idx]
+
+            elif mode == "ss":
+                if gamma_override is not None:
+                    gamma = gamma_override[indices_t]
+                else:
+                    gamma = F_m[:, 0, 1]
+
+                gamma = gamma.type_as(l1_m)
+                sqrt_term = torch.sqrt(gamma**2 + 4.0)
+                lambda_plus = 0.5 * (sqrt_term + gamma)
+                lambda_minus = 0.5 * (sqrt_term - gamma)
+                ones = torch.ones_like(gamma)
+
+                if self.mode == "combined":
+                    dpsi_p = self._dpsi_fixed(lambda_plus, ones, lambda_minus, "plus")
+                    sigma12 = (
+                        (alpha_p / (2.0**alpha_p))
+                        * dpsi_p
+                        * ((gamma + sqrt_term) ** alpha_p - (-gamma + sqrt_term) ** alpha_p)
+                        / sqrt_term
+                    )
+                    dpsi_n = self._dpsi_fixed(lambda_plus, ones, lambda_minus, "minus")
+                    sigma12 = sigma12 + (
+                        (alpha_n / (2.0**alpha_n))
+                        * dpsi_n
+                        * ((gamma + sqrt_term) ** alpha_n - (-gamma + sqrt_term) ** alpha_n)
+                        / sqrt_term
+                    )
+                elif self.mode == "positive":
+                    dpsi = self._dpsi_fixed(lambda_plus, ones, lambda_minus, "plus")
+                    sigma12 = (
+                        (alpha_p / (2.0**alpha_p))
+                        * dpsi
+                        * ((gamma + sqrt_term) ** alpha_p - (-gamma + sqrt_term) ** alpha_p)
+                        / sqrt_term
+                    )
+                else:
+                    dpsi = self._dpsi_fixed(lambda_plus, ones, lambda_minus, "minus")
+                    sigma12 = (
+                        (alpha_n / (2.0**alpha_n))
+                        * dpsi
+                        * ((gamma + sqrt_term) ** alpha_n - (-gamma + sqrt_term) ** alpha_n)
+                        / sqrt_term
+                    )
+
+                for idx, sample_idx in enumerate(indices):
+                    sigma[sample_idx, 0, 1] = sigma12[idx]
+                    sigma[sample_idx, 1, 0] = sigma12[idx]
+
+        return sigma

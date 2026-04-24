@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Install numpy/torch via Ubuntu apt in container.def and keep setup.sh as a no-op to bypass the broken uv wrapper path; evaluators now fall back when torch.load lacks weights_only, then run train/test scoring."
+notes: "Rescore train/test on CPU after fixing eval/models.py to mirror the paper implementation (ordered diagonal stretches and faithful SI-CANN stress computation); regenerate scores_train.json and scores_test.json with split coverage validation."
