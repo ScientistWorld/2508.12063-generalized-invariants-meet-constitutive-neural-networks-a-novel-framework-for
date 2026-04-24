@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Retry evaluation submission after verifying local container_build.log and setup.log both returned 0; run evaluate_train.sh and evaluate_test.sh and validate the split score files."
+notes: "Retry after cleaning stale inlined setup commands out of environment/container.def; build container, install numpy/torch in setup.sh, then run evaluate_train.sh and evaluate_test.sh and validate the split score files."
