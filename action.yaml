@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Retry with ubuntu:22.04 base and apt-installed Python to avoid the repeated slim-bookworm environment signature; then install numpy/torch in setup.sh and run the train/test evaluation scripts."
+notes: "Retry after deleting stale ignored logs/setup.log and logs/container_build.log so the scheduler regenerates fresh environment logs; then install numpy/torch and run the train/test evaluation scripts."
