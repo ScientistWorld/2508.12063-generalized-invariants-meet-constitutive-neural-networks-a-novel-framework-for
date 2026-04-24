@@ -3,5 +3,6 @@
 # only after your turn ends. Sleeping blocks the entire pipeline.
 action: submit
 gpus: 0
+milestone: core_claim
 test: false
-notes: "Rescore train/test on CPU after fixing eval/models.py to mirror the paper implementation (ordered diagonal stretches and faithful SI-CANN stress computation); regenerate scores_train.json and scores_test.json with split coverage validation."
+notes: "Rerun CPU train/test scoring after adding NumPy checkpoint-compat aliases in the evaluators; previous job failed before scoring on 'No module named numpy._core'."

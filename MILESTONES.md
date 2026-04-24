@@ -37,5 +37,10 @@
 - Finalized `PROGRESS.md`, `VERIFICATION.md`, and the scoring guidance files for gym handoff
 - Stopped at `core_claim` because rubber is credibly reproduced and the workspace is clean, but the brain checkpoints still lag the paper and need another training iteration rather than more packaging work
 
+### [2026-04-24 00:00] - core_claim
+- Audited the first real train/test split run and found checkpoint loading failed before any scores were produced because the container NumPy exposes `numpy.core` while the frozen checkpoints unpickle `numpy._core`
+- Patched all evaluation entry points to install backward-compatible NumPy module aliases before `torch.load`, preserving the frozen method artifacts while unblocking benchmark scoring
+- Kept the milestone at `core_claim`; this turn advances evaluation robustness but does not change the reproduced method quality
+
 ## Stop Justification
 - Completed at milestone `core_claim`.

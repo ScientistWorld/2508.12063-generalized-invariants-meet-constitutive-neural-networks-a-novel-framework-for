@@ -21,6 +21,15 @@ import torch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+# Older checkpoints can contain pickled NumPy objects under the internal
+# ``numpy._core`` module path, while the container ships NumPy exposing the
+# same objects via ``numpy.core``. Alias the old path so torch.load can
+# deserialize the trusted local checkpoints.
+if "numpy._core" not in sys.modules:
+    sys.modules["numpy._core"] = np.core
+if "numpy._core.multiarray" not in sys.modules:
+    sys.modules["numpy._core.multiarray"] = np.core.multiarray
+
 from data.load_data import (  # noqa: E402
     BRAIN_SS,
     BRAIN_UC,

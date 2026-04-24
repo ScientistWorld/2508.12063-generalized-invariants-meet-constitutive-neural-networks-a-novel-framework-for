@@ -17,6 +17,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+if "numpy._core" not in sys.modules:
+    sys.modules["numpy._core"] = np.core
+if "numpy._core.multiarray" not in sys.modules:
+    sys.modules["numpy._core.multiarray"] = np.core.multiarray
+
 from data.load_data import (
     get_rubber_dataset,
     get_brain_dataset,
