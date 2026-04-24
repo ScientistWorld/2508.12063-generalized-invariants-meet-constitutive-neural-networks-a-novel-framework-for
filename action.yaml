@@ -4,4 +4,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Retry after cleaning stale inlined setup commands out of environment/container.def; build container, install numpy/torch in setup.sh, then run evaluate_train.sh and evaluate_test.sh and validate the split score files."
+notes: "Retry with ubuntu:22.04 base and apt-installed Python to avoid the repeated slim-bookworm environment signature; then install numpy/torch in setup.sh and run the train/test evaluation scripts."
