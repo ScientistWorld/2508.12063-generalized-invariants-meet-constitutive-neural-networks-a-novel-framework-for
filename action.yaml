@@ -1,6 +1,7 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
+action: submit
 gpus: 0
-notes: "Alternating nonzero point split across all deformation curves; 6 train experiments and 6 test experiments scored; avg_r2 gaps are small on main rubber/brain settings and comparable on ablations."
+test: false
+notes: "Run evaluate_train.sh and evaluate_test.sh on all checkpoints, validate scores_train.json and scores_test.json, and populate the split baseline from a real compute run."

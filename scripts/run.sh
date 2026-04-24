@@ -5,6 +5,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 mkdir -p logs scoring
+rm -f scoring/scores_train.json scoring/scores_test.json
 
 echo "========================================="
 echo "Train/test split evaluation"
