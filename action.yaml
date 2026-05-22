@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: true
 milestone: majority
-notes: "CPU validation job: export neutral prediction artifacts from packaged checkpoints, regenerate full/train/test scores, and run validate.py --compare."
+notes: "Resubmit CPU validation: no prior job ran the artifact-export path, so export neutral prediction artifacts from packaged checkpoints, regenerate full/train/test scores, and run validate.py --compare."

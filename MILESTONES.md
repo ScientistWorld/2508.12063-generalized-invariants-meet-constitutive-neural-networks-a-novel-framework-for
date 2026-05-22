@@ -9,5 +9,9 @@
 - `scoring/scores.json` reproduces the rubber and brain GI-CANN core claims and the main positive/negative/combined ablation grid.
 - Added a model-agnostic prediction-artifact scoring path so future methods can be evaluated without matching GI-CANN checkpoint internals.
 
+### [2026-05-22 08:50] - majority
+- Audited the latest job records and confirmed the artifact-export validation job has not yet run in the container.
+- Keeping the milestone at `majority` and submitting a CPU test job to export neutral prediction artifacts, regenerate full/train/test scores from those artifacts, and run `validate.py --compare`.
+
 ## Stop Justification
-- Completed at milestone `majority`.
+- Highest verified milestone remains `majority`; final artifact-path validation is being submitted as a CPU test job.

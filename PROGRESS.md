@@ -163,6 +163,7 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Updated `run_all_training.py` and `method/export_predictions.py` to write the neutral observed-stress prediction artifacts. This keeps the evaluator usable for future methods that do not share the GI-CANN checkpoint format.
 - Repointed `scripts/run.sh` to a CPU validation job: export predictions from packaged checkpoints, regenerate full/train/test scores from artifacts, and run `python3 validate.py --compare`.
 - Made `data/load_data.py` importable without PyTorch for artifact-only scoring. The local login-node Python still cannot export checkpoint predictions because it lacks `torch`; the submitted CPU container job will validate that path.
+- Continuation audit checked the existing job records and local logs. No completed job contained the new artifact-export header and `outputs/predictions/` is still empty, so `action.yaml` remains set to submit the CPU artifact validation job before finalizing.
 
 ## Bug Fixes Applied
 
