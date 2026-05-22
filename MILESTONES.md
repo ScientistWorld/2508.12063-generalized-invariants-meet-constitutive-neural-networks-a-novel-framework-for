@@ -17,5 +17,9 @@
 - Reviewed completed job `47926f28-2ce`: artifact export produced 12 prediction JSON files, artifact-based full/train/test evaluation completed, and `validate.py --compare` passed.
 - Final verified score files reproduce both paper core claims and the main ablation grid through the reusable artifact evaluator.
 
+### [2026-05-22 09:10] - majority
+- Reviewed completed split-evaluation job `6487ae0e-790`: the full benchmark and both train/test split score files validate successfully.
+- Confirmed the actual method supports the core claim in `scoring/scores.json`: GI-CANN improves over SI-CANN on rubber generalization (`avg_r2` 0.9988 vs 0.9847, learned `alpha_star` 1.6769) and brain generalization (`avg_r2` 0.9590 vs 0.6974, learned `alpha_star` -17.9399).
+
 ## Stop Justification
 - Completed at milestone `majority`.

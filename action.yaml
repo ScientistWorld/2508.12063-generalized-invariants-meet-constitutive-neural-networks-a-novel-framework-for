@@ -2,4 +2,5 @@
 action: done
 gpus: 0
 test: false
-notes: "Alternating nonzero-row train/test split; 96 train metrics and 96 test metrics across 6 experiments/12 methods; train/test files differ and avg_r2 gaps are comparable, largest on intentionally weak rubber negative ablation; caveat: shape_violation_rate is sparse and zero for smooth high-performing methods."
+milestone: majority
+notes: "Core claim verified from real runs: GI-CANN beats SI-CANN on rubber_generalization (avg_r2 0.9988 vs 0.9847, alpha 1.6769 vs fixed 2) and brain_generalization (avg_r2 0.9590 vs 0.6974, alpha -17.9399 vs fixed -2). Split scoring also complete: 96 train and 96 test metrics across 6 experiments/12 methods."
