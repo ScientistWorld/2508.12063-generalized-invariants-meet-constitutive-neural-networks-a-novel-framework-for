@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: false
 milestone: core_claim_plus
-notes: "Retrain rubber ablation checkpoints after brain GI-CANN reached paper-level performance, then regenerate full/train/test scores."
+notes: "Retry rubber ablation retraining after fixing NumPy checkpoint-loading compatibility in the trainer."

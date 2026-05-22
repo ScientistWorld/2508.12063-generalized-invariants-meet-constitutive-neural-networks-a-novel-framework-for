@@ -63,5 +63,10 @@
 - Brain combined GI-CANN also reproduces the secondary brain result with avg R²=0.9604
 - Prepared a follow-up CPU job for the remaining weak rubber ablation checkpoints
 
+### [2026-05-22 07:58] - core_claim_plus
+- Rubber ablation job failed before evaluation because the trainer's warm-start checkpoint loader lacked the NumPy pickle compatibility alias already used in evaluation
+- Partial rubber negative training reached avg R²=0.3486, better than the paper's low-ablation reference of 0.264, but no milestone increase is claimed because the job did not finish
+- Patched trainer checkpoint loading and resubmitted the rubber ablation job
+
 ## Stop Justification
 - Not stopped. Current submission targets the remaining rubber ablation gap after reaching `core_claim_plus` on both rubber and brain core experiments.

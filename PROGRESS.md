@@ -127,6 +127,8 @@
 - Prepared `scripts/run.sh` to retrain all brain checkpoints and regenerate full, train-slice, and test-slice scores in one CPU job.
 - Marked the main shell entrypoints executable before submission so direct scheduler invocation cannot fail on file mode.
 - Reviewed completed job `4cdbf338-c4e`: brain reproduction is now at `core_claim_plus`; patched rubber GI-CANN warm starts and repointed `scripts/run.sh` to retrain rubber ablations next.
+- Reviewed failed job `f90e6a5b-fca`: rubber negative GI-CANN improved to `avg_r2=0.3486`, but the job crashed before evaluation when loading `checkpoints/rubber_positive.pt` for combined warm-start due to a NumPy pickle alias mismatch.
+- Patched `run_all_training.py` checkpoint loading with the same `numpy._core` compatibility alias used by the evaluators and kept the rubber ablation resubmission unchanged.
 
 ## Bug Fixes Applied
 
