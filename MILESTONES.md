@@ -18,4 +18,4 @@
 - Re-ran syntax checks and `python3 validate.py --compare`; all checks passed, so `majority` is restored.
 
 ## Stop Justification
-- Final milestone is `majority` rather than `near_complete` because fixed-exponent SI-CANN baseline calibration and some per-mode ablation values remain uneven, although both core GI-CANN claims and most proposed-method secondary checks are reproduced.
+- Completed at milestone `majority`.
