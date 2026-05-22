@@ -29,5 +29,9 @@
 - Completed final verification of folder separation, method-agnostic documentation, scoring coefficients, artifact-based evaluation, and train/test split integrity.
 - Re-ran `python3 validate.py --compare`; validation passed and the `majority` milestone remains justified.
 
+### [2026-05-22 08:46] - majority
+- Continuation audit re-read the paper's core GI-CANN algorithm and checked the packaged code against the actual method: trainable generalized invariant exponents, Eq. 13 strain-energy branches, loading-mode stress formulas, and L1 sparsity are present.
+- Re-ran `python3 validate.py --compare`; validation passed using the existing artifact-based score files and the `majority` milestone remains justified.
+
 ## Stop Justification
 - Completed at milestone `majority`.

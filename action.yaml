@@ -2,4 +2,4 @@ action: done
 gpus: 0
 test: false
 milestone: majority
-notes: "Final verification passed: method-agnostic docs, artifact evaluator, scoring, and train/test split are ready for gym use."
+notes: "Continuation audit passed: GI-CANN implementation matches the paper method, artifact-based scoring validates, and the majority milestone is ready for final handoff."

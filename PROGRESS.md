@@ -175,6 +175,13 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Brain combined ablation: GI-CANN avg R²=0.9604; SI-CANN avg R²=0.4790.
 - Positive/negative single-branch ablations remain scored as lower-performing contrast settings, preserving the paper's constraint that the learned exponent family must match the material behavior.
 
+## Continuation Audit (2026-05-22)
+
+- Re-read the paper's core method through the converted markdown and a parallel paper-analysis subagent.
+- Confirmed `method/gicann.py` implements the paper's actual GI-CANN computation: learned `alpha`, generalized invariants `J_alpha`, Eq. 13 identity/exponential/logarithmic energy branches, stress formulas for the benchmark loading modes, and L1 sparsity.
+- Confirmed the gym path is method-agnostic: `method/export_predictions.py` writes neutral observed-stress JSON artifacts, while `eval/artifacts.py` scores those artifacts without importing `method/`.
+- Re-ran `python3 validate.py --compare`; all checks passed. No additional compute job is needed because the packaged artifact path has already been validated in-container and the final score files remain coherent.
+
 ## Bug Fixes Applied
 
 ### 2026-04-06 (Initial)
