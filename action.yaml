@@ -1,6 +1,5 @@
-# This iteration runs the split evaluators on the compute node.
-# Do NOT sleep, poll, or wait. The system reads this file only after your turn ends.
-action: submit
+# Split evaluation completed on the compute node.
+action: done
 gpus: 0
 test: false
-notes: "CPU run: export final checkpoint predictions, evaluate full/train/test scoring, and validate generated scores."
+notes: "Alternating nonzero-row train/test split; 96 train metrics and 96 test metrics across 6 experiments/12 methods; train/test files differ and avg_r2 gaps are comparable, largest on intentionally weak rubber negative ablation; caveat: shape_violation_rate is sparse and zero for smooth high-performing methods."
