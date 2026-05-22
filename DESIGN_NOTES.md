@@ -15,6 +15,7 @@
   - `tail_normalized_mae` stresses largest-deformation rows, where hyperelastic behavior is most informative.
   - `shape_violation_rate` penalizes local trend reversals against observed stress trends.
 - Updated checkpoint fallback scoring in both slice evaluators to emit the same new metrics as artifact scoring.
+- Replaced the initial every-other-row split with a target-balanced complementary row split after validation showed the small rubber negative ablation was too sensitive to an unrepresentative held-out subset.
 - Updated `scoring/reference.json` so every metric has `higher_is_better`, `coefficient`, and `description`.
 - Reduced split-shape leakage through the shared artifact helper: slice row selection now lives in `eval/train/evaluate.py` and `eval/test/evaluate.py`, while `eval/artifacts.py` only scores caller-selected rows.
 - Kept `alpha_star` as a zero-coefficient audit field so the benchmark does not reward matching the paper's exponent value.

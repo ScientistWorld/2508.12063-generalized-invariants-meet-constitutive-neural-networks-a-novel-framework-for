@@ -3,23 +3,23 @@
     "brain_combined_ablation": {
       "results": {
         "GI-CANN_J\u03b1+J\u03b1-": {
-          "avg_r2": 0.9442,
-          "avg_normalized_rmse": 0.0744,
-          "tail_normalized_mae": 0.1324,
+          "avg_r2": 0.965,
+          "avg_normalized_rmse": 0.0644,
+          "tail_normalized_mae": 0.0985,
           "shape_violation_rate": 0.0,
-          "r2_ut": 0.8983,
-          "r2_uc": 0.974,
-          "r2_ss": 0.9604,
+          "r2_ut": 0.9617,
+          "r2_uc": 0.9635,
+          "r2_ss": 0.9696,
           "alpha_star": -17.7918
         },
         "SI-CANN_J\u03b1+J\u03b1-": {
-          "avg_r2": 0.3975,
-          "avg_normalized_rmse": 0.2302,
-          "tail_normalized_mae": 0.3696,
+          "avg_r2": 0.3869,
+          "avg_normalized_rmse": 0.2418,
+          "tail_normalized_mae": 0.3698,
           "shape_violation_rate": 0.0,
-          "r2_ut": -0.3391,
-          "r2_uc": 0.6674,
-          "r2_ss": 0.8643,
+          "r2_ut": -0.4836,
+          "r2_uc": 0.7917,
+          "r2_ss": 0.8526,
           "alpha_star": -2.0
         }
       }
@@ -27,23 +27,23 @@
     "brain_generalization": {
       "results": {
         "GI-CANN": {
-          "avg_r2": 0.9422,
-          "avg_normalized_rmse": 0.0757,
-          "tail_normalized_mae": 0.1389,
+          "avg_r2": 0.9643,
+          "avg_normalized_rmse": 0.0649,
+          "tail_normalized_mae": 0.1021,
           "shape_violation_rate": 0.0,
-          "r2_ut": 0.8943,
-          "r2_uc": 0.9744,
-          "r2_ss": 0.9577,
+          "r2_ut": 0.9597,
+          "r2_uc": 0.965,
+          "r2_ss": 0.9683,
           "alpha_star": -17.9399
         },
         "SI-CANN": {
-          "avg_r2": 0.642,
-          "avg_normalized_rmse": 0.1887,
-          "tail_normalized_mae": 0.2987,
+          "avg_r2": 0.6602,
+          "avg_normalized_rmse": 0.1912,
+          "tail_normalized_mae": 0.2995,
           "shape_violation_rate": 0.0,
-          "r2_ut": 0.369,
-          "r2_uc": 0.7171,
-          "r2_ss": 0.8398,
+          "r2_ut": 0.3129,
+          "r2_uc": 0.8248,
+          "r2_ss": 0.8428,
           "alpha_star": -2.0
         }
       }
@@ -51,23 +51,23 @@
     "brain_positive_ablation": {
       "results": {
         "GI-CANN_J\u03b1+": {
-          "avg_r2": 0.4643,
-          "avg_normalized_rmse": 0.2235,
-          "tail_normalized_mae": 0.3658,
+          "avg_r2": 0.4668,
+          "avg_normalized_rmse": 0.233,
+          "tail_normalized_mae": 0.3652,
           "shape_violation_rate": 0.0,
-          "r2_ut": -0.0754,
-          "r2_uc": 0.6214,
-          "r2_ss": 0.847,
+          "r2_ut": -0.1934,
+          "r2_uc": 0.7488,
+          "r2_ss": 0.8448,
           "alpha_star": 1.9019
         },
         "SI-CANN_J\u03b1+": {
-          "avg_r2": 0.3986,
-          "avg_normalized_rmse": 0.2301,
-          "tail_normalized_mae": 0.3693,
+          "avg_r2": 0.3881,
+          "avg_normalized_rmse": 0.2416,
+          "tail_normalized_mae": 0.3696,
           "shape_violation_rate": 0.0,
-          "r2_ut": -0.3359,
-          "r2_uc": 0.6676,
-          "r2_ss": 0.8642,
+          "r2_ut": -0.4801,
+          "r2_uc": 0.7917,
+          "r2_ss": 0.8526,
           "alpha_star": 2.0
         }
       }
@@ -75,23 +75,23 @@
     "rubber_combined_ablation": {
       "results": {
         "GI-CANN_J\u03b1+J\u03b1-": {
-          "avg_r2": 0.9996,
-          "avg_normalized_rmse": 0.0072,
-          "tail_normalized_mae": 0.0106,
+          "avg_r2": 0.9993,
+          "avg_normalized_rmse": 0.009,
+          "tail_normalized_mae": 0.0189,
           "shape_violation_rate": 0.0,
-          "r2_ut": 0.9995,
-          "r2_bt": 0.9997,
-          "r2_ps": 0.9995,
+          "r2_ut": 0.9997,
+          "r2_bt": 0.9987,
+          "r2_ps": 0.9996,
           "alpha_star": 1.813
         },
         "SI-CANN_J\u03b1+J\u03b1-": {
-          "avg_r2": 0.9115,
-          "avg_normalized_rmse": 0.1021,
-          "tail_normalized_mae": 0.1257,
+          "avg_r2": 0.9215,
+          "avg_normalized_rmse": 0.1003,
+          "tail_normalized_mae": 0.1286,
           "shape_violation_rate": 0.0667,
-          "r2_ut": 0.9371,
-          "r2_bt": 0.9532,
-          "r2_ps": 0.8443,
+          "r2_ut": 0.9557,
+          "r2_bt": 0.9642,
+          "r2_ps": 0.8447,
           "alpha_star": -2.0
         }
       }
@@ -99,23 +99,23 @@
     "rubber_generalization": {
       "results": {
         "GI-CANN": {
-          "avg_r2": 0.9989,
-          "avg_normalized_rmse": 0.0113,
-          "tail_normalized_mae": 0.0105,
+          "avg_r2": 0.9988,
+          "avg_normalized_rmse": 0.011,
+          "tail_normalized_mae": 0.016,
           "shape_violation_rate": 0.0,
-          "r2_ut": 0.9995,
-          "r2_bt": 0.9979,
-          "r2_ps": 0.9992,
+          "r2_ut": 0.9998,
+          "r2_bt": 0.9973,
+          "r2_ps": 0.9994,
           "alpha_star": 1.6769
         },
         "SI-CANN": {
-          "avg_r2": 0.983,
-          "avg_normalized_rmse": 0.0396,
-          "tail_normalized_mae": 0.0699,
+          "avg_r2": 0.9834,
+          "avg_normalized_rmse": 0.0413,
+          "tail_normalized_mae": 0.0676,
           "shape_violation_rate": 0.0,
-          "r2_ut": 0.9951,
-          "r2_bt": 0.9575,
-          "r2_ps": 0.9963,
+          "r2_ut": 0.9919,
+          "r2_bt": 0.9615,
+          "r2_ps": 0.9967,
           "alpha_star": 2.0
         }
       }
@@ -123,23 +123,23 @@
     "rubber_negative_ablation": {
       "results": {
         "GI-CANN_J\u03b1-": {
-          "avg_r2": 0.2135,
-          "avg_normalized_rmse": 0.2904,
-          "tail_normalized_mae": 0.4684,
+          "avg_r2": 0.3109,
+          "avg_normalized_rmse": 0.2786,
+          "tail_normalized_mae": 0.4241,
           "shape_violation_rate": 0.0,
-          "r2_ut": -0.1756,
-          "r2_bt": -0.0361,
-          "r2_ps": 0.8524,
+          "r2_ut": -0.1665,
+          "r2_bt": 0.2039,
+          "r2_ps": 0.8953,
           "alpha_star": -0.4294
         },
         "SI-CANN_J\u03b1-": {
-          "avg_r2": 0.073,
-          "avg_normalized_rmse": 0.3324,
-          "tail_normalized_mae": 0.409,
+          "avg_r2": 0.1821,
+          "avg_normalized_rmse": 0.3232,
+          "tail_normalized_mae": 0.4236,
           "shape_violation_rate": 0.2,
-          "r2_ut": -0.4515,
-          "r2_bt": 0.265,
-          "r2_ps": 0.4057,
+          "r2_ut": -0.4452,
+          "r2_bt": 0.4383,
+          "r2_ps": 0.5531,
           "alpha_star": -2.0
         }
       }

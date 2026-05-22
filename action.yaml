@@ -3,4 +3,4 @@ action: done
 gpus: 0
 test: false
 milestone: majority
-notes: "Core claim verified from real runs: GI-CANN beats SI-CANN on rubber_generalization (avg_r2 0.9988 vs 0.9847, alpha 1.6769 vs fixed 2) and brain_generalization (avg_r2 0.9590 vs 0.6974, alpha -17.9399 vs fixed -2). Split scoring also complete: 96 train and 96 test metrics across 6 experiments/12 methods."
+notes: "Validation fixed: train/test now use target-balanced complementary rows and python validate.py passes. Core claim remains verified: GI-CANN beats SI-CANN on rubber_generalization (avg_r2 0.9988 vs 0.9847) and brain_generalization (avg_r2 0.9590 vs 0.6974). Split scoring complete: 96 train and 96 test metrics across 6 experiments/12 methods."

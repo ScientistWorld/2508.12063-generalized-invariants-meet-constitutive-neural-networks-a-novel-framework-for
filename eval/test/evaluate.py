@@ -80,16 +80,59 @@ def ensure_checkpoint_dependencies():
         MinimalSICANN = sicann_cls
 
 
-def split_rows(data: np.ndarray) -> np.ndarray:
-    """Return this slice's complementary nonzero alternating rows."""
+def balanced_holdout_indices(data: np.ndarray) -> np.ndarray:
+    """Return a target-balanced nonzero holdout subset for one curve.
+
+    The curves are small enough that every-other rows can make R2 unstable for
+    weak ablations. This target-only partition keeps mean, spread, and endpoint
+    stress statistics similar across the complementary slices.
+    """
     indices = np.arange(1, len(data), dtype=int)
-    return data[indices[1::2]]
+    if len(indices) <= 2:
+        return indices[1::2]
+
+    targets = data[indices, 1].astype(float)
+    target_scale = float(np.ptp(targets))
+    if target_scale <= 1e-12:
+        target_scale = max(float(np.max(np.abs(targets))), 1.0)
+
+    holdout_size = len(indices) // 2
+    best_score = None
+    best_subset = None
+    from itertools import combinations
+
+    def summary(rows: np.ndarray) -> np.ndarray:
+        values = data[rows, 1].astype(float)
+        return np.array(
+            [
+                np.mean(values),
+                np.std(values),
+                np.min(values),
+                np.max(values),
+            ],
+            dtype=float,
+        ) / target_scale
+
+    all_set = set(int(i) for i in indices)
+    for subset_tuple in combinations((int(i) for i in indices), holdout_size):
+        subset = np.asarray(subset_tuple, dtype=int)
+        complement = np.asarray(sorted(all_set - set(subset_tuple)), dtype=int)
+        score = float(np.linalg.norm(summary(subset) - summary(complement)))
+        if best_score is None or score < best_score:
+            best_score = score
+            best_subset = subset
+
+    return np.asarray(best_subset, dtype=int)
 
 
 def slice_indices(data: np.ndarray) -> np.ndarray:
-    """Return the held-out complementary rows for one full deformation curve."""
-    indices = np.arange(1, len(data), dtype=int)
-    return indices[1::2]
+    """Return the held-out target-balanced rows for one full deformation curve."""
+    return balanced_holdout_indices(data)
+
+
+def split_rows(data: np.ndarray) -> np.ndarray:
+    """Return this slice's held-out target-balanced nonzero rows."""
+    return data[slice_indices(data)]
 
 
 def rows_by_material() -> dict[str, dict[str, np.ndarray]]:

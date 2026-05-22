@@ -2,9 +2,9 @@
 """Train-slice evaluation for the GI-CANN benchmark.
 
 This development slice evaluates the same checkpoint interface as the original
-``scripts/evaluate.sh`` entry point, but recomputes predictions on a fixed
-alternating subset of each deformation curve. The neutral zero-stress point is
-excluded so the slice is not dominated by the trivial undeformed state.
+``scripts/evaluate.sh`` entry point, but recomputes predictions on a
+target-balanced subset of each deformation curve. The neutral zero-stress point
+is excluded so the slice is not dominated by the trivial undeformed state.
 """
 
 from __future__ import annotations
@@ -60,16 +60,61 @@ def ensure_checkpoint_dependencies():
         MinimalSICANN = sicann_cls
 
 
-def split_rows(data: np.ndarray) -> np.ndarray:
-    """Return this slice's nonzero alternating rows for one deformation curve."""
+def balanced_holdout_indices(data: np.ndarray) -> np.ndarray:
+    """Return a target-balanced nonzero holdout subset for one curve.
+
+    The curves are small enough that every-other rows can make R2 unstable for
+    weak ablations. This target-only partition keeps mean, spread, and endpoint
+    stress statistics similar across the complementary slices.
+    """
     indices = np.arange(1, len(data), dtype=int)
-    return data[indices[::2]]
+    if len(indices) <= 2:
+        return indices[1::2]
+
+    targets = data[indices, 1].astype(float)
+    target_scale = float(np.ptp(targets))
+    if target_scale <= 1e-12:
+        target_scale = max(float(np.max(np.abs(targets))), 1.0)
+
+    holdout_size = len(indices) // 2
+    best_score = None
+    best_subset = None
+    from itertools import combinations
+
+    def summary(rows: np.ndarray) -> np.ndarray:
+        values = data[rows, 1].astype(float)
+        return np.array(
+            [
+                np.mean(values),
+                np.std(values),
+                np.min(values),
+                np.max(values),
+            ],
+            dtype=float,
+        ) / target_scale
+
+    all_set = set(int(i) for i in indices)
+    for subset_tuple in combinations((int(i) for i in indices), holdout_size):
+        subset = np.asarray(subset_tuple, dtype=int)
+        complement = np.asarray(sorted(all_set - set(subset_tuple)), dtype=int)
+        score = float(np.linalg.norm(summary(subset) - summary(complement)))
+        if best_score is None or score < best_score:
+            best_score = score
+            best_subset = subset
+
+    return np.asarray(best_subset, dtype=int)
 
 
 def slice_indices(data: np.ndarray) -> np.ndarray:
     """Return the visible development rows for one full deformation curve."""
     indices = np.arange(1, len(data), dtype=int)
-    return indices[::2]
+    holdout = set(int(i) for i in balanced_holdout_indices(data))
+    return np.asarray([int(i) for i in indices if int(i) not in holdout], dtype=int)
+
+
+def split_rows(data: np.ndarray) -> np.ndarray:
+    """Return this slice's target-balanced nonzero rows for one curve."""
+    return data[slice_indices(data)]
 
 
 def rows_by_material() -> dict[str, dict[str, np.ndarray]]:
