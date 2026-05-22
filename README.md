@@ -743,12 +743,35 @@ Two experimental datasets are used:
 
 </details>
 
+### Iteration 3: gpt-5.5
+- **Milestone**: `majority` | **Status**: done
+- **Working time**: 11m | **GPU**: 0.0h
+- **Jobs**: 8 total (5 completed, 3 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-05-22 08:45] - majority
+- Re-verified that `method/` implements GI-CANN with trainable generalized invariant exponent(s), Eq. 13 derivative branches, paper loading-mode stresses, and L1 sparsity.
+- `scoring/scores.json` reproduces the rubber and brain GI-CANN core claims and the main positive/negative/combined ablation grid.
+- Added a model-agnostic prediction-artifact scoring path so future methods can be evaluated without matching GI-CANN checkpoint internals.
+
+### [2026-05-22 08:50] - majority
+- Audited the latest job records and confirmed the artifact-export validation job has not yet run in the container.
+- Keeping the milestone at `majority` and submitting a CPU test job to export neutral prediction artifacts, regenerate full/train/test scores from those artifacts, and run `validate.py --compare`.
+
+### [2026-05-22 08:55] - majority
+- Reviewed completed job `47926f28-2ce`: artifact export produced 12 prediction JSON files, artifact-based full/train/test evaluation completed, and `validate.py --compare` passed.
+- Final verified score files reproduce both paper core claims and the main ablation grid through the reusable artifact evaluator.
+
+</details>
+
 
 ---
 
 # Reproduction Milestones
 
-**Current: secondary_claims**
+**Current: majority**
 
 ## Stop Justification
-- Completed at milestone `secondary_claims`.
+- Completed at milestone `majority`.

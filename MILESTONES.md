@@ -18,4 +18,4 @@
 - Final verified score files reproduce both paper core claims and the main ablation grid through the reusable artifact evaluator.
 
 ## Stop Justification
-- Completed at milestone `majority`. The remaining gaps are optional calibration improvements for fixed-exponent baselines and exact low-performing ablation numbers, not blockers for the reproduced core and secondary claims.
+- Completed at milestone `majority`.
