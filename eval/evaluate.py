@@ -180,7 +180,12 @@ def build_scores_json(checkpoint_results, output_path, experiments_filter=None):
             r2_bt = r2_train.get('bt', 0.0)
             r2_ps = r2_test.get('ps', 0.0)
             avg_r2 = float(np.mean([r2_ut, r2_bt, r2_ps]))
-            alpha_star = params.get('alpha_plus', params.get('alpha_fixed', 0.0))
+            if model_type == 'SI-CANN':
+                alpha_star = params.get('alpha_fixed', 2.0 if mode == 'positive' else -2.0)
+            elif mode == 'negative':
+                alpha_star = params.get('alpha_minus', 0.0)
+            else:
+                alpha_star = params.get('alpha_plus', params.get('alpha_minus', 0.0))
 
             if exp_name not in exp_data:
                 exp_data[exp_name] = {'results': {}}
@@ -209,7 +214,12 @@ def build_scores_json(checkpoint_results, output_path, experiments_filter=None):
             r2_uc = r2_train.get('uc', 0.0)
             r2_ss = r2_test.get('ss', 0.0)
             avg_r2 = float(np.mean([r2_ut, r2_uc, r2_ss]))
-            alpha_star = params.get('alpha_minus', params.get('alpha_fixed', 0.0))
+            if model_type == 'SI-CANN':
+                alpha_star = params.get('alpha_fixed', 2.0 if mode == 'positive' else -2.0)
+            elif mode == 'positive':
+                alpha_star = params.get('alpha_plus', 0.0)
+            else:
+                alpha_star = params.get('alpha_minus', params.get('alpha_plus', 0.0))
 
             if exp_name not in exp_data:
                 exp_data[exp_name] = {'results': {}}
@@ -267,7 +277,7 @@ def main():
         else:
             print(f"Checkpoint not found: {ckpt_path}")
 
-    if args.checkpoints_dir:
+    if args.checkpoints_dir and not args.checkpoint:
         ckpt_dir = Path(args.checkpoints_dir)
         if ckpt_dir.exists():
             for ckpt_path in sorted(ckpt_dir.glob('*.pt')):

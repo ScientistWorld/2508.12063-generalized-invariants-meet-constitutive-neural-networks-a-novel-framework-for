@@ -14,6 +14,8 @@ The workspace started at a credible `core_claim`. The method implementation is a
 ## Fixes Applied
 
 - Updated [`eval/evaluate.py`](/home/user/eval/evaluate.py) and [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) so the documented `--experiment` interface now works for selected experiment evaluation.
+- Updated [`eval/evaluate.py`](/home/user/eval/evaluate.py), [`eval/train/evaluate.py`](/home/user/eval/train/evaluate.py), and [`eval/test/evaluate.py`](/home/user/eval/test/evaluate.py) so `--checkpoint` no longer also scans the full checkpoint directory.
+- Corrected evaluation reporting of `alpha_star` for positive and negative ablation checkpoints so it comes from the branch actually used by the model.
 - Fixed [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) to honor `${PYTHON}` instead of calling a missing `python` binary directly.
 - Reworded [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) to keep the benchmark scope physics-aware and interpretable without overexposing the paper’s specific invariant-exponent framing.
 - Replaced this report with the current verification findings and judgment.

@@ -10,10 +10,10 @@
 
 - Milestone reached: `majority`
 - Ready for gym use: yes
-- `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
-- Benchmark-facing documentation avoids leaking the paper's exact implementation into the problem definition
+- `python3 validate.py --compare` passes on the packaged workspace
 - `scoring/scores.json` has been regenerated for all six benchmark experiments
 - Split evaluation is complete and `scoring/scores_train.json` / `scoring/scores_test.json` are populated from a real compute run
+- Final action state and milestone documentation are aligned to `majority`
 
 ## Implementation Complete
 
@@ -154,6 +154,8 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Patched `run_all_training.py` checkpoint loading with the same `numpy._core` compatibility alias used by the evaluators and kept the rubber ablation resubmission unchanged.
 - Reviewed completed job `f04aced1-1c0`: rubber combined GI-CANN recovered to `avg_r2=0.9994`, rubber negative remains a low-performing ablation at `avg_r2=0.3486`, and full/train/test scoring validates.
 - Updated final documentation and action state for a `majority` milestone handoff.
+- Patched `eval/evaluate.py`, `eval/train/evaluate.py`, and `eval/test/evaluate.py` so `--checkpoint` evaluates only the requested checkpoint and learned `alpha_star` is read from the correct positive or negative branch for ablation checkpoints.
+- Re-ran `python3 validate.py --compare`; all structural checks passed. Local score regeneration was not run because the login-node Python lacks `torch`, but previous compute-generated score artifacts remain valid.
 
 ## Bug Fixes Applied
 

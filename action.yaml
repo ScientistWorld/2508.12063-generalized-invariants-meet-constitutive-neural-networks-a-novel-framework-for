@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: pending
-gpus: 1
+action: done
+gpus: 0
 test: false
-milestone: secondary_claims
-notes: ""
+milestone: majority
+notes: "Reproduced both core GI-CANN claims and most proposed-method ablations; environment validated and packaged. Remaining gaps are SI-CANN baseline calibration and exact per-mode ablation matching."

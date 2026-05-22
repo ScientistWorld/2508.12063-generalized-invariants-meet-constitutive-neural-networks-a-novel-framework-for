@@ -172,7 +172,12 @@ def build_scores_json(results: list[dict], output_path: str, experiments_filter:
             r2_ut = r2.get("ut", 0.0)
             r2_bt = r2.get("bt", 0.0)
             r2_ps = r2.get("ps", 0.0)
-            alpha_star = params.get("alpha_plus", params.get("alpha_fixed", 0.0))
+            if model_type == "SI-CANN":
+                alpha_star = params.get("alpha_fixed", 2.0 if mode == "positive" else -2.0)
+            elif mode == "negative":
+                alpha_star = params.get("alpha_minus", 0.0)
+            else:
+                alpha_star = params.get("alpha_plus", params.get("alpha_minus", 0.0))
             exp_data[exp_name]["results"][method_name] = {
                 "r2_ut": round(r2_ut, 4),
                 "r2_bt": round(r2_bt, 4),
@@ -184,7 +189,12 @@ def build_scores_json(results: list[dict], output_path: str, experiments_filter:
             r2_ut = r2.get("ut", 0.0)
             r2_uc = r2.get("uc", 0.0)
             r2_ss = r2.get("ss", 0.0)
-            alpha_star = params.get("alpha_minus", params.get("alpha_fixed", 0.0))
+            if model_type == "SI-CANN":
+                alpha_star = params.get("alpha_fixed", 2.0 if mode == "positive" else -2.0)
+            elif mode == "positive":
+                alpha_star = params.get("alpha_plus", 0.0)
+            else:
+                alpha_star = params.get("alpha_minus", params.get("alpha_plus", 0.0))
             exp_data[exp_name]["results"][method_name] = {
                 "r2_ut": round(r2_ut, 4),
                 "r2_uc": round(r2_uc, 4),
@@ -225,7 +235,7 @@ def main() -> None:
         else:
             print(f"Checkpoint not found: {ckpt_path}")
 
-    if args.checkpoints_dir:
+    if args.checkpoints_dir and not args.checkpoint:
         ckpt_dir = Path(args.checkpoints_dir)
         if ckpt_dir.exists():
             for ckpt_path in sorted(ckpt_dir.glob("*.pt")):
