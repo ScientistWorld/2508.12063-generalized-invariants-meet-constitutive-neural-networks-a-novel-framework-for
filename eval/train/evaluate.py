@@ -166,6 +166,8 @@ def build_scores_json(results: list[dict], output_path: str, experiments_filter:
 
         r2 = result["r2_by_mode"]
         params = result["params"]
+        mode = result["mode"]
+        model_type = result["model_type"]
         exp_data.setdefault(exp_name, {"results": {}})
 
         if result["material"] == "rubber":

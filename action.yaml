@@ -5,4 +5,4 @@ action: done
 gpus: 0
 test: false
 milestone: majority
-notes: "Reproduced both core GI-CANN claims and most proposed-method ablations; environment validated and packaged. Remaining gaps are SI-CANN baseline calibration and exact per-mode ablation matching."
+notes: "Continuation audit restored majority after fixing the split evaluator packaging bug. Both core GI-CANN claims and most proposed-method ablations are reproduced; remaining gaps are SI-CANN baseline calibration and exact per-mode ablation matching."

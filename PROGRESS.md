@@ -156,6 +156,9 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Updated final documentation and action state for a `majority` milestone handoff.
 - Patched `eval/evaluate.py`, `eval/train/evaluate.py`, and `eval/test/evaluate.py` so `--checkpoint` evaluates only the requested checkpoint and learned `alpha_star` is read from the correct positive or negative branch for ablation checkpoints.
 - Re-ran `python3 validate.py --compare`; all structural checks passed. Local score regeneration was not run because the login-node Python lacks `torch`, but previous compute-generated score artifacts remain valid.
+- Continuation audit reset the claimed milestone to `secondary_claims`; after re-checking the implementation, scoring, and docs, `majority` remains defensible.
+- Fixed a split-evaluator packaging bug in `eval/train/evaluate.py` and `eval/test/evaluate.py`: `build_scores_json` now defines `mode` and `model_type` from each checkpoint result before reporting `alpha_star`.
+- Re-ran Python syntax checks and `python3 validate.py --compare`; both passed.
 
 ## Bug Fixes Applied
 
