@@ -1,0 +1,148 @@
+{
+  "experiments": {
+    "brain_combined_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1+J\u03b1-": {
+          "avg_r2": 0.9674,
+          "avg_normalized_rmse": 0.0582,
+          "tail_normalized_mae": 0.1006,
+          "shape_violation_rate": 0.0,
+          "r2_ut": 0.9529,
+          "r2_uc": 0.982,
+          "r2_ss": 0.9673,
+          "alpha_star": -17.7918
+        },
+        "SI-CANN_J\u03b1+J\u03b1-": {
+          "avg_r2": 0.3707,
+          "avg_normalized_rmse": 0.2217,
+          "tail_normalized_mae": 0.3493,
+          "shape_violation_rate": 0.0,
+          "r2_ut": -0.577,
+          "r2_uc": 0.7907,
+          "r2_ss": 0.8985,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "brain_generalization": {
+      "results": {
+        "GI-CANN": {
+          "avg_r2": 0.9664,
+          "avg_normalized_rmse": 0.0591,
+          "tail_normalized_mae": 0.1045,
+          "shape_violation_rate": 0.0,
+          "r2_ut": 0.9519,
+          "r2_uc": 0.9817,
+          "r2_ss": 0.9656,
+          "alpha_star": -17.9399
+        },
+        "SI-CANN": {
+          "avg_r2": 0.6489,
+          "avg_normalized_rmse": 0.1777,
+          "tail_normalized_mae": 0.2813,
+          "shape_violation_rate": 0.0,
+          "r2_ut": 0.2351,
+          "r2_uc": 0.8188,
+          "r2_ss": 0.893,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "brain_positive_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1+": {
+          "avg_r2": 0.4584,
+          "avg_normalized_rmse": 0.2129,
+          "tail_normalized_mae": 0.3459,
+          "shape_violation_rate": 0.0,
+          "r2_ut": -0.2704,
+          "r2_uc": 0.7505,
+          "r2_ss": 0.895,
+          "alpha_star": 1.9019
+        },
+        "SI-CANN_J\u03b1+": {
+          "avg_r2": 0.3718,
+          "avg_normalized_rmse": 0.2216,
+          "tail_normalized_mae": 0.349,
+          "shape_violation_rate": 0.0,
+          "r2_ut": -0.5737,
+          "r2_uc": 0.7908,
+          "r2_ss": 0.8985,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "rubber_combined_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1+J\u03b1-": {
+          "avg_r2": 0.9992,
+          "avg_normalized_rmse": 0.0093,
+          "tail_normalized_mae": 0.0205,
+          "shape_violation_rate": 0.0,
+          "r2_ut": 0.9999,
+          "r2_bt": 0.9988,
+          "r2_ps": 0.999,
+          "alpha_star": 1.813
+        },
+        "SI-CANN_J\u03b1+J\u03b1-": {
+          "avg_r2": 0.9197,
+          "avg_normalized_rmse": 0.0956,
+          "tail_normalized_mae": 0.1525,
+          "shape_violation_rate": 0.1667,
+          "r2_ut": 0.9168,
+          "r2_bt": 0.9707,
+          "r2_ps": 0.8715,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "rubber_generalization": {
+      "results": {
+        "GI-CANN": {
+          "avg_r2": 0.9986,
+          "avg_normalized_rmse": 0.0121,
+          "tail_normalized_mae": 0.0206,
+          "shape_violation_rate": 0.0,
+          "r2_ut": 0.9997,
+          "r2_bt": 0.9973,
+          "r2_ps": 0.9989,
+          "alpha_star": 1.6769
+        },
+        "SI-CANN": {
+          "avg_r2": 0.9841,
+          "avg_normalized_rmse": 0.0394,
+          "tail_normalized_mae": 0.0667,
+          "shape_violation_rate": 0.0,
+          "r2_ut": 0.994,
+          "r2_bt": 0.962,
+          "r2_ps": 0.9965,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "rubber_negative_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1-": {
+          "avg_r2": 0.3592,
+          "avg_normalized_rmse": 0.2599,
+          "tail_normalized_mae": 0.4625,
+          "shape_violation_rate": 0.0,
+          "r2_ut": -0.1756,
+          "r2_bt": 0.4003,
+          "r2_ps": 0.8528,
+          "alpha_star": -0.4294
+        },
+        "SI-CANN_J\u03b1-": {
+          "avg_r2": 0.2347,
+          "avg_normalized_rmse": 0.2919,
+          "tail_normalized_mae": 0.4606,
+          "shape_violation_rate": 0.2222,
+          "r2_ut": -0.4058,
+          "r2_bt": 0.5823,
+          "r2_ps": 0.5276,
+          "alpha_star": -2.0
+        }
+      }
+    }
+  }
+}
