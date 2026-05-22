@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from method.gicann import GICANN  # noqa: E402
 from method.sicann import SICANN  # noqa: E402
-from run_all_training import load_checkpoint, save_prediction_artifact  # noqa: E402
+from method.training_runner import load_checkpoint, save_prediction_artifact  # noqa: E402
 
 
 def checkpoint_metadata(path: Path, config: dict) -> tuple[str, str, str]:

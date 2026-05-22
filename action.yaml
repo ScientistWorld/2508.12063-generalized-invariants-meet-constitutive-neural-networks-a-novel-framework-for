@@ -2,4 +2,4 @@ action: done
 gpus: 0
 test: false
 milestone: majority
-notes: "Packaging audit passed: no external downloads are required because the benchmark data is embedded in tracked data/load_data.py, and no shared-cache paths or placeholder fetches were found."
+notes: "Completed majority reproduction. Artifact-based scoring and validate.py --compare pass after final packaging cleanup; data is embedded and no external downloads are required."

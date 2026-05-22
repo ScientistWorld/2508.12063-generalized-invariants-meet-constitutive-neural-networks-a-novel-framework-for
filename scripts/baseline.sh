@@ -12,7 +12,7 @@ PYTHON=${PYTHON:-python3}
 mkdir -p checkpoints scoring
 rm -f outputs/predictions/*.json 2>/dev/null || true
 
-${PYTHON} run_all_training.py \
+${PYTHON} method/training_runner.py \
   --device "${DEVICE:-cpu}" \
   --materials rubber,brain \
   --modes positive,negative,combined \

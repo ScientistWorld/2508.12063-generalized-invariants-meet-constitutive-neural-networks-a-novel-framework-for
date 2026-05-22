@@ -94,11 +94,11 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 2. `eval/evaluate.py`: fixed SI checkpoint handling, restored `scores.json` schema compatibility with `reference.json`, and made checkpoint-stored metrics the authoritative fallback for shipped checkpoints.
 3. `scripts/evaluate.sh`: now forwards CLI arguments instead of ignoring them.
 4. `environment/setup.sh`: switched to `uv pip install --system` as required by the environment protocol.
-5. `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `scripts/run.sh`: aligned all entrypoints on the current `run_all_training.py` trainer so the packaged environment no longer mixes old 5k-epoch scripts with the newer robust training path.
+5. `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `scripts/run.sh`: aligned all entrypoints on the current `method/training_runner.py` trainer so the packaged environment no longer mixes old 5k-epoch scripts with the newer robust training path.
 6. `scoring/TARGETS.md` and `scoring/CONSTRAINTS.md`: corrected the target/constraint definitions so they match the paper’s actual core experiments and the implemented Eq. (13)-style GI-CANN branches.
 7. `method/gicann.py` and `eval/models.py`: fixed deformation-mode dispatch so brain compression is no longer misclassified near `lambda=1`.
 8. `method/gicann.py`, `method/sicann.py`, and `eval/models.py`: fixed diagonal loading stress computation to use the mode's actual principal-stretch ordering instead of sorted singular values.
-9. `data/load_data.py`, `method/gicann.py`, `method/train.py`, `run_all_training.py`, and `eval/evaluate.py`: switched loss and R² reporting to the observed stress component (`sigma_11` for UT/UC/BT/PS, `sigma_12` for SS) instead of flattening mostly-zero tensors.
+9. `data/load_data.py`, `method/gicann.py`, `method/train.py`, `method/training_runner.py`, and `eval/evaluate.py`: switched loss and R² reporting to the observed stress component (`sigma_11` for UT/UC/BT/PS, `sigma_12` for SS) instead of flattening mostly-zero tensors.
 
 ## Train/Test Split Baseline (2026-04-24)
 
@@ -145,13 +145,13 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 
 - Re-audited the workspace after restart. Rubber GI-CANN still supports `core_claim`; brain GI-CANN/SI-CANN checkpoint scores remain far below the paper.
 - Fixed a training inconsistency in `method/sicann.py`: SI-CANN now optimizes the same observed stress component used by GI-CANN and by scoring instead of a full mostly-zero stress tensor.
-- Fixed `run_all_training.py` checkpoint selection so early stopping tracks observed held-out stress MSE, matching the benchmark target.
+- Fixed `method/training_runner.py` checkpoint selection so early stopping tracks observed held-out stress MSE, matching the benchmark target.
 - Fixed `eval/evaluate.py` so `scripts/evaluate.sh` recomputes predictions from checkpoint weights and data instead of accepting checkpoint-embedded results.
 - Prepared `scripts/run.sh` to retrain all brain checkpoints and regenerate full, train-slice, and test-slice scores in one CPU job.
 - Marked the main shell entrypoints executable before submission so direct scheduler invocation cannot fail on file mode.
 - Reviewed completed job `4cdbf338-c4e`: brain reproduction is now at `core_claim_plus`; patched rubber GI-CANN warm starts and repointed `scripts/run.sh` to retrain rubber ablations next.
 - Reviewed failed job `f90e6a5b-fca`: rubber negative GI-CANN improved to `avg_r2=0.3486`, but the job crashed before evaluation when loading `checkpoints/rubber_positive.pt` for combined warm-start due to a NumPy pickle alias mismatch.
-- Patched `run_all_training.py` checkpoint loading with the same `numpy._core` compatibility alias used by the evaluators and kept the rubber ablation resubmission unchanged.
+- Patched `method/training_runner.py` checkpoint loading with the same `numpy._core` compatibility alias used by the evaluators and kept the rubber ablation resubmission unchanged.
 - Reviewed completed job `f04aced1-1c0`: rubber combined GI-CANN recovered to `avg_r2=0.9994`, rubber negative remains a low-performing ablation at `avg_r2=0.3486`, and full/train/test scoring validates.
 - Updated final documentation and action state for a `majority` milestone handoff.
 - Patched `eval/evaluate.py`, `eval/train/evaluate.py`, and `eval/test/evaluate.py` so `--checkpoint` evaluates only the requested checkpoint and learned `alpha_star` is read from the correct positive or negative branch for ablation checkpoints.
@@ -160,11 +160,12 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Fixed a split-evaluator packaging bug in `eval/train/evaluate.py` and `eval/test/evaluate.py`: `build_scores_json` now defines `mode` and `model_type` from each checkpoint result before reporting `alpha_star`.
 - Re-ran Python syntax checks and `python3 validate.py --compare`; both passed.
 - Added neutral prediction-artifact scoring in `eval/artifacts.py`. `scripts/evaluate.sh`, `scripts/evaluate_train.sh`, and `scripts/evaluate_test.sh` now prefer `outputs/predictions/*.json` and only fall back to checkpoint reconstruction when artifacts are absent.
-- Updated `run_all_training.py` and `method/export_predictions.py` to write the neutral observed-stress prediction artifacts. This keeps the evaluator usable for future methods that do not share the GI-CANN checkpoint format.
+- Updated `method/training_runner.py` and `method/export_predictions.py` to write the neutral observed-stress prediction artifacts. This keeps the evaluator usable for future methods that do not share the GI-CANN checkpoint format.
 - Repointed `scripts/run.sh` to a CPU validation job: export predictions from packaged checkpoints, regenerate full/train/test scores from artifacts, and run `python3 validate.py --compare`.
 - Made `data/load_data.py` importable without PyTorch for artifact-only scoring. The local login-node Python still cannot export checkpoint predictions because it lacks `torch`; the submitted CPU container job will validate that path.
 - Continuation audit checked the existing job records and local logs. No completed job contained the new artifact-export header and `outputs/predictions/` is still empty, so `action.yaml` remains set to submit the CPU artifact validation job before finalizing.
 - Reviewed completed job `47926f28-2ce`: the container exported 12 neutral prediction artifacts, regenerated full/train/test score files from those artifacts, and passed `python3 validate.py --compare`. This verifies that `scripts/evaluate*.sh` can score method outputs without depending on GI-CANN checkpoint internals.
+- Final packaging cleanup moved the active trainer into `method/training_runner.py` and the obsolete one-off retraining helpers into `method/legacy/`, leaving root-level code out of the reusable workspace surface. Syntax checks, artifact-based `scripts/evaluate.sh`, and `python3 validate.py --compare` pass after the move.
 
 ## Final Validated Results (Artifact Path)
 

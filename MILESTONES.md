@@ -21,5 +21,9 @@
 - Reviewed completed split-evaluation job `6487ae0e-790`: the full benchmark and both train/test split score files validate successfully.
 - Confirmed the actual method supports the core claim in `scoring/scores.json`: GI-CANN improves over SI-CANN on rubber generalization (`avg_r2` 0.9988 vs 0.9847, learned `alpha_star` 1.6769) and brain generalization (`avg_r2` 0.9590 vs 0.6974, learned `alpha_star` -17.9399).
 
+### [2026-05-22 09:20] - majority
+- Moved the active trainer from the repository root to `method/training_runner.py` and updated `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `method/export_predictions.py`.
+- Re-ran syntax checks, artifact-based `scripts/evaluate.sh`, and `python3 validate.py --compare`; all checks passed with the same `majority` results.
+
 ## Stop Justification
 - Completed at milestone `majority`.
