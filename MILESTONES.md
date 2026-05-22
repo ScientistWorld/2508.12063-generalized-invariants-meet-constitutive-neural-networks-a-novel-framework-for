@@ -33,5 +33,9 @@
 - Continuation audit re-read the paper's core GI-CANN algorithm and checked the packaged code against the actual method: trainable generalized invariant exponents, Eq. 13 strain-energy branches, loading-mode stress formulas, and L1 sparsity are present.
 - Re-ran `python3 validate.py --compare`; validation passed using the existing artifact-based score files and the `majority` milestone remains justified.
 
+### [2026-05-22 08:49] - majority
+- Final verifier reviewed folder separation, method-agnostic docs, scoring coefficients, split evaluators, download portability, and reproduced numbers.
+- Re-ran artifact-based full/train/test evaluation and `python3 validate.py --compare`; all checks passed and the `majority` milestone remains the final judgment.
+
 ## Stop Justification
 - Completed at milestone `majority`.
