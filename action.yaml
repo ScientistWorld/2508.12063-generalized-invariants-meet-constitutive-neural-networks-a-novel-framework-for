@@ -1,6 +1,5 @@
-# Split evaluation completed on the compute node.
 action: done
 gpus: 0
 test: false
 milestone: majority
-notes: "Validation fixed: train/test now use target-balanced complementary rows and python validate.py passes. Core claim remains verified: GI-CANN beats SI-CANN on rubber_generalization (avg_r2 0.9988 vs 0.9847) and brain_generalization (avg_r2 0.9590 vs 0.6974). Split scoring complete: 96 train and 96 test metrics across 6 experiments/12 methods."
+notes: "Packaging audit passed: no external downloads are required because the benchmark data is embedded in tracked data/load_data.py, and no shared-cache paths or placeholder fetches were found."
