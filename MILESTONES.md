@@ -75,4 +75,4 @@
 - Stopped at `majority` rather than `near_complete` because SI-CANN baselines and some per-mode ablation details are still uneven relative to the paper, although the proposed-method claims and main constraints are covered
 
 ## Stop Justification
-- Finalized at `majority`. The reusable gym is complete, validation passes, both primary GI-CANN claims are reproduced, and the remaining discrepancies are calibration gaps in secondary SI-CANN baselines rather than blockers for the core reproduction.
+- Completed at milestone `majority`.
