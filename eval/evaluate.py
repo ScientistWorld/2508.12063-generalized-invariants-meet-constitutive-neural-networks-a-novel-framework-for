@@ -27,7 +27,7 @@ from data.load_data import (
     compute_r2,
     extract_observed_stress,
 )
-from eval.artifacts import build_scores_from_artifacts, load_prediction_artifacts
+from eval.artifacts import all_rows_by_material, build_scores_from_artifacts, load_prediction_artifacts
 
 torch = None
 MinimalGICANN = None
@@ -297,7 +297,7 @@ def main():
             scores = build_scores_from_artifacts(
                 artifacts,
                 args.scores_json,
-                split='full',
+                rows_by_material=all_rows_by_material(),
                 experiments_filter=experiments_filter,
             )
             print(f"\n=== Scores Summary ===")

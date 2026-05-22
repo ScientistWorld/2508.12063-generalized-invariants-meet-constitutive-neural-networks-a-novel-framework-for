@@ -5,17 +5,52 @@
       "weight": 0.4,
       "primary_metric": "avg_r2",
       "metrics": {
-        "r2_ut": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_bt": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_ps": {"higher_is_better": true, "coefficient": 1.5},
-        "avg_r2": {"higher_is_better": true, "coefficient": 0.5},
-        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+        "r2_ut": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-tension R2 on the evaluated slice."
+        },
+        "r2_bt": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Equibiaxial-tension R2 on the evaluated slice."
+        },
+        "r2_ps": {
+          "higher_is_better": true,
+          "coefficient": 1.2,
+          "description": "Pure-shear R2 on the evaluated slice."
+        },
+        "avg_r2": {
+          "higher_is_better": true,
+          "coefficient": 0.4,
+          "description": "Mean R2 across all deformation modes in this experiment."
+        },
+        "avg_normalized_rmse": {
+          "higher_is_better": false,
+          "coefficient": -0.5,
+          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+        },
+        "tail_normalized_mae": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
+        },
+        "shape_violation_rate": {
+          "higher_is_better": false,
+          "coefficient": -0.2,
+          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+        },
+        "alpha_star": {
+          "higher_is_better": false,
+          "coefficient": 0.0,
+          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+        }
       },
       "results": {
         "SI-CANN": {
           "type": "baseline",
           "r2_ut": 0.992,
-          "r2_bt": 0.960,
+          "r2_bt": 0.96,
           "r2_ps": 0.996,
           "avg_r2": 0.982,
           "alpha_star": 2.0
@@ -35,11 +70,46 @@
       "weight": 0.05,
       "primary_metric": "avg_r2",
       "metrics": {
-        "r2_ut": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_bt": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_ps": {"higher_is_better": true, "coefficient": 0.0},
-        "avg_r2": {"higher_is_better": true, "coefficient": 1.0},
-        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+        "r2_ut": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-tension R2 on the evaluated slice."
+        },
+        "r2_bt": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Equibiaxial-tension R2 on the evaluated slice."
+        },
+        "r2_ps": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Pure-shear R2 on the evaluated slice."
+        },
+        "avg_r2": {
+          "higher_is_better": true,
+          "coefficient": 0.8,
+          "description": "Mean R2 across all deformation modes in this experiment."
+        },
+        "avg_normalized_rmse": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+        },
+        "tail_normalized_mae": {
+          "higher_is_better": false,
+          "coefficient": -0.15,
+          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
+        },
+        "shape_violation_rate": {
+          "higher_is_better": false,
+          "coefficient": -0.1,
+          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+        },
+        "alpha_star": {
+          "higher_is_better": false,
+          "coefficient": 0.0,
+          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+        }
       },
       "results": {
         "SI-CANN_Jα-": {
@@ -63,11 +133,46 @@
       "weight": 0.05,
       "primary_metric": "avg_r2",
       "metrics": {
-        "r2_ut": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_bt": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_ps": {"higher_is_better": true, "coefficient": 0.0},
-        "avg_r2": {"higher_is_better": true, "coefficient": 1.0},
-        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+        "r2_ut": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-tension R2 on the evaluated slice."
+        },
+        "r2_bt": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Equibiaxial-tension R2 on the evaluated slice."
+        },
+        "r2_ps": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Pure-shear R2 on the evaluated slice."
+        },
+        "avg_r2": {
+          "higher_is_better": true,
+          "coefficient": 0.8,
+          "description": "Mean R2 across all deformation modes in this experiment."
+        },
+        "avg_normalized_rmse": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+        },
+        "tail_normalized_mae": {
+          "higher_is_better": false,
+          "coefficient": -0.15,
+          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
+        },
+        "shape_violation_rate": {
+          "higher_is_better": false,
+          "coefficient": -0.1,
+          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+        },
+        "alpha_star": {
+          "higher_is_better": false,
+          "coefficient": 0.0,
+          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+        }
       },
       "results": {
         "SI-CANN_Jα+Jα-": {
@@ -91,26 +196,61 @@
       "weight": 0.4,
       "primary_metric": "avg_r2",
       "metrics": {
-        "r2_ut": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_uc": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_ss": {"higher_is_better": true, "coefficient": 1.5},
-        "avg_r2": {"higher_is_better": true, "coefficient": 0.5},
-        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+        "r2_ut": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-tension R2 on the evaluated slice."
+        },
+        "r2_uc": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-compression R2 on the evaluated slice."
+        },
+        "r2_ss": {
+          "higher_is_better": true,
+          "coefficient": 1.2,
+          "description": "Simple-shear R2 on the evaluated slice."
+        },
+        "avg_r2": {
+          "higher_is_better": true,
+          "coefficient": 0.4,
+          "description": "Mean R2 across all deformation modes in this experiment."
+        },
+        "avg_normalized_rmse": {
+          "higher_is_better": false,
+          "coefficient": -0.5,
+          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+        },
+        "tail_normalized_mae": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
+        },
+        "shape_violation_rate": {
+          "higher_is_better": false,
+          "coefficient": -0.2,
+          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+        },
+        "alpha_star": {
+          "higher_is_better": false,
+          "coefficient": 0.0,
+          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+        }
       },
       "results": {
         "SI-CANN": {
           "type": "baseline",
-          "r2_ut": 0.120,
+          "r2_ut": 0.12,
           "r2_uc": 0.836,
           "r2_ss": 0.879,
-          "avg_r2": 0.610,
+          "avg_r2": 0.61,
           "alpha_star": -2.0
         },
         "GI-CANN": {
           "type": "proposed",
-          "r2_ut": 0.930,
+          "r2_ut": 0.93,
           "r2_uc": 0.998,
-          "r2_ss": 0.970,
+          "r2_ss": 0.97,
           "avg_r2": 0.966,
           "alpha_star": -18.016
         }
@@ -121,11 +261,46 @@
       "weight": 0.05,
       "primary_metric": "avg_r2",
       "metrics": {
-        "r2_ut": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_uc": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_ss": {"higher_is_better": true, "coefficient": 0.0},
-        "avg_r2": {"higher_is_better": true, "coefficient": 1.0},
-        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+        "r2_ut": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-tension R2 on the evaluated slice."
+        },
+        "r2_uc": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-compression R2 on the evaluated slice."
+        },
+        "r2_ss": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Simple-shear R2 on the evaluated slice."
+        },
+        "avg_r2": {
+          "higher_is_better": true,
+          "coefficient": 0.8,
+          "description": "Mean R2 across all deformation modes in this experiment."
+        },
+        "avg_normalized_rmse": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+        },
+        "tail_normalized_mae": {
+          "higher_is_better": false,
+          "coefficient": -0.15,
+          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
+        },
+        "shape_violation_rate": {
+          "higher_is_better": false,
+          "coefficient": -0.1,
+          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+        },
+        "alpha_star": {
+          "higher_is_better": false,
+          "coefficient": 0.0,
+          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+        }
       },
       "results": {
         "SI-CANN_Jα+": {
@@ -138,7 +313,7 @@
         "GI-CANN_Jα+": {
           "type": "proposed",
           "r2_ut": 0.0,
-          "r2_uc": 0.700,
+          "r2_uc": 0.7,
           "r2_ss": 0.879,
           "avg_r2": 0.526
         }
@@ -149,23 +324,58 @@
       "weight": 0.05,
       "primary_metric": "avg_r2",
       "metrics": {
-        "r2_ut": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_uc": {"higher_is_better": true, "coefficient": 0.0},
-        "r2_ss": {"higher_is_better": true, "coefficient": 0.0},
-        "avg_r2": {"higher_is_better": true, "coefficient": 1.0},
-        "alpha_star": {"higher_is_better": false, "coefficient": 0.0}
+        "r2_ut": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-tension R2 on the evaluated slice."
+        },
+        "r2_uc": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Uniaxial-compression R2 on the evaluated slice."
+        },
+        "r2_ss": {
+          "higher_is_better": true,
+          "coefficient": 0.0,
+          "description": "Simple-shear R2 on the evaluated slice."
+        },
+        "avg_r2": {
+          "higher_is_better": true,
+          "coefficient": 0.8,
+          "description": "Mean R2 across all deformation modes in this experiment."
+        },
+        "avg_normalized_rmse": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+        },
+        "tail_normalized_mae": {
+          "higher_is_better": false,
+          "coefficient": -0.15,
+          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
+        },
+        "shape_violation_rate": {
+          "higher_is_better": false,
+          "coefficient": -0.1,
+          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+        },
+        "alpha_star": {
+          "higher_is_better": false,
+          "coefficient": 0.0,
+          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+        }
       },
       "results": {
         "SI-CANN_Jα+Jα-": {
           "type": "baseline",
-          "r2_ut": 0.140,
+          "r2_ut": 0.14,
           "r2_uc": 0.832,
           "r2_ss": 0.878,
           "avg_r2": 0.617
         },
         "GI-CANN_Jα+Jα-": {
           "type": "proposed",
-          "r2_ut": 0.930,
+          "r2_ut": 0.93,
           "r2_uc": 0.997,
           "r2_ss": 0.972,
           "avg_r2": 0.966

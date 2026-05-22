@@ -41,6 +41,7 @@ from data.load_data import (  # noqa: E402
     extract_observed_stress,
 )
 from eval.artifacts import build_scores_from_artifacts, load_prediction_artifacts  # noqa: E402
+from eval.artifacts import curve_quality_metrics  # noqa: E402
 
 torch = None
 MinimalGICANN = None
@@ -63,6 +64,27 @@ def split_rows(data: np.ndarray) -> np.ndarray:
     """Return this slice's nonzero alternating rows for one deformation curve."""
     indices = np.arange(1, len(data), dtype=int)
     return data[indices[::2]]
+
+
+def slice_indices(data: np.ndarray) -> np.ndarray:
+    """Return the visible development rows for one full deformation curve."""
+    indices = np.arange(1, len(data), dtype=int)
+    return indices[::2]
+
+
+def rows_by_material() -> dict[str, dict[str, np.ndarray]]:
+    return {
+        "rubber": {
+            "ut": slice_indices(RUBBER_UT),
+            "bt": slice_indices(RUBBER_BT),
+            "ps": slice_indices(RUBBER_PS),
+        },
+        "brain": {
+            "ut": slice_indices(BRAIN_UT),
+            "uc": slice_indices(BRAIN_UC),
+            "ss": slice_indices(BRAIN_SS),
+        },
+    }
 
 
 def get_slice_dataset(material: str) -> tuple[HyperelasticDataset, list[str]]:
@@ -123,7 +145,8 @@ def evaluate_checkpoint(checkpoint_path: Path, device: str = "cpu") -> dict:
     S = dataset.S.to(device_obj)
     gamma = dataset.gamma.to(device_obj)
 
-    r2_by_mode = {}
+    predictions_by_mode = {}
+    targets_by_mode = {}
     with torch.no_grad():
         for mode_name in mode_names:
             indices = dataset.mode_indices[mode_name]
@@ -135,13 +158,14 @@ def evaluate_checkpoint(checkpoint_path: Path, device: str = "cpu") -> dict:
             target = S[idx_t]
             pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
             target_obs = extract_observed_stress(target, [mode_name] * len(indices)).cpu().numpy()
-            r2_by_mode[mode_name] = float(compute_r2(pred_obs, target_obs))
+            predictions_by_mode[mode_name] = pred_obs
+            targets_by_mode[mode_name] = target_obs
 
     return {
         "material": material,
         "mode": config.get("mode", "unknown"),
         "model_type": model_type,
-        "r2_by_mode": r2_by_mode,
+        "metrics": curve_quality_metrics(material, predictions_by_mode, targets_by_mode),
         "params": extract_params_from_state(state["model_state"], config, is_sicann),
         "checkpoint": str(checkpoint_path),
     }
@@ -180,16 +204,13 @@ def build_scores_json(results: list[dict], output_path: str, experiments_filter:
         if experiments_filter and exp_name not in experiments_filter:
             continue
 
-        r2 = result["r2_by_mode"]
+        metrics = result["metrics"]
         params = result["params"]
         mode = result["mode"]
         model_type = result["model_type"]
         exp_data.setdefault(exp_name, {"results": {}})
 
         if result["material"] == "rubber":
-            r2_ut = r2.get("ut", 0.0)
-            r2_bt = r2.get("bt", 0.0)
-            r2_ps = r2.get("ps", 0.0)
             if model_type == "SI-CANN":
                 alpha_star = params.get("alpha_fixed", 2.0 if mode == "positive" else -2.0)
             elif mode == "negative":
@@ -197,16 +218,16 @@ def build_scores_json(results: list[dict], output_path: str, experiments_filter:
             else:
                 alpha_star = params.get("alpha_plus", params.get("alpha_minus", 0.0))
             exp_data[exp_name]["results"][method_name] = {
-                "r2_ut": round(r2_ut, 4),
-                "r2_bt": round(r2_bt, 4),
-                "r2_ps": round(r2_ps, 4),
-                "avg_r2": round(float(np.mean([r2_ut, r2_bt, r2_ps])), 4),
+                "r2_ut": round(metrics["r2_ut"], 4),
+                "r2_bt": round(metrics["r2_bt"], 4),
+                "r2_ps": round(metrics["r2_ps"], 4),
+                "avg_r2": round(metrics["avg_r2"], 4),
+                "avg_normalized_rmse": round(metrics["avg_normalized_rmse"], 4),
+                "tail_normalized_mae": round(metrics["tail_normalized_mae"], 4),
+                "shape_violation_rate": round(metrics["shape_violation_rate"], 4),
                 "alpha_star": round(float(alpha_star), 4),
             }
         else:
-            r2_ut = r2.get("ut", 0.0)
-            r2_uc = r2.get("uc", 0.0)
-            r2_ss = r2.get("ss", 0.0)
             if model_type == "SI-CANN":
                 alpha_star = params.get("alpha_fixed", 2.0 if mode == "positive" else -2.0)
             elif mode == "positive":
@@ -214,10 +235,13 @@ def build_scores_json(results: list[dict], output_path: str, experiments_filter:
             else:
                 alpha_star = params.get("alpha_minus", params.get("alpha_plus", 0.0))
             exp_data[exp_name]["results"][method_name] = {
-                "r2_ut": round(r2_ut, 4),
-                "r2_uc": round(r2_uc, 4),
-                "r2_ss": round(r2_ss, 4),
-                "avg_r2": round(float(np.mean([r2_ut, r2_uc, r2_ss])), 4),
+                "r2_ut": round(metrics["r2_ut"], 4),
+                "r2_uc": round(metrics["r2_uc"], 4),
+                "r2_ss": round(metrics["r2_ss"], 4),
+                "avg_r2": round(metrics["avg_r2"], 4),
+                "avg_normalized_rmse": round(metrics["avg_normalized_rmse"], 4),
+                "tail_normalized_mae": round(metrics["tail_normalized_mae"], 4),
+                "shape_violation_rate": round(metrics["shape_violation_rate"], 4),
                 "alpha_star": round(float(alpha_star), 4),
             }
 
@@ -261,7 +285,7 @@ def main() -> None:
             build_scores_from_artifacts(
                 artifacts,
                 args.scores_json,
-                split="train",
+                rows_by_material=rows_by_material(),
                 experiments_filter=experiments_filter,
             )
             return
@@ -287,7 +311,7 @@ def main() -> None:
                     results.append(result)
                     print(
                         f"  {result['model_type']} | {result['material']} | "
-                        f"{result['mode']} | avg_r2={np.mean(list(result['r2_by_mode'].values())):.4f}"
+                        f"{result['mode']} | avg_r2={result['metrics']['avg_r2']:.4f}"
                     )
                 except Exception as exc:
                     print(f"  ERROR: {exc}")
