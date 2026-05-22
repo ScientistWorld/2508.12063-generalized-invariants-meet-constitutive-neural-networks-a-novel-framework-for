@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
-gpus: 0
+action: pending
+gpus: 1
 test: false
-milestone: majority
-notes: "Continuation audit restored majority after fixing the split evaluator packaging bug. Both core GI-CANN claims and most proposed-method ablations are reproduced; remaining gaps are SI-CANN baseline calibration and exact per-mode ablation matching."
+milestone: secondary_claims
+notes: ""

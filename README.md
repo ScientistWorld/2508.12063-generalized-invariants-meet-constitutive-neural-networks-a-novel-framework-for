@@ -748,7 +748,7 @@ Two experimental datasets are used:
 
 # Reproduction Milestones
 
-**Current: majority**
+**Current: secondary_claims**
 
 ## Stop Justification
-- Completed at milestone `majority`.
+- Completed at milestone `secondary_claims`.
