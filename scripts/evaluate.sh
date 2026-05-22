@@ -1,7 +1,10 @@
 #!/bin/bash
 # Evaluation script — the standard way to evaluate work in this environment.
 #
-# This script evaluates all checkpoints in checkpoints/ and produces scoring/scores.json.
+# This script evaluates neutral prediction artifacts in outputs/predictions/
+# and produces scoring/scores.json. If no prediction artifacts are present,
+# it falls back to legacy checkpoint reconstruction for the packaged GI/SI-CANN
+# checkpoints.
 #
 # OUTPUT CONTRACT: This script MUST write scoring/scores.json containing
 # a JSON dict nested by experiment, matching the structure in scoring/reference.json.

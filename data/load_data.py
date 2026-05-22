@@ -13,8 +13,17 @@ Deformation modes:
 """
 
 import numpy as np
-import torch
-from torch.utils.data import Dataset
+
+try:
+    import torch
+    from torch.utils.data import Dataset
+except ModuleNotFoundError:
+    torch = None
+
+    class Dataset:  # type: ignore[no-redef]
+        """Placeholder so target arrays can be imported without PyTorch."""
+
+        pass
 
 
 # Rubber data from Treloar (1944) — Table A.5, units: MPa
@@ -205,6 +214,8 @@ class HyperelasticDataset(Dataset):
     """
 
     def __init__(self, deformation_modes):
+        if torch is None:
+            raise RuntimeError("PyTorch is required to instantiate HyperelasticDataset")
         self.F_list = []
         self.S_list = []
         self.gamma_list = []  # shear strain for SS mode
@@ -330,7 +341,7 @@ def extract_observed_stress(stress, mode_names):
     if len(mode_names) == 0:
         return stress[..., 0, 0][..., :0]
 
-    if torch.is_tensor(stress):
+    if torch is not None and torch.is_tensor(stress):
         observed = torch.empty(len(mode_names), dtype=stress.dtype, device=stress.device)
         for i, mode_name in enumerate(mode_names):
             if mode_name == 'ss':

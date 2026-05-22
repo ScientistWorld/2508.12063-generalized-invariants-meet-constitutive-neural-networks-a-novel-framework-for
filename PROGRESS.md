@@ -159,6 +159,10 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Continuation audit reset the claimed milestone to `secondary_claims`; after re-checking the implementation, scoring, and docs, `majority` remains defensible.
 - Fixed a split-evaluator packaging bug in `eval/train/evaluate.py` and `eval/test/evaluate.py`: `build_scores_json` now defines `mode` and `model_type` from each checkpoint result before reporting `alpha_star`.
 - Re-ran Python syntax checks and `python3 validate.py --compare`; both passed.
+- Added neutral prediction-artifact scoring in `eval/artifacts.py`. `scripts/evaluate.sh`, `scripts/evaluate_train.sh`, and `scripts/evaluate_test.sh` now prefer `outputs/predictions/*.json` and only fall back to checkpoint reconstruction when artifacts are absent.
+- Updated `run_all_training.py` and `method/export_predictions.py` to write the neutral observed-stress prediction artifacts. This keeps the evaluator usable for future methods that do not share the GI-CANN checkpoint format.
+- Repointed `scripts/run.sh` to a CPU validation job: export predictions from packaged checkpoints, regenerate full/train/test scores from artifacts, and run `python3 validate.py --compare`.
+- Made `data/load_data.py` importable without PyTorch for artifact-only scoring. The local login-node Python still cannot export checkpoint predictions because it lacks `torch`; the submitted CPU container job will validate that path.
 
 ## Bug Fixes Applied
 

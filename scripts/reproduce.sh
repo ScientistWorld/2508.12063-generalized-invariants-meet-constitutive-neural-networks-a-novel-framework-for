@@ -11,6 +11,7 @@ PYTHON=${PYTHON:-python3}
 bash scripts/download.sh
 
 rm -f checkpoints/*.pt checkpoints/training_summary.json scoring/scores.json
+rm -f outputs/predictions/*.json 2>/dev/null || true
 
 ${PYTHON} run_all_training.py \
   --device "${DEVICE:-cpu}" \

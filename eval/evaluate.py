@@ -12,7 +12,6 @@ import json
 import os
 import sys
 import numpy as np
-import torch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -28,7 +27,23 @@ from data.load_data import (
     compute_r2,
     extract_observed_stress,
 )
-from eval.models import MinimalGICANN, MinimalSICANN
+from eval.artifacts import build_scores_from_artifacts, load_prediction_artifacts
+
+torch = None
+MinimalGICANN = None
+MinimalSICANN = None
+
+
+def ensure_checkpoint_dependencies():
+    """Import PyTorch-only dependencies for legacy checkpoint scoring."""
+    global torch, MinimalGICANN, MinimalSICANN
+    if torch is None:
+        import torch as torch_module
+        from eval.models import MinimalGICANN as gicann_cls, MinimalSICANN as sicann_cls
+
+        torch = torch_module
+        MinimalGICANN = gicann_cls
+        MinimalSICANN = sicann_cls
 
 
 def extract_params_from_state(model_state, config, is_sicann):
@@ -52,6 +67,7 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
     # These benchmark checkpoints are trusted local reproduction artifacts.
     # PyTorch 2.6 defaults to weights_only=True, which rejects older NumPy
     # scalar metadata before the model state can be read.
+    ensure_checkpoint_dependencies()
     try:
         state = torch.load(checkpoint_path, map_location=device, weights_only=False)
     except TypeError:
@@ -252,8 +268,14 @@ def main():
     parser = argparse.ArgumentParser(description='Evaluate GI-CANN results')
     parser.add_argument('--checkpoint', type=str, default=None)
     parser.add_argument('--checkpoints-dir', type=str, default='checkpoints')
+    parser.add_argument('--predictions-dir', type=str, default='outputs/predictions')
     parser.add_argument('--scores-json', type=str, default='scoring/scores.json')
     parser.add_argument('--device', type=str, default='cpu')
+    parser.add_argument(
+        '--prefer-checkpoints',
+        action='store_true',
+        help='Use legacy checkpoint reconstruction even when neutral prediction artifacts exist.',
+    )
     parser.add_argument(
         '--experiment',
         type=str,
@@ -261,6 +283,30 @@ def main():
         help='Optional experiment name or comma-separated list of experiment names to keep in scores.json',
     )
     args = parser.parse_args()
+
+    experiments_filter = None
+    if args.experiment:
+        experiments_filter = {
+            item.strip() for item in args.experiment.split(',') if item.strip()
+        }
+
+    if not args.checkpoint and not args.prefer_checkpoints:
+        artifacts = load_prediction_artifacts(args.predictions_dir)
+        if artifacts:
+            print(f"Evaluating {len(artifacts)} prediction artifacts from {args.predictions_dir}")
+            scores = build_scores_from_artifacts(
+                artifacts,
+                args.scores_json,
+                split='full',
+                experiments_filter=experiments_filter,
+            )
+            print(f"\n=== Scores Summary ===")
+            experiments = scores.get('experiments', scores)
+            for exp_name, exp_info in sorted(experiments.items()):
+                print(f"\n{exp_name}:")
+                for method_name, metrics in sorted(exp_info.get('results', {}).items()):
+                    print(f"  {method_name}: avg_r2={metrics.get('avg_r2', 'N/A')}")
+            return
 
     results = []
 
@@ -292,11 +338,6 @@ def main():
                     print(f"  ERROR: {e}")
 
     if results:
-        experiments_filter = None
-        if args.experiment:
-            experiments_filter = {
-                item.strip() for item in args.experiment.split(',') if item.strip()
-            }
         scores = build_scores_json(results, args.scores_json, experiments_filter)
         print(f"\n=== Scores Summary ===")
         experiments = scores.get('experiments', scores)

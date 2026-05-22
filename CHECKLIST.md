@@ -17,6 +17,7 @@
 
 ## Code
 - [x] Evaluation code in `eval/`
+- [x] Model-agnostic prediction artifact scoring path in `eval/artifacts.py`
 - [x] Method implementation in `method/`
 - [x] Baseline implementation in `baseline/` (via sicann.py)
 - [x] Data loading in `data/`

@@ -10,6 +10,7 @@ cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python3}
 
 mkdir -p checkpoints scoring
+rm -f outputs/predictions/*.json 2>/dev/null || true
 
 ${PYTHON} run_all_training.py \
   --device "${DEVICE:-cpu}" \

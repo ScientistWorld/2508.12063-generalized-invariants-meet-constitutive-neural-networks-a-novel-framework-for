@@ -10,7 +10,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import torch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -35,7 +34,23 @@ from data.load_data import (  # noqa: E402
     compute_r2,
     extract_observed_stress,
 )
-from eval.models import MinimalGICANN, MinimalSICANN  # noqa: E402
+from eval.artifacts import build_scores_from_artifacts, load_prediction_artifacts  # noqa: E402
+
+torch = None
+MinimalGICANN = None
+MinimalSICANN = None
+
+
+def ensure_checkpoint_dependencies():
+    """Import PyTorch-only dependencies for legacy checkpoint scoring."""
+    global torch, MinimalGICANN, MinimalSICANN
+    if torch is None:
+        import torch as torch_module
+        from eval.models import MinimalGICANN as gicann_cls, MinimalSICANN as sicann_cls
+
+        torch = torch_module
+        MinimalGICANN = gicann_cls
+        MinimalSICANN = sicann_cls
 
 
 def split_rows(data: np.ndarray) -> np.ndarray:
@@ -76,6 +91,7 @@ def evaluate_checkpoint(checkpoint_path: Path, device: str = "cpu") -> dict:
     # These benchmark checkpoints are trusted local reproduction artifacts.
     # PyTorch 2.6 defaults to weights_only=True, which rejects their NumPy
     # scalar config metadata before the model state can be read.
+    ensure_checkpoint_dependencies()
     try:
         state = torch.load(checkpoint_path, map_location=device, weights_only=False)
     except TypeError:
@@ -212,8 +228,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate GI-CANN checkpoints on the held-out test slice")
     parser.add_argument("--checkpoint", type=str, default=None)
     parser.add_argument("--checkpoints-dir", type=str, default="checkpoints")
+    parser.add_argument("--predictions-dir", type=str, default="outputs/predictions")
     parser.add_argument("--scores-json", type=str, default="scoring/scores_test.json")
     parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument(
+        "--prefer-checkpoints",
+        action="store_true",
+        help="Use legacy checkpoint reconstruction even when neutral prediction artifacts exist.",
+    )
     parser.add_argument(
         "--experiment",
         type=str,
@@ -221,6 +243,22 @@ def main() -> None:
         help="Optional experiment name or comma-separated list of experiment names to keep in scores.json",
     )
     args = parser.parse_args()
+
+    experiments_filter = None
+    if args.experiment:
+        experiments_filter = {item.strip() for item in args.experiment.split(",") if item.strip()}
+
+    if not args.checkpoint and not args.prefer_checkpoints:
+        artifacts = load_prediction_artifacts(args.predictions_dir)
+        if artifacts:
+            print(f"Evaluating {len(artifacts)} prediction artifacts from {args.predictions_dir}")
+            build_scores_from_artifacts(
+                artifacts,
+                args.scores_json,
+                split="test",
+                experiments_filter=experiments_filter,
+            )
+            return
 
     results = []
     if args.checkpoint:
@@ -249,9 +287,6 @@ def main() -> None:
                     print(f"  ERROR: {exc}")
 
     if results:
-        experiments_filter = None
-        if args.experiment:
-            experiments_filter = {item.strip() for item in args.experiment.split(",") if item.strip()}
         build_scores_json(results, args.scores_json, experiments_filter)
 
 
