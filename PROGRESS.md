@@ -8,7 +8,7 @@
 
 ## Current Status
 
-- Milestone retained: `core_claim`
+- Milestone retained: `core_claim_plus`
 - Ready for gym use: yes
 - `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
 - Benchmark-facing documentation avoids leaking the paper's exact implementation into the problem definition
@@ -38,7 +38,7 @@
 
 **Verified core claim**: GI-CANN discovers α*≈1.677 for rubber and achieves avg R²≈0.999 on the held-out pure-shear benchmark.
 
-### Brain — shipped checkpoints not reproduced
+### Brain — pre-retraining checkpoints were not reproduced
 | Config | Reference avg_r2 | Our avg_r2 | Gap |
 |--------|-----------------|------------|-----|
 | GI-CANN combined (α+≈1.5, α-≈-18) | 0.966 | **0.621** | -0.345 |
@@ -48,7 +48,14 @@
 | SI-CANN negative (α=-2) | 0.610 | **-0.506** | -1.12 |
 | SI-CANN combined (α=-2) | 0.617 | **-0.502** | -1.12 |
 
-**Current audited status**: the shipped brain checkpoints do not support the paper's claim. After the constitutive fixes made in this workspace, the existing brain checkpoints need retraining before any higher milestone can be claimed.
+**Historical audited status before job `4cdbf338-c4e`**: the shipped brain checkpoints did not support the paper's claim. The completed retraining job fixed this gap; current brain results are summarized below.
+
+## Job Result (2026-05-22, `4cdbf338-c4e`)
+
+- The CPU retraining job completed successfully and regenerated `scoring/scores.json`, `scoring/scores_train.json`, and `scoring/scores_test.json`.
+- Brain GI-CANN negative now reaches `avg_r2=0.9590`, `r2_ss=0.9656`, and `alpha_star=-17.9399`, close to the paper's `avg_r2=0.966`, `r2_ss=0.970`, and `alpha_star=-18.016`.
+- Brain GI-CANN combined now reaches `avg_r2=0.9604`, matching the paper's combined-branch claim closely enough for a secondary brain reproduction.
+- The remaining clear gap is rubber ablations: rubber combined GI-CANN is still weak (`avg_r2=0.2155` versus paper `0.999`), and rubber negative GI-CANN is below the low ablation reference. The next submission targets those stale checkpoints.
 
 ### Brain — corrected constitutive check
 
@@ -97,13 +104,13 @@
 - `python3 validate.py --compare` passes.
 - `eval/` remains import-separated from `method/`.
 - Rubber GI-CANN positive-mode reproduction is still strong enough to justify `core_claim`.
-- The corrected implementation reproduces the paper's brain one-term negative constitutive behavior when evaluated at the paper's reported parameters.
+- The corrected implementation now reproduces the paper's brain one-term negative constitutive behavior from a trained checkpoint, not just from the paper's reported parameters.
 
 ## What Remains
 
 - Retrain the existing brain GI-CANN checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
-- Re-attempt the brain negative and combined settings with the targeted job already captured in `scripts/run.sh` if future compute is allocated.
-- Improve the weak brain-benchmark scores if additional compute becomes available.
+- Re-attempt the weak rubber combined and negative ablations with the targeted job now captured in `scripts/run.sh`.
+- Improve the weak rubber ablation scores if additional compute is allocated.
 
 ## Wrap-up Notes
 
@@ -119,6 +126,7 @@
 - Fixed `eval/evaluate.py` so `scripts/evaluate.sh` recomputes predictions from checkpoint weights and data instead of accepting checkpoint-embedded results.
 - Prepared `scripts/run.sh` to retrain all brain checkpoints and regenerate full, train-slice, and test-slice scores in one CPU job.
 - Marked the main shell entrypoints executable before submission so direct scheduler invocation cannot fail on file mode.
+- Reviewed completed job `4cdbf338-c4e`: brain reproduction is now at `core_claim_plus`; patched rubber GI-CANN warm starts and repointed `scripts/run.sh` to retrain rubber ablations next.
 
 ## Bug Fixes Applied
 

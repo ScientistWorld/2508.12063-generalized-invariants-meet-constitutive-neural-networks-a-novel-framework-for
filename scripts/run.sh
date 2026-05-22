@@ -1,6 +1,7 @@
 #!/bin/bash
-# Targeted reproduction job: retrain the weak brain checkpoints after the
-# observed-stress loss/evaluator fixes, then regenerate all score artifacts.
+# Targeted reproduction job: retrain the remaining weak rubber ablation
+# checkpoints after the brain reproduction fix, then regenerate all score
+# artifacts.
 
 set -euo pipefail
 
@@ -8,17 +9,17 @@ cd "$(dirname "$0")/.."
 mkdir -p logs scoring
 
 echo "========================================="
-echo "Brain GI-CANN/SI-CANN retraining"
+echo "Rubber GI-CANN/SI-CANN ablation retraining"
 echo "========================================="
 
 python3 run_all_training.py \
   --device cpu \
-  --materials brain \
-  --modes positive,negative,combined \
+  --materials rubber \
+  --modes negative,combined \
   --families gi,si \
   --epochs "${EPOCHS:-30000}" \
   --grad-clip "${GRAD_CLIP:-0.5}" \
-  2>&1 | tee logs/brain_retrain.log
+  2>&1 | tee logs/rubber_ablation_retrain.log
 
 echo "--- Evaluating full benchmark ---"
 bash scripts/evaluate.sh 2>&1 | tee logs/evaluate.log

@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: core_claim**
+**Current: core_claim_plus**
 
 ## Progress Log
 
@@ -57,5 +57,11 @@
 - Final pre-submit audit confirmed `scripts/run.sh` and `action.yaml` are aligned on the brain retraining job
 - Fixed executable bits on the main shell entrypoints so the scheduler can invoke them directly
 
+### [2026-05-22 07:50] - core_claim_plus
+- CPU retraining job completed successfully and regenerated full/train/test score artifacts
+- Brain GI-CANN now matches the paper-level core behavior: negative-mode avg R²=0.9590 with α*=-17.9399 versus paper avg R²=0.966 and α*=-18.016
+- Brain combined GI-CANN also reproduces the secondary brain result with avg R²=0.9604
+- Prepared a follow-up CPU job for the remaining weak rubber ablation checkpoints
+
 ## Stop Justification
-- Not stopped. Current submission targets the remaining brain reproduction gap while retaining the verified rubber `core_claim`.
+- Not stopped. Current submission targets the remaining rubber ablation gap after reaching `core_claim_plus` on both rubber and brain core experiments.
