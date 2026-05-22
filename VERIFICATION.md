@@ -22,9 +22,11 @@ The workspace started at a credible `core_claim`. The method implementation is a
 
 The workspace is suitable as a research gym. A future scientist can use the problem/evaluation/data side without importing `method/`, and the benchmark-facing markdown is sufficiently method-safe for from-scratch use. The scoring rubric is also reasonable for the experiments actually present in `scores.json`: both core generalization experiments dominate at 40% each, the held-out mode is emphasized inside each core experiment, and the four ablations collectively remain secondary at 20%.
 
-The train/test split is now also exercised against the frozen final checkpoints rather than only designed on paper. The run produced complete `scores_train.json` and `scores_test.json` files with matching experiment/method coverage and non-identical values across slices. The main caveat is calibration rather than correctness: the alternating split yields a very small train/test gap on `rubber_generalization` (`0.9986` vs `0.9989` for GI-CANN), so the anti-shortcut signal is present but mild on the strongest rubber result. By contrast, the weak brain and ablation checkpoints remain poor on both slices, which gives future improve-mode agents room to improve but also reflects that the shipped checkpoint set is uneven across claims.
+The final compute jobs regenerated the frozen checkpoints and score files rather than relying on stale checkpoint-embedded metrics. The proposed GI-CANN method now reproduces both central claims: rubber generalization reaches avg R²=0.9988 with α*=1.6769, and brain generalization reaches avg R²=0.9590 with α*=-17.9399. The main secondary proposed-method checks are also covered: rubber combined avg R²=0.9994, brain combined avg R²=0.9604, brain positive remains weak at avg R²=0.5425, and rubber negative remains a low-performance contrast at avg R²=0.3486.
 
-- Milestone: core_claim
+The train/test split is exercised against the final checkpoints. The run produced complete `scores_train.json` and `scores_test.json` files with matching experiment/method coverage and non-identical values across slices. The remaining caveat is calibration rather than reproduction integrity: fixed-exponent SI-CANN baselines and some per-mode ablation values do not exactly match the paper, so the final milestone is `majority` rather than `near_complete`.
+
+- Milestone: majority
 - Ready for gym use: yes
 - Confidence: high
-- Key limitation: brain-side reproduction remains below the paper’s reported numbers, and the visible/held-out gap is especially small on the strongest rubber benchmark because the split uses alternating samples from the same smooth curves
+- Key limitation: SI-CANN baseline calibration and exact per-mode ablation matching remain uneven, while both core proposed GI-CANN claims are reproduced

@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: core_claim_plus**
+**Current: majority**
 
 ## Progress Log
 
@@ -68,5 +68,11 @@
 - Partial rubber negative training reached avg R²=0.3486, better than the paper's low-ablation reference of 0.264, but no milestone increase is claimed because the job did not finish
 - Patched trainer checkpoint loading and resubmitted the rubber ablation job
 
+### [2026-05-22 07:59] - majority
+- Rubber ablation retraining completed after one scheduler preemption/restart and regenerated `scores.json`, `scores_train.json`, and `scores_test.json`
+- Rubber combined GI-CANN now reaches avg R²=0.9994 versus the paper's 0.999, while rubber negative GI-CANN remains a low-performing contrastive ablation at avg R²=0.3486 versus the paper's 0.264
+- Full validation passes with both core GI-CANN claims reproduced: rubber avg R²=0.9988 with α*=1.6769, and brain avg R²=0.9590 with α*=-17.9399
+- Stopped at `majority` rather than `near_complete` because SI-CANN baselines and some per-mode ablation details are still uneven relative to the paper, although the proposed-method claims and main constraints are covered
+
 ## Stop Justification
-- Not stopped. Current submission targets the remaining rubber ablation gap after reaching `core_claim_plus` on both rubber and brain core experiments.
+- Finalized at `majority`. The reusable gym is complete, validation passes, both primary GI-CANN claims are reproduced, and the remaining discrepancies are calibration gaps in secondary SI-CANN baselines rather than blockers for the core reproduction.

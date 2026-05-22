@@ -1,8 +1,6 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
-gpus: 0
-test: false
-milestone: core_claim_plus
-notes: "Retry rubber ablation retraining after fixing NumPy checkpoint-loading compatibility in the trainer."
+action: done
+milestone: majority
+notes: "Reproduced both core GI-CANN claims and the main proposed-method ablations; validation passes with regenerated full/train/test scores."

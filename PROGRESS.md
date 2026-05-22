@@ -8,7 +8,7 @@
 
 ## Current Status
 
-- Milestone retained: `core_claim_plus`
+- Milestone reached: `majority`
 - Ready for gym use: yes
 - `python3 validate.py` and `python3 validate.py --compare` both pass on the packaged workspace
 - Benchmark-facing documentation avoids leaking the paper's exact implementation into the problem definition
@@ -48,14 +48,36 @@
 | SI-CANN negative (α=-2) | 0.610 | **-0.506** | -1.12 |
 | SI-CANN combined (α=-2) | 0.617 | **-0.502** | -1.12 |
 
-**Historical audited status before job `4cdbf338-c4e`**: the shipped brain checkpoints did not support the paper's claim. The completed retraining job fixed this gap; current brain results are summarized below.
+**Historical audited status before job `4cdbf338-c4e`**: the shipped brain checkpoints did not support the paper's claim. The completed retraining job fixed this gap; current final results are summarized below.
+
+## Final Results (2026-05-22)
+
+| Experiment | Method | Reference avg_r2 | Reproduced avg_r2 | Status |
+|------------|--------|------------------|-------------------|--------|
+| Rubber generalization | GI-CANN | 0.998 | **0.9988** | reproduced |
+| Rubber generalization | SI-CANN | 0.982 | **0.9847** | reproduced |
+| Brain generalization | GI-CANN | 0.966 | **0.9590** | reproduced |
+| Brain generalization | SI-CANN | 0.610 | **0.6974** | plausible baseline |
+| Rubber combined ablation | GI-CANN | 0.999 | **0.9994** | reproduced |
+| Rubber negative ablation | GI-CANN | 0.264 | **0.3486** | low-performance contrast reproduced |
+| Brain combined ablation | GI-CANN | 0.966 | **0.9604** | reproduced |
+| Brain positive ablation | GI-CANN | 0.526 | **0.5425** | reproduced |
+
+The proposed GI-CANN method is reproduced across both primary materials and the main ablations. The final milestone is `majority` because the SI-CANN fixed-exponent baselines and some per-mode ablation values do not exactly match the paper, but they remain honest method runs and constraint checks.
 
 ## Job Result (2026-05-22, `4cdbf338-c4e`)
 
 - The CPU retraining job completed successfully and regenerated `scoring/scores.json`, `scoring/scores_train.json`, and `scoring/scores_test.json`.
 - Brain GI-CANN negative now reaches `avg_r2=0.9590`, `r2_ss=0.9656`, and `alpha_star=-17.9399`, close to the paper's `avg_r2=0.966`, `r2_ss=0.970`, and `alpha_star=-18.016`.
 - Brain GI-CANN combined now reaches `avg_r2=0.9604`, matching the paper's combined-branch claim closely enough for a secondary brain reproduction.
-- The remaining clear gap is rubber ablations: rubber combined GI-CANN is still weak (`avg_r2=0.2155` versus paper `0.999`), and rubber negative GI-CANN is below the low ablation reference. The next submission targets those stale checkpoints.
+- This moved the reproduction to `core_claim_plus`; the next job addressed the stale rubber ablation checkpoints.
+
+## Job Result (2026-05-22, `f04aced1-1c0`)
+
+- The rubber ablation retry completed successfully after a scheduler drain/restart and regenerated full, train, and held-out score artifacts.
+- Rubber combined GI-CANN now reaches `avg_r2=0.9994`, matching the paper's `0.999` secondary ablation result.
+- Rubber negative GI-CANN reaches `avg_r2=0.3486`; it is not numerically identical to the paper's `0.264`, but it preserves the intended low-performance contrast against positive/combined rubber invariants.
+- `python3 validate.py --compare` passes and confirms all six experiments are present in `reference.json`, `scores.json`, `scores_train.json`, and `scores_test.json`.
 
 ### Brain — corrected constitutive check
 
@@ -103,20 +125,21 @@
 
 - `python3 validate.py --compare` passes.
 - `eval/` remains import-separated from `method/`.
-- Rubber GI-CANN positive-mode reproduction is still strong enough to justify `core_claim`.
-- The corrected implementation now reproduces the paper's brain one-term negative constitutive behavior from a trained checkpoint, not just from the paper's reported parameters.
+- Rubber GI-CANN positive-mode reproduction supports the paper's stretch-dominated core claim with α*≈1.677 and avg R²≈0.999.
+- Brain GI-CANN negative-mode reproduction supports the paper's shear-sensitive core claim with α*≈-17.94 and avg R²≈0.959.
+- Combined and positive/negative ablation experiments are present and scored, giving future agents both benefit and constraint metrics.
 
 ## What Remains
 
-- Retrain the existing brain GI-CANN checkpoints under the corrected constitutive formulas so the checkpoint contents, evaluator, and current method code all agree.
-- Re-attempt the weak rubber combined and negative ablations with the targeted job now captured in `scripts/run.sh`.
-- Improve the weak rubber ablation scores if additional compute is allocated.
+- Optional: improve fixed-exponent SI-CANN baseline calibration, especially combined rubber and combined brain.
+- Optional: tune rubber negative ablation if exact per-mode R² matching is needed. The current result already preserves the low-performance contrast.
+- Optional: run more seeds to quantify variance. The current package uses deterministic single-seed checkpoints.
 
 ## Wrap-up Notes
 
 - `data/` and `eval/` are usable without importing from `method/`, so the workspace works in both improve-mode and from-scratch-mode.
 - The scoring rubric now emphasizes held-out generalization and keeps ablations as contrastive checks rather than double-counting the same fit signal.
-- The main scientific limitation of the current packaged workspace is the gap between the strong rubber reproduction and the weak brain reproduction.
+- The main scientific limitation of the current packaged workspace is baseline calibration, not the proposed GI-CANN method: both core proposed-method claims are reproduced.
 
 ## Current Turn Update (2026-05-22)
 
@@ -129,6 +152,8 @@
 - Reviewed completed job `4cdbf338-c4e`: brain reproduction is now at `core_claim_plus`; patched rubber GI-CANN warm starts and repointed `scripts/run.sh` to retrain rubber ablations next.
 - Reviewed failed job `f90e6a5b-fca`: rubber negative GI-CANN improved to `avg_r2=0.3486`, but the job crashed before evaluation when loading `checkpoints/rubber_positive.pt` for combined warm-start due to a NumPy pickle alias mismatch.
 - Patched `run_all_training.py` checkpoint loading with the same `numpy._core` compatibility alias used by the evaluators and kept the rubber ablation resubmission unchanged.
+- Reviewed completed job `f04aced1-1c0`: rubber combined GI-CANN recovered to `avg_r2=0.9994`, rubber negative remains a low-performing ablation at `avg_r2=0.3486`, and full/train/test scoring validates.
+- Updated final documentation and action state for a `majority` milestone handoff.
 
 ## Bug Fixes Applied
 

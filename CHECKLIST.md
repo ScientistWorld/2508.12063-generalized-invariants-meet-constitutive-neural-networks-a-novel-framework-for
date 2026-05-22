@@ -42,7 +42,7 @@
 - [x] `core_claim` — minimum experiment supports central claim (rubber reproduced)
 - [x] Brain checkpoint retraining after observed-stress loss fix
 - [x] `core_claim_plus` — rubber and brain core settings reproduced
-- [ ] `secondary_claims`
-- [ ] `majority`
+- [x] `secondary_claims` — main combined/positive/negative ablations scored
+- [x] `majority` — both core claims and most proposed-method ablations reproduced
 - [ ] `near_complete`
 - [ ] `full`
