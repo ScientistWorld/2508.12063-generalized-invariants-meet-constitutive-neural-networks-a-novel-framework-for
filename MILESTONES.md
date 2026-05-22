@@ -48,4 +48,4 @@
 - Closed the design phase at `core_claim` because the evaluation artifact is now complete and usable, with the main caveat that the shipped brain checkpoints remain weak on both slices
 
 ## Stop Justification
-- Completed at milestone `core_claim`.
+- Completed at milestone `none`.
