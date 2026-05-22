@@ -13,5 +13,9 @@
 - Audited the latest job records and confirmed the artifact-export validation job has not yet run in the container.
 - Keeping the milestone at `majority` and submitting a CPU test job to export neutral prediction artifacts, regenerate full/train/test scores from those artifacts, and run `validate.py --compare`.
 
+### [2026-05-22 08:55] - majority
+- Reviewed completed job `47926f28-2ce`: artifact export produced 12 prediction JSON files, artifact-based full/train/test evaluation completed, and `validate.py --compare` passed.
+- Final verified score files reproduce both paper core claims and the main ablation grid through the reusable artifact evaluator.
+
 ## Stop Justification
-- Highest verified milestone remains `majority`; final artifact-path validation is being submitted as a CPU test job.
+- Completed at milestone `majority`. The remaining gaps are optional calibration improvements for fixed-exponent baselines and exact low-performing ablation numbers, not blockers for the reproduced core and secondary claims.

@@ -10,6 +10,7 @@
 - [x] `scoring/reference.json` — paper's reported numbers
 - [x] Workspace validated via `python validate.py`
 - [x] `scoring/scores.json` — reproduced numbers
+- [x] Artifact-based full/train/test score regeneration validated in container job `47926f28-2ce`
 - [x] `scoring/TARGETS.md` — filled in
 - [x] `scoring/CONSTRAINTS.md` — filled in
 - [x] `scoring/DIRECTION.md` — filled in

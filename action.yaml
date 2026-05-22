@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
+action: done
 gpus: 0
 test: true
 milestone: majority
-notes: "Resubmit CPU validation: no prior job ran the artifact-export path, so export neutral prediction artifacts from packaged checkpoints, regenerate full/train/test scores, and run validate.py --compare."
+notes: "Verified majority reproduction. Job 47926f28-2ce exported 12 neutral prediction artifacts, regenerated full/train/test scores from artifacts, and passed validate.py --compare."

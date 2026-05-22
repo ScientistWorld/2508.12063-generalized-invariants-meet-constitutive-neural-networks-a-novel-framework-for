@@ -164,6 +164,15 @@ The proposed GI-CANN method is reproduced across both primary materials and the 
 - Repointed `scripts/run.sh` to a CPU validation job: export predictions from packaged checkpoints, regenerate full/train/test scores from artifacts, and run `python3 validate.py --compare`.
 - Made `data/load_data.py` importable without PyTorch for artifact-only scoring. The local login-node Python still cannot export checkpoint predictions because it lacks `torch`; the submitted CPU container job will validate that path.
 - Continuation audit checked the existing job records and local logs. No completed job contained the new artifact-export header and `outputs/predictions/` is still empty, so `action.yaml` remains set to submit the CPU artifact validation job before finalizing.
+- Reviewed completed job `47926f28-2ce`: the container exported 12 neutral prediction artifacts, regenerated full/train/test score files from those artifacts, and passed `python3 validate.py --compare`. This verifies that `scripts/evaluate*.sh` can score method outputs without depending on GI-CANN checkpoint internals.
+
+## Final Validated Results (Artifact Path)
+
+- Rubber generalization: GI-CANN avg R²=0.9988 with α*=1.677; SI-CANN avg R²=0.9847.
+- Brain generalization: GI-CANN avg R²=0.9590 with α*=-17.94; SI-CANN avg R²=0.6974.
+- Rubber combined ablation: GI-CANN avg R²=0.9994; SI-CANN avg R²=0.9220.
+- Brain combined ablation: GI-CANN avg R²=0.9604; SI-CANN avg R²=0.4790.
+- Positive/negative single-branch ablations remain scored as lower-performing contrast settings, preserving the paper's constraint that the learned exponent family must match the material behavior.
 
 ## Bug Fixes Applied
 
