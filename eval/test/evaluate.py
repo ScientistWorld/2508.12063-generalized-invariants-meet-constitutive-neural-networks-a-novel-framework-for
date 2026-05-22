@@ -41,6 +41,32 @@ MinimalGICANN = None
 MinimalSICANN = None
 
 
+def score_entries(scores: dict, experiments_filter: set[str] | None = None) -> set[tuple[str, str]]:
+    entries = set()
+    for exp_name, exp_info in scores.get("experiments", {}).items():
+        if experiments_filter and exp_name not in experiments_filter:
+            continue
+        for method_name in exp_info.get("results", {}):
+            entries.add((exp_name, method_name))
+    return entries
+
+
+def validate_train_entries_present(scores: dict, train_scores_path: str, experiments_filter: set[str] | None = None) -> None:
+    """Ensure held-out scores cover every method entry exposed in train scores."""
+    path = Path(train_scores_path)
+    if not path.exists():
+        print(f"Train score file not found at {path}; skipping train/test entry validation.")
+        return
+
+    with open(path) as f:
+        train_scores = json.load(f)
+
+    missing = sorted(score_entries(train_scores, experiments_filter) - score_entries(scores, experiments_filter))
+    if missing:
+        formatted = ", ".join(f"{exp}/{method}" for exp, method in missing)
+        raise SystemExit(f"Held-out test scores are missing train-scored method entries: {formatted}")
+
+
 def ensure_checkpoint_dependencies():
     """Import PyTorch-only dependencies for legacy checkpoint scoring."""
     global torch, MinimalGICANN, MinimalSICANN
@@ -230,6 +256,7 @@ def main() -> None:
     parser.add_argument("--checkpoints-dir", type=str, default="checkpoints")
     parser.add_argument("--predictions-dir", type=str, default="outputs/predictions")
     parser.add_argument("--scores-json", type=str, default="scoring/scores_test.json")
+    parser.add_argument("--train-scores-json", type=str, default="scoring/scores_train.json")
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument(
         "--prefer-checkpoints",
@@ -252,12 +279,13 @@ def main() -> None:
         artifacts = load_prediction_artifacts(args.predictions_dir)
         if artifacts:
             print(f"Evaluating {len(artifacts)} prediction artifacts from {args.predictions_dir}")
-            build_scores_from_artifacts(
+            scores = build_scores_from_artifacts(
                 artifacts,
                 args.scores_json,
                 split="test",
                 experiments_filter=experiments_filter,
             )
+            validate_train_entries_present(scores, args.train_scores_json, experiments_filter)
             return
 
     results = []
@@ -287,7 +315,8 @@ def main() -> None:
                     print(f"  ERROR: {exc}")
 
     if results:
-        build_scores_json(results, args.scores_json, experiments_filter)
+        scores = build_scores_json(results, args.scores_json, experiments_filter)
+        validate_train_entries_present(scores, args.train_scores_json, experiments_filter)
 
 
 if __name__ == "__main__":
