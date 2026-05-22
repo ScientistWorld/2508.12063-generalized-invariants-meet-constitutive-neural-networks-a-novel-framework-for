@@ -1,9 +1,6 @@
-# This iteration writes files only — do NOT submit compute jobs.
-# Once you set action to 'done', STOP immediately.
-# Do NOT sleep, poll, or wait. The system reads this file
-# only after your turn ends.
-action: done
+# This iteration runs the split evaluators on the compute node.
+# Do NOT sleep, poll, or wait. The system reads this file only after your turn ends.
+action: submit
 gpus: 0
 test: false
-milestone: majority
-notes: "Improvements: added normalized error, tail error, and shape-violation metrics; moved split row selection into slice evaluators; updated reference metric schema and design notes. Notes: static checks only, no evaluator runs."
+notes: "CPU run: export final checkpoint predictions, evaluate full/train/test scoring, and validate generated scores."

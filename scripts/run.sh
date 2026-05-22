@@ -1,6 +1,6 @@
 #!/bin/bash
-# Final CPU validation job: export model-agnostic prediction artifacts from the
-# packaged checkpoints, regenerate all scoring files, and run structural checks.
+# CPU scoring job: export model-agnostic prediction artifacts from the packaged
+# checkpoints, regenerate all scoring files, and run structural checks.
 
 set -euo pipefail
 
