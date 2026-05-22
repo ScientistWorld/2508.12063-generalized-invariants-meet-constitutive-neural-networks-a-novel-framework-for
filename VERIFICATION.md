@@ -2,34 +2,29 @@
 
 ## Initial Assessment
 
-The workspace started at a credible `core_claim`. The method implementation is a real GI-CANN/SI-CANN reproduction rather than a surrogate regressor, the folder separation between `data/`, `eval/`, and `method/` is intact, and the reproduced rubber result still supports the claimed milestone. The remaining verification work was mostly about gym usability: checking for method leakage in benchmark-facing docs, confirming the scoring rubric is sensible for the experiments actually present in `scores.json`, and making sure the documented evaluation interface matches the actual CLI.
+The workspace started at the claimed `majority` milestone. I audited the current state after the final packaging cleanup rather than the older verification state captured in the stale report. The implementation in `method/` is a real GI-CANN/SI-CANN reproduction: it trains constitutive neural models with learned generalized invariant exponents, branch-specific stress derivatives, loading-mode losses, and sparsity regularization. The reproduced artifacts and `scoring/scores.json` cover the rubber and brain core generalization experiments plus the positive, negative, and combined ablation grid.
+
+The folder separation is suitable for gym use. `data/` is self-contained and method-independent, `eval/` does not import from `method/`, and the default evaluator reads neutral prediction artifacts from `outputs/predictions` before falling back to a legacy checkpoint interface.
 
 ## Issues Found
 
-- Minor: [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) still used paper-specific invariant-exponent language more directly than necessary for a gym-facing “direction” document.
-- Minor: [`scoring/TARGETS.md`](/home/user/scoring/TARGETS.md) documented `bash scripts/evaluate.sh --experiment ...`, but [`eval/evaluate.py`](/home/user/eval/evaluate.py) did not actually support `--experiment`.
-- Minor: [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) advertised a configurable Python interpreter but still hardcoded `python`, which fails on this machine.
-- Minor: [`VERIFICATION.md`](/home/user/VERIFICATION.md) itself was stale and described older fixed issues rather than the current verification state.
+- Cosmetic: project-local `__pycache__` directories were created by local syntax/validation checks.
+- Cosmetic: pre-existing unrelated system-file changes remain in the worktree (`README.md`, `manifest.json`, and deleted `trajectory/*.jsonl` files). They were not part of this reproduction verification and were left untouched.
+- None critical. I found no method leakage in the strict method-agnostic documents, no scored wall-clock or paper-deviation metrics, no `shared/` references in committed method/eval/baseline/script code, and no broken external download URLs. `scripts/download.sh` is intentionally a no-op because the paper data used here is embedded in tracked data-loading code.
 
 ## Fixes Applied
 
-- Updated [`eval/evaluate.py`](/home/user/eval/evaluate.py) and [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) so the documented `--experiment` interface now works for selected experiment evaluation.
-- Updated [`eval/evaluate.py`](/home/user/eval/evaluate.py), [`eval/train/evaluate.py`](/home/user/eval/train/evaluate.py), and [`eval/test/evaluate.py`](/home/user/eval/test/evaluate.py) so `--checkpoint` no longer also scans the full checkpoint directory.
-- Corrected evaluation reporting of `alpha_star` for positive and negative ablation checkpoints so it comes from the branch actually used by the model.
-- Fixed split-score generation in [`eval/train/evaluate.py`](/home/user/eval/train/evaluate.py) and [`eval/test/evaluate.py`](/home/user/eval/test/evaluate.py) by defining `mode` and `model_type` inside `build_scores_json`.
-- Fixed [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh) to honor `${PYTHON}` instead of calling a missing `python` binary directly.
-- Reworded [`scoring/DIRECTION.md`](/home/user/scoring/DIRECTION.md) to keep the benchmark scope physics-aware and interpretable without overexposing the paper’s specific invariant-exponent framing.
-- Replaced this report with the current verification findings and judgment.
+- Removed generated project-local `__pycache__` directories.
+- Refreshed this verification report to reflect the final workspace state after artifact export, train/test evaluation, and root cleanup.
+- Re-ran `python3 validate.py --compare`; validation passed for `reference.json`, `scores.json`, `scores_train.json`, `scores_test.json`, import separation, artifact-based evaluation, train/test independence, and method-key consistency.
 
 ## Final Judgment
 
-The workspace is suitable as a research gym. A future scientist can use the problem/evaluation/data side without importing `method/`, and the benchmark-facing markdown is sufficiently method-safe for from-scratch use. The scoring rubric is also reasonable for the experiments actually present in `scores.json`: both core generalization experiments dominate at 40% each, the held-out mode is emphasized inside each core experiment, and the four ablations collectively remain secondary at 20%.
+The workspace is ready to serve as a research gym. A from-scratch scientist can understand the problem, data, allowed direction, constraints, and scoring without seeing the paper method. An improve-mode scientist can replace the method as long as it emits the documented prediction artifact format, then reuse `scripts/evaluate.sh`, `scripts/evaluate_train.sh`, and `scripts/evaluate_test.sh`.
 
-The final compute jobs regenerated the frozen checkpoints and score files rather than relying on stale checkpoint-embedded metrics. The proposed GI-CANN method now reproduces both central claims: rubber generalization reaches avg R²=0.9988 with α*=1.6769, and brain generalization reaches avg R²=0.9590 with α*=-17.9399. The main secondary proposed-method checks are also covered: rubber combined avg R²=0.9994, brain combined avg R²=0.9604, brain positive remains weak at avg R²=0.5425, and rubber negative remains a low-performance contrast at avg R²=0.3486.
-
-The train/test split is exercised against the final checkpoints. The run produced complete `scores_train.json` and `scores_test.json` files with matching experiment/method coverage and non-identical values across slices. The remaining caveat is calibration rather than reproduction integrity: fixed-exponent SI-CANN baselines and some per-mode ablation values do not exactly match the paper, so the final milestone is `majority` rather than `near_complete`.
+The scoring rubric is coherent for the reproduced experiments: the two core generalization experiments dominate the weight, ablations are secondary, benefit metrics have positive coefficients, constraint/error metrics have negative coefficients, and `alpha_star` is report-only. The reproduced scores support the central claims on both material classes: GI-CANN improves over SI-CANN on rubber generalization (`avg_r2` 0.9988 vs 0.9847) and brain generalization (`avg_r2` 0.9590 vs 0.6974), with additional ablation experiments present in the score files. Train/test split scores have matching method coverage and comparable difficulty.
 
 - Milestone: majority
 - Ready for gym use: yes
 - Confidence: high
-- Key limitation: SI-CANN baseline calibration and exact per-mode ablation matching remain uneven, while both core proposed GI-CANN claims are reproduced
+- Key limitation: exact SI-CANN baseline calibration and some per-mode ablation values remain uneven, so `majority` is justified rather than `near_complete`.

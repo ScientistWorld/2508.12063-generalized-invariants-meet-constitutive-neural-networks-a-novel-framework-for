@@ -2,4 +2,4 @@ action: done
 gpus: 0
 test: false
 milestone: majority
-notes: "Completed majority reproduction. Artifact-based scoring and validate.py --compare pass after final packaging cleanup; data is embedded and no external downloads are required."
+notes: "Final verification passed: method-agnostic docs, artifact evaluator, scoring, and train/test split are ready for gym use."

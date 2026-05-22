@@ -25,5 +25,9 @@
 - Moved the active trainer from the repository root to `method/training_runner.py` and updated `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `method/export_predictions.py`.
 - Re-ran syntax checks, artifact-based `scripts/evaluate.sh`, and `python3 validate.py --compare`; all checks passed with the same `majority` results.
 
+### [2026-05-22 09:35] - majority
+- Completed final verification of folder separation, method-agnostic documentation, scoring coefficients, artifact-based evaluation, and train/test split integrity.
+- Re-ran `python3 validate.py --compare`; validation passed and the `majority` milestone remains justified.
+
 ## Stop Justification
 - Completed at milestone `majority`.
