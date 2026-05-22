@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from method.gicann import GICANN, detect_deformation_mode, get_principal_stretches
+from data.load_data import extract_observed_stress
 
 
 class SICANN(nn.Module):
@@ -213,6 +214,10 @@ class SICANN(nn.Module):
 
     def loss(self, F, S_target, gamma=None):
         S_pred = self.compute_stress(F, gamma_override=gamma)
-        mse = torch.mean((S_pred - S_target) ** 2)
+        l1, l2, l3 = get_principal_stretches(F)
+        mode_names = detect_deformation_mode(l1, l2, l3, F)
+        pred_obs = extract_observed_stress(S_pred, mode_names)
+        target_obs = extract_observed_stress(S_target, mode_names)
+        mse = torch.mean((pred_obs - target_obs) ** 2)
         l1_loss = self.r * sum(torch.sum(torch.abs(w)) for w in self.get_strain_energy_weights())
         return mse + l1_loss, mse

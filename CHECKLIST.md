@@ -40,6 +40,7 @@
 ## Milestones
 - [x] `method_runs` — executes end-to-end without errors
 - [x] `core_claim` — minimum experiment supports central claim (rubber reproduced)
+- [ ] Brain checkpoint retraining after observed-stress loss fix
 - [ ] `core_claim_plus` — additional settings
 - [ ] `secondary_claims`
 - [ ] `majority`

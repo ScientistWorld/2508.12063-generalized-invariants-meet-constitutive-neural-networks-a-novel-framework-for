@@ -49,7 +49,13 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
     Returns:
         dict with material, mode, model_type, r2_train, r2_test, avg_r2, params
     """
-    state = torch.load(checkpoint_path, map_location=device)
+    # These benchmark checkpoints are trusted local reproduction artifacts.
+    # PyTorch 2.6 defaults to weights_only=True, which rejects older NumPy
+    # scalar metadata before the model state can be read.
+    try:
+        state = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    except TypeError:
+        state = torch.load(checkpoint_path, map_location=device)
     config = state.get('config', {})
 
     # Infer material and mode from checkpoint filename
@@ -72,59 +78,53 @@ def evaluate_checkpoint(checkpoint_path, device='cpu'):
     model_type = 'SI-CANN' if is_sicann else 'GI-CANN'
 
     params = extract_params_from_state(state['model_state'], config, is_sicann)
-    stored_results = state.get('results')
-    if stored_results and 'r2_train' in stored_results and 'r2_test' in stored_results:
-        r2_train = {k: float(v) for k, v in stored_results['r2_train'].items()}
-        r2_test = {k: float(v) for k, v in stored_results['r2_test'].items()}
-        avg_r2 = float(stored_results.get('avg_r2', np.mean(list(r2_train.values()) + list(r2_test.values()))))
+    if is_sicann:
+        model = MinimalSICANN(config)
     else:
-        if is_sicann:
-            model = MinimalSICANN(config)
-        else:
-            model = MinimalGICANN(config)
+        model = MinimalGICANN(config)
 
-        model.load_state_dict(state['model_state'], strict=not is_sicann)
-        model.eval()
+    model.load_state_dict(state['model_state'], strict=not is_sicann)
+    model.eval()
 
-        device_obj = torch.device(device)
-        model = model.to(device_obj)
+    device_obj = torch.device(device)
+    model = model.to(device_obj)
 
-        F_train = train_ds.F.to(device_obj)
-        S_train = train_ds.S.to(device_obj)
-        gamma_train = train_ds.gamma.to(device_obj)
-        F_test = test_ds.F.to(device_obj)
-        S_test = test_ds.S.to(device_obj)
-        gamma_test = test_ds.gamma.to(device_obj)
+    F_train = train_ds.F.to(device_obj)
+    S_train = train_ds.S.to(device_obj)
+    gamma_train = train_ds.gamma.to(device_obj)
+    F_test = test_ds.F.to(device_obj)
+    S_test = test_ds.S.to(device_obj)
+    gamma_test = test_ds.gamma.to(device_obj)
 
-        with torch.no_grad():
-            r2_train = {}
-            r2_test = {}
+    with torch.no_grad():
+        r2_train = {}
+        r2_test = {}
 
-            for mode_name in train_modes:
-                indices = train_ds.mode_indices[mode_name]
-                idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
-                if mode_name == 'ss':
-                    pred = model(F_train[idx_t], gamma_override=gamma_train[idx_t])
-                else:
-                    pred = model(F_train[idx_t])
-                tgt = S_train[idx_t]
-                pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
-                tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
-                r2_train[mode_name] = float(compute_r2(pred_obs, tgt_obs))
+        for mode_name in train_modes:
+            indices = train_ds.mode_indices[mode_name]
+            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
+            if mode_name == 'ss':
+                pred = model(F_train[idx_t], gamma_override=gamma_train[idx_t])
+            else:
+                pred = model(F_train[idx_t])
+            tgt = S_train[idx_t]
+            pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
+            tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+            r2_train[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
-            for mode_name in test_modes:
-                indices = test_ds.mode_indices[mode_name]
-                idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
-                if mode_name == 'ss':
-                    pred = model(F_test[idx_t], gamma_override=gamma_test[idx_t])
-                else:
-                    pred = model(F_test[idx_t])
-                tgt = S_test[idx_t]
-                pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
-                tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
-                r2_test[mode_name] = float(compute_r2(pred_obs, tgt_obs))
+        for mode_name in test_modes:
+            indices = test_ds.mode_indices[mode_name]
+            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
+            if mode_name == 'ss':
+                pred = model(F_test[idx_t], gamma_override=gamma_test[idx_t])
+            else:
+                pred = model(F_test[idx_t])
+            tgt = S_test[idx_t]
+            pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
+            tgt_obs = extract_observed_stress(tgt, [mode_name] * len(indices)).cpu().numpy()
+            r2_test[mode_name] = float(compute_r2(pred_obs, tgt_obs))
 
-        avg_r2 = float(np.mean(list(r2_train.values()) + list(r2_test.values())))
+    avg_r2 = float(np.mean(list(r2_train.values()) + list(r2_test.values())))
 
     return {
         'material': material,

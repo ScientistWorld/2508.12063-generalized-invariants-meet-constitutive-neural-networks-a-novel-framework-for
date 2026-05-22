@@ -111,6 +111,14 @@
 - The scoring rubric now emphasizes held-out generalization and keeps ablations as contrastive checks rather than double-counting the same fit signal.
 - The main scientific limitation of the current packaged workspace is the gap between the strong rubber reproduction and the weak brain reproduction.
 
+## Current Turn Update (2026-05-22)
+
+- Re-audited the workspace after restart. Rubber GI-CANN still supports `core_claim`; brain GI-CANN/SI-CANN checkpoint scores remain far below the paper.
+- Fixed a training inconsistency in `method/sicann.py`: SI-CANN now optimizes the same observed stress component used by GI-CANN and by scoring instead of a full mostly-zero stress tensor.
+- Fixed `run_all_training.py` checkpoint selection so early stopping tracks observed held-out stress MSE, matching the benchmark target.
+- Fixed `eval/evaluate.py` so `scripts/evaluate.sh` recomputes predictions from checkpoint weights and data instead of accepting checkpoint-embedded results.
+- Prepared `scripts/run.sh` to retrain all brain checkpoints and regenerate full, train-slice, and test-slice scores in one CPU job.
+
 ## Bug Fixes Applied
 
 ### 2026-04-06 (Initial)

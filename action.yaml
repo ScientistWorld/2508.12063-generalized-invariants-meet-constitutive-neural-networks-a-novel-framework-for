@@ -1,7 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
+action: submit
 gpus: 0
+test: false
 milestone: core_claim
-notes: "alternating nonzero samples by mode; 30 train metrics, 30 test metrics; complete train/test coverage with near-identical rubber core scores (GI 0.9986 train vs 0.9989 test) and non-identical values elsewhere; caveat: brain and several ablation checkpoints remain strongly negative on both slices."
+notes: "Retrain all brain GI-CANN/SI-CANN checkpoints after observed-stress loss and evaluator fixes, then regenerate full/train/test scores."

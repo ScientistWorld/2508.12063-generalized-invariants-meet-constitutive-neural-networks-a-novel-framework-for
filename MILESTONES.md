@@ -47,5 +47,11 @@
 - Verified that the split is not a copy-paste bug: every experiment differs numerically across slices, although the strongest rubber benchmark has only a very small gap because the alternating split stays on the same smooth curve family
 - Closed the design phase at `core_claim` because the evaluation artifact is now complete and usable, with the main caveat that the shipped brain checkpoints remain weak on both slices
 
+### [2026-05-22 07:19] - core_claim
+- Audited the current package and confirmed the core weakness is still the brain checkpoints, not the rubber GI-CANN reproduction
+- Patched SI-CANN training to use the same observed stress component loss as GI-CANN and scoring
+- Patched the main evaluator to recompute scores from checkpoint weights instead of trusting checkpoint-embedded metrics
+- Prepared a targeted CPU job to retrain all brain GI-CANN/SI-CANN checkpoints and regenerate `scores.json`, `scores_train.json`, and `scores_test.json`
+
 ## Stop Justification
-- Completed at milestone `none`.
+- Not stopped. Current submission targets the remaining brain reproduction gap while retaining the verified rubber `core_claim`.

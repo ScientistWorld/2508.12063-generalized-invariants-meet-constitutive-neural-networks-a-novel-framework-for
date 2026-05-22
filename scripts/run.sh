@@ -1,15 +1,27 @@
 #!/bin/bash
-# Designer job: produce train/test split evaluation scores.
+# Targeted reproduction job: retrain the weak brain checkpoints after the
+# observed-stress loss/evaluator fixes, then regenerate all score artifacts.
 
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 mkdir -p logs scoring
-rm -f scoring/scores_train.json scoring/scores_test.json
 
 echo "========================================="
-echo "Train/test split evaluation"
+echo "Brain GI-CANN/SI-CANN retraining"
 echo "========================================="
+
+python3 run_all_training.py \
+  --device cpu \
+  --materials brain \
+  --modes positive,negative,combined \
+  --families gi,si \
+  --epochs "${EPOCHS:-30000}" \
+  --grad-clip "${GRAD_CLIP:-0.5}" \
+  2>&1 | tee logs/brain_retrain.log
+
+echo "--- Evaluating full benchmark ---"
+bash scripts/evaluate.sh 2>&1 | tee logs/evaluate.log
 
 echo "--- Evaluating train slice ---"
 bash scripts/evaluate_train.sh 2>&1 | tee logs/evaluate_train.log
@@ -65,5 +77,5 @@ PY
 
 echo ""
 echo "========================================="
-echo "Done! Results in scoring/scores_train.json and scoring/scores_test.json"
+echo "Done! Results in scoring/scores.json, scoring/scores_train.json, and scoring/scores_test.json"
 echo "========================================="
