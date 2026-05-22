@@ -53,5 +53,9 @@
 - Patched the main evaluator to recompute scores from checkpoint weights instead of trusting checkpoint-embedded metrics
 - Prepared a targeted CPU job to retrain all brain GI-CANN/SI-CANN checkpoints and regenerate `scores.json`, `scores_train.json`, and `scores_test.json`
 
+### [2026-05-22 07:22] - core_claim
+- Final pre-submit audit confirmed `scripts/run.sh` and `action.yaml` are aligned on the brain retraining job
+- Fixed executable bits on the main shell entrypoints so the scheduler can invoke them directly
+
 ## Stop Justification
 - Not stopped. Current submission targets the remaining brain reproduction gap while retaining the verified rubber `core_claim`.

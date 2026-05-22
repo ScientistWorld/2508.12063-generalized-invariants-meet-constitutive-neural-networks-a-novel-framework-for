@@ -118,6 +118,7 @@
 - Fixed `run_all_training.py` checkpoint selection so early stopping tracks observed held-out stress MSE, matching the benchmark target.
 - Fixed `eval/evaluate.py` so `scripts/evaluate.sh` recomputes predictions from checkpoint weights and data instead of accepting checkpoint-embedded results.
 - Prepared `scripts/run.sh` to retrain all brain checkpoints and regenerate full, train-slice, and test-slice scores in one CPU job.
+- Marked the main shell entrypoints executable before submission so direct scheduler invocation cannot fail on file mode.
 
 ## Bug Fixes Applied
 
