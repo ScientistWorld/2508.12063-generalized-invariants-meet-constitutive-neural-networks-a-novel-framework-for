@@ -1,0 +1,6 @@
+rubber_positive_gicann.json: alpha*=1.2700 params={'alpha': 1.27, 'w_id': 0.249349, 'w_exp1': 0.199526, 'w_exp2': 1.089409, 'train_loss': 3.199818, 'criterion': 0.001264}
+rubber_negative_gicann.json: alpha*=-0.5050 params={'alpha': -0.505, 'w_id': 7.296124, 'w_exp1': 0.0, 'w_exp2': 0.0, 'train_loss': 61.296257, 'criterion': 1.197627}
+rubber_combined_gicann.json: alpha*=4.1300 params={'alpha_plus': 4.13, 'alpha_minus': -0.35, 'w_id_plus': 0.001984, 'w_id_minus': 7.296948, 'train_loss': 0.398352, 'criterion': 0.01358}
+brain_negative_gicann.json: alpha*=-6.3800 params={'alpha': -6.38, 'w_id': 0.0, 'w_exp1': 1.584893, 'w_exp2': 0.041918, 'train_loss': 0.019549, 'criterion': 0.00015}
+brain_positive_gicann.json: alpha*=5.2100 params={'alpha': 5.21, 'w_id': 0.0, 'w_exp1': 2.511886, 'w_exp2': 0.039253, 'train_loss': 0.049362, 'criterion': 0.000148}
+brain_combined_gicann.json: alpha*=-22.8500 params={'alpha_plus': 32.15, 'alpha_minus': -22.85, 'w_id_plus': 0.00024, 'w_id_minus': 0.004079, 'train_loss': 0.00168, 'criterion': 0.000205}

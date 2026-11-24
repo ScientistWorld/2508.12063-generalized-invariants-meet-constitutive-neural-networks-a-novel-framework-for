@@ -1,0 +1,54 @@
+{
+  "total": -0.003127,
+  "main": -0.00036,
+  "per_experiment": {
+    "rubber_generalization": -0.001612,
+    "rubber_negative_ablation": 6e-05,
+    "rubber_combined_ablation": -0.00029,
+    "brain_generalization": 0.001252,
+    "brain_positive_ablation": -0.00257,
+    "brain_combined_ablation": 3.3e-05
+  },
+  "missing": [],
+  "nan": [],
+  "values": {
+    "rubber_generalization": {
+      "r2_ps": 0.9992,
+      "avg_r2": 0.9983,
+      "avg_normalized_rmse": 0.0132,
+      "tail_normalized_mae": 0.0243,
+      "shape_violation_rate": 0.0
+    },
+    "rubber_negative_ablation": {
+      "avg_r2": 0.3129,
+      "avg_normalized_rmse": 0.2783,
+      "tail_normalized_mae": 0.4274,
+      "shape_violation_rate": 0.0
+    },
+    "rubber_combined_ablation": {
+      "avg_r2": 0.9972,
+      "avg_normalized_rmse": 0.0159,
+      "tail_normalized_mae": 0.0326,
+      "shape_violation_rate": 0.0
+    },
+    "brain_generalization": {
+      "r2_ss": 0.9674,
+      "avg_r2": 0.9651,
+      "avg_normalized_rmse": 0.0642,
+      "tail_normalized_mae": 0.0903,
+      "shape_violation_rate": 0.0
+    },
+    "brain_positive_ablation": {
+      "avg_r2": 0.4116,
+      "avg_normalized_rmse": 0.2455,
+      "tail_normalized_mae": 0.3885,
+      "shape_violation_rate": 0.0
+    },
+    "brain_combined_ablation": {
+      "avg_r2": 0.9652,
+      "avg_normalized_rmse": 0.0641,
+      "tail_normalized_mae": 0.0957,
+      "shape_violation_rate": 0.0
+    }
+  }
+}

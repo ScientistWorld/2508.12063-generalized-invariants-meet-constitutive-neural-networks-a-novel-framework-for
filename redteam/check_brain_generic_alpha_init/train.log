@@ -1,0 +1,64 @@
+
+============================================================
+GI-CANN: brain (negative) — 20000 epochs, lr=0.001
+============================================================
+  Warm-start: alpha=-18, nonnegative weights, identity-dominant init
+  [redteam patch] alpha_minus init -2.0, alpha lr = base lr
+  Epoch  1000/20000 | Loss: 0.017268 | Test MSE: 0.002842 | Avg R²: 0.6850 | {'alpha_minus': -2.816}
+  Epoch  2000/20000 | Loss: 0.016502 | Test MSE: 0.002825 | Avg R²: 0.6894 | {'alpha_minus': -2.9782}
+  Epoch  3000/20000 | Loss: 0.015378 | Test MSE: 0.002802 | Avg R²: 0.6979 | {'alpha_minus': -3.2533}
+  Epoch  4000/20000 | Loss: 0.014016 | Test MSE: 0.002759 | Avg R²: 0.7095 | {'alpha_minus': -3.6585}
+  Epoch  5000/20000 | Loss: 0.012586 | Test MSE: 0.002695 | Avg R²: 0.7240 | {'alpha_minus': -4.1849}
+  Epoch  6000/20000 | Loss: 0.011196 | Test MSE: 0.002616 | Avg R²: 0.7412 | {'alpha_minus': -4.8102}
+  Epoch  7000/20000 | Loss: 0.009881 | Test MSE: 0.002525 | Avg R²: 0.7608 | {'alpha_minus': -5.5145}
+  Epoch  8000/20000 | Loss: 0.008647 | Test MSE: 0.002422 | Avg R²: 0.7821 | {'alpha_minus': -6.2813}
+  Epoch  9000/20000 | Loss: 0.007501 | Test MSE: 0.002309 | Avg R²: 0.8041 | {'alpha_minus': -7.0939}
+  Epoch 10000/20000 | Loss: 0.006448 | Test MSE: 0.002193 | Avg R²: 0.8267 | {'alpha_minus': -7.9364}
+  Epoch 11000/20000 | Loss: 0.005496 | Test MSE: 0.002059 | Avg R²: 0.8477 | {'alpha_minus': -8.7951}
+  Epoch 12000/20000 | Loss: 0.004647 | Test MSE: 0.001929 | Avg R²: 0.8680 | {'alpha_minus': -9.6593}
+  Epoch 13000/20000 | Loss: 0.003903 | Test MSE: 0.001795 | Avg R²: 0.8865 | {'alpha_minus': -10.5206}
+  Epoch 14000/20000 | Loss: 0.003266 | Test MSE: 0.001665 | Avg R²: 0.9032 | {'alpha_minus': -11.3723}
+  Epoch 15000/20000 | Loss: 0.002733 | Test MSE: 0.001530 | Avg R²: 0.9174 | {'alpha_minus': -12.2074}
+  Epoch 16000/20000 | Loss: 0.002302 | Test MSE: 0.001422 | Avg R²: 0.9299 | {'alpha_minus': -13.0186}
+  Epoch 17000/20000 | Loss: 0.001969 | Test MSE: 0.001316 | Avg R²: 0.9397 | {'alpha_minus': -13.7964}
+  Epoch 18000/20000 | Loss: 0.001727 | Test MSE: 0.001221 | Avg R²: 0.9473 | {'alpha_minus': -14.5272}
+  Epoch 19000/20000 | Loss: 0.001566 | Test MSE: 0.001142 | Avg R²: 0.9526 | {'alpha_minus': -15.1921}
+  Epoch 20000/20000 | Loss: 0.001472 | Test MSE: 0.001079 | Avg R²: 0.9561 | {'alpha_minus': -15.7636}
+
+Final: r2_train={'ut': 0.9270709294724084, 'uc': 0.9825934028168328}, r2_test={'ss': 0.9585724559141071}, avg_r2=0.9561
+Params: {'alpha_minus': -15.763611421272017, 'w_id_minus': 0.012633199821637377, 'w_exp1_minus': 1e-06, 'w_exp2_minus': 1e-06, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+Prediction artifact saved to outputs/predictions/brain_negative_gicann.json
+
+============================================================
+GI-CANN: brain (combined) — 20000 epochs, lr=0.001
+============================================================
+  Warm-start: alpha=-18, nonnegative weights, identity-dominant init
+  [redteam patch] alpha_minus init -2.0, alpha lr = base lr
+  Epoch  1000/20000 | Loss: 0.075930 | Test MSE: 0.002796 | Avg R²: 0.6459 | {'alpha_plus': 1.2152, 'alpha_minus': -3.4752}
+  Epoch  2000/20000 | Loss: 0.041363 | Test MSE: 0.002627 | Avg R²: 0.7394 | {'alpha_plus': 0.782, 'alpha_minus': -4.7369}
+  Epoch  3000/20000 | Loss: 0.029621 | Test MSE: 0.002504 | Avg R²: 0.7654 | {'alpha_plus': 0.782, 'alpha_minus': -5.6767}
+  Epoch  4000/20000 | Loss: 0.018268 | Test MSE: 0.002384 | Avg R²: 0.7893 | {'alpha_plus': 0.782, 'alpha_minus': -6.5504}
+  Epoch  5000/20000 | Loss: 0.007101 | Test MSE: 0.002263 | Avg R²: 0.8126 | {'alpha_plus': 0.782, 'alpha_minus': -7.415}
+  Epoch  6000/20000 | Loss: 0.006051 | Test MSE: 0.002136 | Avg R²: 0.8350 | {'alpha_plus': 0.782, 'alpha_minus': -8.2823}
+  Epoch  7000/20000 | Loss: 0.005132 | Test MSE: 0.002006 | Avg R²: 0.8563 | {'alpha_plus': 0.782, 'alpha_minus': -9.1517}
+  Epoch  8000/20000 | Loss: 0.004324 | Test MSE: 0.001872 | Avg R²: 0.8759 | {'alpha_plus': 0.782, 'alpha_minus': -10.0187}
+  Epoch  9000/20000 | Loss: 0.003624 | Test MSE: 0.001739 | Avg R²: 0.8937 | {'alpha_plus': 0.782, 'alpha_minus': -10.8781}
+  Epoch 10000/20000 | Loss: 0.003030 | Test MSE: 0.001612 | Avg R²: 0.9095 | {'alpha_plus': 0.782, 'alpha_minus': -11.7243}
+  Epoch 11000/20000 | Loss: 0.002541 | Test MSE: 0.001497 | Avg R²: 0.9233 | {'alpha_plus': 0.782, 'alpha_minus': -12.5507}
+  Epoch 12000/20000 | Loss: 0.002151 | Test MSE: 0.001376 | Avg R²: 0.9343 | {'alpha_plus': 0.782, 'alpha_minus': -13.3493}
+  Epoch 13000/20000 | Loss: 0.001857 | Test MSE: 0.001274 | Avg R²: 0.9432 | {'alpha_plus': 0.782, 'alpha_minus': -14.1098}
+  Epoch 14000/20000 | Loss: 0.001650 | Test MSE: 0.001187 | Avg R²: 0.9498 | {'alpha_plus': 0.782, 'alpha_minus': -14.8159}
+  Epoch 15000/20000 | Loss: 0.001521 | Test MSE: 0.001148 | Avg R²: 0.9542 | {'alpha_plus': 0.782, 'alpha_minus': -15.4454}
+  Epoch 16000/20000 | Loss: 0.001449 | Test MSE: 0.001058 | Avg R²: 0.9570 | {'alpha_plus': 0.782, 'alpha_minus': -15.967}
+  Epoch 17000/20000 | Loss: 0.001419 | Test MSE: 0.001020 | Avg R²: 0.9585 | {'alpha_plus': 0.7819, 'alpha_minus': -16.3505}
+  Epoch 18000/20000 | Loss: 0.001410 | Test MSE: 0.000996 | Avg R²: 0.9591 | {'alpha_plus': 0.7819, 'alpha_minus': -16.5886}
+  Epoch 19000/20000 | Loss: 0.001408 | Test MSE: 0.000981 | Avg R²: 0.9594 | {'alpha_plus': 0.7819, 'alpha_minus': -16.7083}
+  Epoch 20000/20000 | Loss: 0.001407 | Test MSE: 0.000991 | Avg R²: 0.9593 | {'alpha_plus': 0.7819, 'alpha_minus': -16.7585}
+
+Final: r2_train={'ut': 0.9334434808842191, 'uc': 0.9824632499722347}, r2_test={'ss': 0.9623480654874494}, avg_r2=0.9594
+Params: {'alpha_plus': 0.7818852380886955, 'alpha_minus': -16.708257921392136, 'w_id_plus': 0.0, 'w_id_minus': 0.010880059282498782, 'w_exp1_plus': 1e-06, 'w_exp2_plus': 1e-06, 'w_exp1_minus': 1e-06, 'w_exp2_minus': 1e-06, 'w_ln1_plus': 0.0, 'w_ln2_plus': 0.0, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+Prediction artifact saved to outputs/predictions/brain_combined_gicann.json
+
+=== ALL RESULTS ===
+GI-CANN brain negative: avg_r2=0.9561
+GI-CANN brain combined: avg_r2=0.9594

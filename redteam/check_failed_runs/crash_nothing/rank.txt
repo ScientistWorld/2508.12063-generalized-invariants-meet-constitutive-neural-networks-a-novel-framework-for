@@ -1,0 +1,29 @@
+{
+  "total": 0.0,
+  "main": 0.0,
+  "per_experiment": {
+    "rubber_generalization": null,
+    "rubber_negative_ablation": null,
+    "rubber_combined_ablation": null,
+    "brain_generalization": null,
+    "brain_positive_ablation": null,
+    "brain_combined_ablation": null
+  },
+  "missing": [
+    "rubber_generalization/GI-CANN",
+    "rubber_negative_ablation/GI-CANN_J\u03b1-",
+    "rubber_combined_ablation/GI-CANN_J\u03b1+J\u03b1-",
+    "brain_generalization/GI-CANN",
+    "brain_positive_ablation/GI-CANN_J\u03b1+",
+    "brain_combined_ablation/GI-CANN_J\u03b1+J\u03b1-"
+  ],
+  "nan": [],
+  "values": {
+    "rubber_generalization": {},
+    "rubber_negative_ablation": {},
+    "rubber_combined_ablation": {},
+    "brain_generalization": {},
+    "brain_positive_ablation": {},
+    "brain_combined_ablation": {}
+  }
+}

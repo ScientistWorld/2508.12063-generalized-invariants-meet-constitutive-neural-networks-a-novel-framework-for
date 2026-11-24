@@ -1,0 +1,6 @@
+rewrote RUBBER_UT from rubber_positive_gicann.json:ut
+rewrote RUBBER_BT from rubber_positive_gicann.json:bt
+rewrote RUBBER_PS from rubber_positive_gicann.json:ps
+rewrote BRAIN_UT from brain_negative_gicann.json:ut
+rewrote BRAIN_UC from brain_negative_gicann.json:uc
+rewrote BRAIN_SS from brain_negative_gicann.json:ss

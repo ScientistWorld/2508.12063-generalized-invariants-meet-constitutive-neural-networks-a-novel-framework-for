@@ -1,0 +1,13 @@
+brain_combined_gicann.json: max |diff| = 9.810e-03
+brain_combined_sicann.json: max |diff| = 0.000e+00
+brain_negative_gicann.json: max |diff| = 4.532e-03
+brain_negative_sicann.json: max |diff| = 0.000e+00
+brain_positive_gicann.json: max |diff| = 0.000e+00
+brain_positive_sicann.json: max |diff| = 0.000e+00
+rubber_combined_gicann.json: max |diff| = 1.516e-02
+rubber_combined_sicann.json: max |diff| = 0.000e+00
+rubber_negative_gicann.json: max |diff| = 0.000e+00
+rubber_negative_sicann.json: max |diff| = 0.000e+00
+rubber_positive_gicann.json: max |diff| = 2.038e-01
+rubber_positive_sicann.json: max |diff| = 0.000e+00
+overall max |diff| = 2.038e-01

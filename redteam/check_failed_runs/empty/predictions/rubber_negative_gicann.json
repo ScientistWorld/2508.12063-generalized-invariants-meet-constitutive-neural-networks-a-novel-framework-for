@@ -1,0 +1,17 @@
+{
+  "schema": "hyperelastic_observed_stress_predictions_v1",
+  "paper": "2508.12063",
+  "material": "rubber",
+  "mode": "negative",
+  "model": "GI-CANN",
+  "alpha_star": -0.42939305498726443,
+  "params": {
+    "alpha_minus": -0.42939305498726443,
+    "w_id_minus": 10.38047310040424,
+    "w_exp1_minus": 1e-06,
+    "w_exp2_minus": 1e-06,
+    "w_ln1_minus": 0.0,
+    "w_ln2_minus": 0.0
+  },
+  "predictions": {}
+}

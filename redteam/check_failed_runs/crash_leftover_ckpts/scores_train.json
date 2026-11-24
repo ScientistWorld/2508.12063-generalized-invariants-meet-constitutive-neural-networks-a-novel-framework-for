@@ -1,0 +1,148 @@
+{
+  "experiments": {
+    "brain_combined_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": 0.8828,
+          "r2_uc": 0.9919,
+          "r2_ss": 0.9585,
+          "avg_r2": 0.9444,
+          "avg_normalized_rmse": 0.07,
+          "tail_normalized_mae": 0.135,
+          "shape_violation_rate": 0.0,
+          "alpha_star": -17.7918
+        },
+        "SI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": -0.3287,
+          "r2_uc": 0.6584,
+          "r2_ss": 0.9094,
+          "avg_r2": 0.413,
+          "avg_normalized_rmse": 0.215,
+          "tail_normalized_mae": 0.3485,
+          "shape_violation_rate": 0.0,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "brain_generalization": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.8795,
+          "r2_uc": 0.9906,
+          "r2_ss": 0.9554,
+          "avg_r2": 0.9419,
+          "avg_normalized_rmse": 0.0721,
+          "tail_normalized_mae": 0.1419,
+          "shape_violation_rate": 0.0,
+          "alpha_star": -17.9399
+        },
+        "SI-CANN": {
+          "r2_ut": 0.3437,
+          "r2_uc": 0.7045,
+          "r2_ss": 0.8872,
+          "avg_r2": 0.6451,
+          "avg_normalized_rmse": 0.18,
+          "tail_normalized_mae": 0.2804,
+          "shape_violation_rate": 0.0,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "brain_positive_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1+": {
+          "r2_ut": -0.0692,
+          "r2_uc": 0.6155,
+          "r2_ss": 0.8949,
+          "avg_r2": 0.4804,
+          "avg_normalized_rmse": 0.2092,
+          "tail_normalized_mae": 0.3463,
+          "shape_violation_rate": 0.0,
+          "alpha_star": 1.9019
+        },
+        "SI-CANN_J\u03b1+": {
+          "r2_ut": -0.327,
+          "r2_uc": 0.658,
+          "r2_ss": 0.9093,
+          "avg_r2": 0.4135,
+          "avg_normalized_rmse": 0.2149,
+          "tail_normalized_mae": 0.3485,
+          "shape_violation_rate": 0.0,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "rubber_combined_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": 0.9997,
+          "r2_bt": 0.9996,
+          "r2_ps": 0.9988,
+          "avg_r2": 0.9994,
+          "avg_normalized_rmse": 0.0081,
+          "tail_normalized_mae": 0.0121,
+          "shape_violation_rate": 0.0,
+          "alpha_star": 1.813
+        },
+        "SI-CANN_J\u03b1+J\u03b1-": {
+          "r2_ut": 0.9006,
+          "r2_bt": 0.9643,
+          "r2_ps": 0.8757,
+          "avg_r2": 0.9135,
+          "avg_normalized_rmse": 0.097,
+          "tail_normalized_mae": 0.1524,
+          "shape_violation_rate": 0.1667,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "rubber_generalization": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.9995,
+          "r2_bt": 0.9978,
+          "r2_ps": 0.9987,
+          "avg_r2": 0.9987,
+          "avg_normalized_rmse": 0.0123,
+          "tail_normalized_mae": 0.0152,
+          "shape_violation_rate": 0.0,
+          "alpha_star": 1.6769
+        },
+        "SI-CANN": {
+          "r2_ut": 0.9963,
+          "r2_bt": 0.9596,
+          "r2_ps": 0.9961,
+          "avg_r2": 0.984,
+          "avg_normalized_rmse": 0.0392,
+          "tail_normalized_mae": 0.0689,
+          "shape_violation_rate": 0.0,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "rubber_negative_ablation": {
+      "results": {
+        "GI-CANN_J\u03b1-": {
+          "r2_ut": -0.1783,
+          "r2_bt": 0.274,
+          "r2_ps": 0.8159,
+          "avg_r2": 0.3039,
+          "avg_normalized_rmse": 0.2721,
+          "tail_normalized_mae": 0.5058,
+          "shape_violation_rate": 0.0,
+          "alpha_star": -0.4294
+        },
+        "SI-CANN_J\u03b1-": {
+          "r2_ut": -0.4003,
+          "r2_bt": 0.4914,
+          "r2_ps": 0.4191,
+          "avg_r2": 0.17,
+          "avg_normalized_rmse": 0.302,
+          "tail_normalized_mae": 0.4455,
+          "shape_violation_rate": 0.2778,
+          "alpha_star": -2.0
+        }
+      }
+    }
+  }
+}

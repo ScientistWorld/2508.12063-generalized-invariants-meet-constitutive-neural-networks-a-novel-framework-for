@@ -1,0 +1,66 @@
+{
+  "schema": "hyperelastic_observed_stress_predictions_v1",
+  "paper": "2508.12063",
+  "material": "rubber",
+  "mode": "positive",
+  "model": "GI-CANN",
+  "alpha_star": 1.676903851367745,
+  "params": {
+    "alpha_plus": 1.676903851367745,
+    "w_id_plus": 0.24319735511275792,
+    "w_exp1_plus": 0.11346220478308677,
+    "w_exp2_plus": 0.23462146914714088,
+    "w_ln1_plus": -0.00014262211736751446,
+    "w_ln2_plus": 0.0001703713908783108
+  },
+  "predictions": {
+    "ut": [
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN
+    ],
+    "bt": [
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN
+    ],
+    "ps": [
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN,
+      NaN
+    ]
+  }
+}

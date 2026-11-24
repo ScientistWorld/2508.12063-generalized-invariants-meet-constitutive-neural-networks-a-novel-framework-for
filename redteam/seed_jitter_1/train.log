@@ -1,0 +1,187 @@
+
+============================================================
+GI-CANN: rubber (positive) — 20000 epochs, lr=0.001
+============================================================
+  [redteam patch] jitter seed 1 scale 0.05: init {'alpha_plus': 1.54157, 'w_id_plus': 1.77333, 'w_exp1_plus': 0.02038, 'w_exp2_plus': 4.56747, 'w_ln1_plus': 0.09544, 'w_ln2_plus': 2.15073}
+  Epoch  1000/20000 | Loss: 7.600228 | Test MSE: 6.294225 | Avg R²: 0.6908 | {'alpha_plus': 1.6048}
+  Epoch  2000/20000 | Loss: 1.190381 | Test MSE: 0.059893 | Avg R²: 0.9513 | {'alpha_plus': 2.3592}
+  Epoch  3000/20000 | Loss: 0.966299 | Test MSE: 0.044510 | Avg R²: 0.9634 | {'alpha_plus': 2.2351}
+  Epoch  4000/20000 | Loss: 0.523684 | Test MSE: 0.048430 | Avg R²: 0.9807 | {'alpha_plus': 1.9761}
+  Epoch  5000/20000 | Loss: 0.161338 | Test MSE: 0.083382 | Avg R²: 0.9942 | {'alpha_plus': 1.7186}
+  Epoch  6000/20000 | Loss: 0.144781 | Test MSE: 0.093320 | Avg R²: 0.9938 | {'alpha_plus': 1.7057}
+  Epoch  7000/20000 | Loss: 0.126009 | Test MSE: 0.071226 | Avg R²: 0.9949 | {'alpha_plus': 1.7032}
+  Epoch  8000/20000 | Loss: 0.111117 | Test MSE: 0.061355 | Avg R²: 0.9955 | {'alpha_plus': 1.7005}
+  Epoch  9000/20000 | Loss: 0.109188 | Test MSE: 0.061070 | Avg R²: 0.9956 | {'alpha_plus': 1.6969}
+  Epoch 10000/20000 | Loss: 0.071909 | Test MSE: 0.041868 | Avg R²: 0.9966 | {'alpha_plus': 1.6926}
+  Epoch 11000/20000 | Loss: 0.070246 | Test MSE: 0.020121 | Avg R²: 0.9976 | {'alpha_plus': 1.6873}
+  Epoch 12000/20000 | Loss: 0.040998 | Test MSE: 0.017581 | Avg R²: 0.9981 | {'alpha_plus': 1.6807}
+  Epoch 13000/20000 | Loss: 0.039516 | Test MSE: 0.014304 | Avg R²: 0.9984 | {'alpha_plus': 1.6755}
+  Epoch 14000/20000 | Loss: 0.037507 | Test MSE: 0.012432 | Avg R²: 0.9985 | {'alpha_plus': 1.6736}
+  Epoch 15000/20000 | Loss: 0.036008 | Test MSE: 0.011379 | Avg R²: 0.9986 | {'alpha_plus': 1.6732}
+  Epoch 16000/20000 | Loss: 0.037260 | Test MSE: 0.014261 | Avg R²: 0.9984 | {'alpha_plus': 1.6727}
+  Epoch 17000/20000 | Loss: 0.039133 | Test MSE: 0.015087 | Avg R²: 0.9984 | {'alpha_plus': 1.6726}
+  Epoch 18000/20000 | Loss: 0.039149 | Test MSE: 0.015071 | Avg R²: 0.9984 | {'alpha_plus': 1.6726}
+  Epoch 19000/20000 | Loss: 0.039069 | Test MSE: 0.015031 | Avg R²: 0.9984 | {'alpha_plus': 1.6726}
+  Epoch 20000/20000 | Loss: 0.039011 | Test MSE: 0.015002 | Avg R²: 0.9984 | {'alpha_plus': 1.6726}
+
+Final: r2_train={'ut': 0.9997634172842705, 'bt': 0.9971444254091858}, r2_test={'ps': 0.998757083334065}, avg_r2=0.9986
+Params: {'alpha_plus': 1.6731851238312885, 'w_id_plus': 0.23381521089282323, 'w_exp1_plus': 0.11112430289927228, 'w_exp2_plus': 0.27026519818614025, 'w_ln1_plus': 0.000393510052954623, 'w_ln2_plus': -0.0006834682374517533}
+Prediction artifact saved to outputs/predictions/rubber_positive_gicann.json
+
+============================================================
+GI-CANN: rubber (negative) — 20000 epochs, lr=0.001
+============================================================
+  Rubber negative warm-start: alpha=-2, small exp branch
+  [redteam patch] jitter seed 1 scale 0.05: init {'alpha_minus': -1.87349, 'w_id_minus': 0.0094, 'w_exp1_minus': 0.00093, 'w_exp2_minus': 0.0009, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+  Epoch  1000/20000 | Loss: 84.593264 | Test MSE: 13.076837 | Avg R²: -0.0636 | {'alpha_minus': -1.7676}
+  Epoch  2000/20000 | Loss: 83.974325 | Test MSE: 12.416731 | Avg R²: -0.0361 | {'alpha_minus': -1.6667}
+  Epoch  3000/20000 | Loss: 83.239684 | Test MSE: 11.662970 | Avg R²: -0.0057 | {'alpha_minus': -1.5665}
+  Epoch  4000/20000 | Loss: 82.363322 | Test MSE: 10.804083 | Avg R²: 0.0275 | {'alpha_minus': -1.4664}
+  Epoch  5000/20000 | Loss: 81.317018 | Test MSE: 9.833274 | Avg R²: 0.0635 | {'alpha_minus': -1.3664}
+  Epoch  6000/20000 | Loss: 80.069607 | Test MSE: 8.750150 | Avg R²: 0.1017 | {'alpha_minus': -1.2663}
+  Epoch  7000/20000 | Loss: 78.587777 | Test MSE: 7.564657 | Avg R²: 0.1412 | {'alpha_minus': -1.1663}
+  Epoch  8000/20000 | Loss: 76.838064 | Test MSE: 6.302325 | Avg R²: 0.1805 | {'alpha_minus': -1.0663}
+  Epoch  9000/20000 | Loss: 74.790238 | Test MSE: 5.009935 | Avg R²: 0.2172 | {'alpha_minus': -0.9663}
+  Epoch 10000/20000 | Loss: 72.422196 | Test MSE: 3.759829 | Avg R²: 0.2488 | {'alpha_minus': -0.8663}
+  Epoch 11000/20000 | Loss: 69.726085 | Test MSE: 2.650348 | Avg R²: 0.2721 | {'alpha_minus': -0.7663}
+  Epoch 12000/20000 | Loss: 66.715049 | Test MSE: 1.802782 | Avg R²: 0.2860 | {'alpha_minus': -0.6663}
+  Epoch 13000/20000 | Loss: 63.459495 | Test MSE: 1.381968 | Avg R²: 0.3095 | {'alpha_minus': -0.5663}
+  Epoch 14000/20000 | Loss: 60.502969 | Test MSE: 1.297599 | Avg R²: 0.3564 | {'alpha_minus': -0.4743}
+  Epoch 15000/20000 | Loss: 59.392401 | Test MSE: 1.257101 | Avg R²: 0.3518 | {'alpha_minus': -0.4439}
+  Epoch 16000/20000 | Loss: 58.720496 | Test MSE: 1.255782 | Avg R²: 0.3476 | {'alpha_minus': -0.4257}
+  Epoch 17000/20000 | Loss: 58.174189 | Test MSE: 1.268312 | Avg R²: 0.3437 | {'alpha_minus': -0.411}
+  Epoch 18000/20000 | Loss: 57.716036 | Test MSE: 1.288393 | Avg R²: 0.3400 | {'alpha_minus': -0.3987}
+  Epoch 19000/20000 | Loss: 57.316405 | Test MSE: 1.313132 | Avg R²: 0.3365 | {'alpha_minus': -0.388}
+  Epoch 20000/20000 | Loss: 56.954276 | Test MSE: 1.341423 | Avg R²: 0.3331 | {'alpha_minus': -0.3782}
+
+Final: r2_train={'ut': -0.09967170902093558, 'bt': 0.27976044638860564}, r2_test={'ps': 0.8628364003152126}, avg_r2=0.3476
+Params: {'alpha_minus': -0.42573074196022104, 'w_id_minus': 10.622202995770772, 'w_exp1_minus': 1e-06, 'w_exp2_minus': 1e-06, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+Prediction artifact saved to outputs/predictions/rubber_negative_gicann.json
+
+============================================================
+GI-CANN: rubber (combined) — 20000 epochs, lr=0.001
+============================================================
+  Rubber combined warm-start: copied positive branch from checkpoints/rubber_positive.pt
+  [redteam patch] jitter seed 1 scale 0.05: init {'alpha_plus': 1.68583, 'alpha_minus': -1.89303, 'w_id_plus': 0.22319, 'w_id_minus': 0.0, 'w_exp1_plus': 0.11123, 'w_exp2_plus': 0.2696, 'w_exp1_minus': 0.00093, 'w_exp2_minus': 0.00107, 'w_ln1_plus': 0.00038, 'w_ln2_plus': -0.00069, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+  Epoch  1000/20000 | Loss: 0.036196 | Test MSE: 0.013675 | Avg R²: 0.9986 | {'alpha_plus': 1.6918, 'alpha_minus': -1.8443}
+  Epoch  2000/20000 | Loss: 0.032751 | Test MSE: 0.012110 | Avg R²: 0.9987 | {'alpha_plus': 1.6999, 'alpha_minus': -1.7839}
+  Epoch  3000/20000 | Loss: 0.031782 | Test MSE: 0.011858 | Avg R²: 0.9987 | {'alpha_plus': 1.7079, 'alpha_minus': -1.7274}
+  Epoch  4000/20000 | Loss: 0.030722 | Test MSE: 0.011482 | Avg R²: 0.9988 | {'alpha_plus': 1.7163, 'alpha_minus': -1.6658}
+  Epoch  5000/20000 | Loss: 0.029527 | Test MSE: 0.011986 | Avg R²: 0.9988 | {'alpha_plus': 1.7233, 'alpha_minus': -1.6067}
+  Epoch  6000/20000 | Loss: 0.029266 | Test MSE: 0.011020 | Avg R²: 0.9989 | {'alpha_plus': 1.7292, 'alpha_minus': -1.5621}
+  Epoch  7000/20000 | Loss: 0.028016 | Test MSE: 0.010249 | Avg R²: 0.9989 | {'alpha_plus': 1.7352, 'alpha_minus': -1.5243}
+  Epoch  8000/20000 | Loss: 0.026561 | Test MSE: 0.010400 | Avg R²: 0.9990 | {'alpha_plus': 1.7418, 'alpha_minus': -1.4808}
+  Epoch  9000/20000 | Loss: 0.028301 | Test MSE: 0.013592 | Avg R²: 0.9988 | {'alpha_plus': 1.7495, 'alpha_minus': -1.4403}
+  Epoch 10000/20000 | Loss: 0.024339 | Test MSE: 0.011144 | Avg R²: 0.9991 | {'alpha_plus': 1.7575, 'alpha_minus': -1.4015}
+  Epoch 11000/20000 | Loss: 0.023119 | Test MSE: 0.010979 | Avg R²: 0.9991 | {'alpha_plus': 1.7669, 'alpha_minus': -1.3627}
+  Epoch 12000/20000 | Loss: 0.022870 | Test MSE: 0.011614 | Avg R²: 0.9991 | {'alpha_plus': 1.7749, 'alpha_minus': -1.3304}
+  Epoch 13000/20000 | Loss: 0.021278 | Test MSE: 0.009242 | Avg R²: 0.9992 | {'alpha_plus': 1.7824, 'alpha_minus': -1.2966}
+  Epoch 14000/20000 | Loss: 0.020185 | Test MSE: 0.010943 | Avg R²: 0.9992 | {'alpha_plus': 1.7901, 'alpha_minus': -1.2605}
+  Epoch 15000/20000 | Loss: 0.032019 | Test MSE: 0.006306 | Avg R²: 0.9993 | {'alpha_plus': 1.7975, 'alpha_minus': -1.2223}
+  Epoch 16000/20000 | Loss: 0.019173 | Test MSE: 0.008080 | Avg R²: 0.9994 | {'alpha_plus': 1.8043, 'alpha_minus': -1.1907}
+  Epoch 17000/20000 | Loss: 0.018955 | Test MSE: 0.009438 | Avg R²: 0.9994 | {'alpha_plus': 1.8108, 'alpha_minus': -1.1552}
+  Epoch 18000/20000 | Loss: 0.017592 | Test MSE: 0.007375 | Avg R²: 0.9994 | {'alpha_plus': 1.8144, 'alpha_minus': -1.1322}
+  Epoch 19000/20000 | Loss: 0.018571 | Test MSE: 0.007839 | Avg R²: 0.9995 | {'alpha_plus': 1.8195, 'alpha_minus': -1.1004}
+  Epoch 20000/20000 | Loss: 0.017544 | Test MSE: 0.007313 | Avg R²: 0.9995 | {'alpha_plus': 1.8251, 'alpha_minus': -1.0718}
+
+Final: r2_train={'ut': 0.9995590845773812, 'bt': 0.9988905555181906}, r2_test={'ps': 0.9993112536215302}, avg_r2=0.9993
+Params: {'alpha_plus': 1.7975465296851902, 'alpha_minus': -1.2223152574855234, 'w_id_plus': 0.1850611759148859, 'w_id_minus': 0.02518006330199568, 'w_exp1_plus': 0.08493562997918988, 'w_exp2_plus': 0.2504481220194399, 'w_exp1_minus': 1e-06, 'w_exp2_minus': 1e-06, 'w_ln1_plus': 0.00032263260991037275, 'w_ln2_plus': -0.0006646819473053139, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+Prediction artifact saved to outputs/predictions/rubber_combined_gicann.json
+
+============================================================
+GI-CANN: brain (positive) — 20000 epochs, lr=0.001
+============================================================
+  Brain positive: exp branch initialized at w_exp1=0.01, w_exp2=0.1
+  [redteam patch] jitter seed 1 scale 0.05: init {'alpha_plus': 1.4502, 'w_id_plus': 2.13918, 'w_exp1_plus': 0.00996, 'w_exp2_plus': 0.09293, 'w_ln1_plus': 0.10296, 'w_ln2_plus': 1.89269}
+  Epoch  1000/20000 | Loss: 0.040867 | Test MSE: 0.003054 | Avg R²: 0.5459 | {'alpha_plus': 1.7892}
+  Epoch  2000/20000 | Loss: 0.026757 | Test MSE: 0.003127 | Avg R²: 0.5288 | {'alpha_plus': 2.6662}
+  Epoch  3000/20000 | Loss: 0.026030 | Test MSE: 0.003093 | Avg R²: 0.5088 | {'alpha_plus': 3.2435}
+  Epoch  4000/20000 | Loss: 0.025977 | Test MSE: 0.003076 | Avg R²: 0.5014 | {'alpha_plus': 3.4437}
+  Epoch  5000/20000 | Loss: 0.025978 | Test MSE: 0.003072 | Avg R²: 0.4999 | {'alpha_plus': 3.4837}
+  Epoch  6000/20000 | Loss: 0.025981 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch  7000/20000 | Loss: 0.025976 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch  8000/20000 | Loss: 0.025976 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch  9000/20000 | Loss: 0.025977 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 10000/20000 | Loss: 0.025978 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 11000/20000 | Loss: 0.025979 | Test MSE: 0.003074 | Avg R²: 0.5001 | {'alpha_plus': 3.4863}
+  Epoch 12000/20000 | Loss: 0.025978 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 13000/20000 | Loss: 0.025977 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 14000/20000 | Loss: 0.025977 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 15000/20000 | Loss: 0.025977 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 16000/20000 | Loss: 0.025978 | Test MSE: 0.003072 | Avg R²: 0.4999 | {'alpha_plus': 3.4863}
+  Epoch 17000/20000 | Loss: 0.025977 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 18000/20000 | Loss: 0.025978 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 19000/20000 | Loss: 0.025976 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+  Epoch 20000/20000 | Loss: 0.025978 | Test MSE: 0.003072 | Avg R²: 0.4998 | {'alpha_plus': 3.4863}
+
+Final: r2_train={'ut': 0.030227552395824087, 'uc': 0.7248550228353547}, r2_test={'ss': 0.8827456349323183}, avg_r2=0.5459
+Params: {'alpha_plus': 1.789187237637087, 'w_id_plus': 1.2187382698965428, 'w_exp1_plus': 1e-06, 'w_exp2_plus': 1e-06, 'w_ln1_plus': 8.442314962974406e-05, 'w_ln2_plus': 0.8900750333281364}
+Prediction artifact saved to outputs/predictions/brain_positive_gicann.json
+
+============================================================
+GI-CANN: brain (negative) — 20000 epochs, lr=0.001
+============================================================
+  Warm-start: alpha=-18, nonnegative weights, identity-dominant init
+  [redteam patch] jitter seed 1 scale 0.05: init {'alpha_minus': -17.81405, 'w_id_minus': 0.01022, 'w_exp1_minus': 0.0, 'w_exp2_minus': 0.0, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+  Epoch  1000/20000 | Loss: 0.001468 | Test MSE: 0.000906 | Avg R²: 0.9593 | {'alpha_minus': -17.7849}
+  Epoch  2000/20000 | Loss: 0.001461 | Test MSE: 0.000910 | Avg R²: 0.9594 | {'alpha_minus': -17.728}
+  Epoch  3000/20000 | Loss: 0.001454 | Test MSE: 0.000914 | Avg R²: 0.9595 | {'alpha_minus': -17.6652}
+  Epoch  4000/20000 | Loss: 0.001448 | Test MSE: 0.000914 | Avg R²: 0.9597 | {'alpha_minus': -17.6037}
+  Epoch  5000/20000 | Loss: 0.001447 | Test MSE: 0.000849 | Avg R²: 0.9608 | {'alpha_minus': -17.5447}
+  Epoch  6000/20000 | Loss: 0.001437 | Test MSE: 0.000918 | Avg R²: 0.9598 | {'alpha_minus': -17.4882}
+  Epoch  7000/20000 | Loss: 0.001435 | Test MSE: 0.000982 | Avg R²: 0.9588 | {'alpha_minus': -17.4341}
+  Epoch  8000/20000 | Loss: 0.001429 | Test MSE: 0.000934 | Avg R²: 0.9598 | {'alpha_minus': -17.3828}
+  Epoch  9000/20000 | Loss: 0.001425 | Test MSE: 0.000937 | Avg R²: 0.9598 | {'alpha_minus': -17.3343}
+  Epoch 10000/20000 | Loss: 0.001423 | Test MSE: 0.000941 | Avg R²: 0.9598 | {'alpha_minus': -17.2884}
+  Epoch 11000/20000 | Loss: 0.001420 | Test MSE: 0.000944 | Avg R²: 0.9598 | {'alpha_minus': -17.2455}
+  Epoch 12000/20000 | Loss: 0.001418 | Test MSE: 0.000947 | Avg R²: 0.9598 | {'alpha_minus': -17.2052}
+  Epoch 13000/20000 | Loss: 0.001416 | Test MSE: 0.000950 | Avg R²: 0.9598 | {'alpha_minus': -17.1677}
+  Epoch 14000/20000 | Loss: 0.001414 | Test MSE: 0.000953 | Avg R²: 0.9598 | {'alpha_minus': -17.1332}
+  Epoch 15000/20000 | Loss: 0.001413 | Test MSE: 0.000955 | Avg R²: 0.9598 | {'alpha_minus': -17.1012}
+  Epoch 16000/20000 | Loss: 0.001416 | Test MSE: 0.001025 | Avg R²: 0.9587 | {'alpha_minus': -17.0716}
+  Epoch 17000/20000 | Loss: 0.001411 | Test MSE: 0.000996 | Avg R²: 0.9592 | {'alpha_minus': -17.0446}
+  Epoch 18000/20000 | Loss: 0.001410 | Test MSE: 0.000966 | Avg R²: 0.9597 | {'alpha_minus': -17.0199}
+  Epoch 19000/20000 | Loss: 0.001410 | Test MSE: 0.000963 | Avg R²: 0.9597 | {'alpha_minus': -16.9974}
+  Epoch 20000/20000 | Loss: 0.001409 | Test MSE: 0.000965 | Avg R²: 0.9597 | {'alpha_minus': -16.9769}
+
+Final: r2_train={'ut': 0.9340419306895951, 'uc': 0.9810201526865345}, r2_test={'ss': 0.9674043064273764}, avg_r2=0.9608
+Params: {'alpha_minus': -17.54473099144378, 'w_id_minus': 0.009629347259790175, 'w_exp1_minus': 1e-06, 'w_exp2_minus': 1e-06, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+Prediction artifact saved to outputs/predictions/brain_negative_gicann.json
+
+============================================================
+GI-CANN: brain (combined) — 20000 epochs, lr=0.001
+============================================================
+  Warm-start: alpha=-18, nonnegative weights, identity-dominant init
+  [redteam patch] jitter seed 1 scale 0.05: init {'alpha_plus': 1.59233, 'alpha_minus': -19.01324, 'w_id_plus': 2.04163, 'w_id_minus': 0.01013, 'w_exp1_plus': 0.01921, 'w_exp2_plus': 4.9283, 'w_exp1_minus': 0.0, 'w_exp2_minus': 0.0, 'w_ln1_plus': 0.10433, 'w_ln2_plus': 2.11757, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+  Epoch  1000/20000 | Loss: 0.073784 | Test MSE: 0.001192 | Avg R²: 0.8435 | {'alpha_plus': 1.5529, 'alpha_minus': -19.0212}
+  Epoch  2000/20000 | Loss: 0.040406 | Test MSE: 0.000954 | Avg R²: 0.9219 | {'alpha_plus': 1.5259, 'alpha_minus': -19.042}
+  Epoch  3000/20000 | Loss: 0.021264 | Test MSE: 0.000841 | Avg R²: 0.9559 | {'alpha_plus': 1.5209, 'alpha_minus': -19.046}
+  Epoch  4000/20000 | Loss: 0.011109 | Test MSE: 0.000846 | Avg R²: 0.9544 | {'alpha_plus': 1.5209, 'alpha_minus': -19.007}
+  Epoch  5000/20000 | Loss: 0.001691 | Test MSE: 0.000848 | Avg R²: 0.9547 | {'alpha_plus': 1.5209, 'alpha_minus': -18.9506}
+  Epoch  6000/20000 | Loss: 0.001672 | Test MSE: 0.000851 | Avg R²: 0.9551 | {'alpha_plus': 1.5209, 'alpha_minus': -18.8775}
+  Epoch  7000/20000 | Loss: 0.001652 | Test MSE: 0.000839 | Avg R²: 0.9560 | {'alpha_plus': 1.5209, 'alpha_minus': -18.7938}
+  Epoch  8000/20000 | Loss: 0.001632 | Test MSE: 0.000857 | Avg R²: 0.9561 | {'alpha_plus': 1.5209, 'alpha_minus': -18.7096}
+  Epoch  9000/20000 | Loss: 0.001613 | Test MSE: 0.000856 | Avg R²: 0.9566 | {'alpha_plus': 1.5209, 'alpha_minus': -18.6264}
+  Epoch 10000/20000 | Loss: 0.001595 | Test MSE: 0.000863 | Avg R²: 0.9569 | {'alpha_plus': 1.5209, 'alpha_minus': -18.5444}
+  Epoch 11000/20000 | Loss: 0.001579 | Test MSE: 0.000899 | Avg R²: 0.9565 | {'alpha_plus': 1.5209, 'alpha_minus': -18.4629}
+  Epoch 12000/20000 | Loss: 0.001566 | Test MSE: 0.000818 | Avg R²: 0.9587 | {'alpha_plus': 1.5209, 'alpha_minus': -18.3823}
+  Epoch 13000/20000 | Loss: 0.001550 | Test MSE: 0.000824 | Avg R²: 0.9589 | {'alpha_plus': 1.521, 'alpha_minus': -18.3026}
+  Epoch 14000/20000 | Loss: 0.001533 | Test MSE: 0.000885 | Avg R²: 0.9580 | {'alpha_plus': 1.521, 'alpha_minus': -18.2242}
+  Epoch 15000/20000 | Loss: 0.001523 | Test MSE: 0.000837 | Avg R²: 0.9593 | {'alpha_plus': 1.521, 'alpha_minus': -18.147}
+  Epoch 16000/20000 | Loss: 0.001510 | Test MSE: 0.000941 | Avg R²: 0.9575 | {'alpha_plus': 1.5211, 'alpha_minus': -18.0713}
+  Epoch 17000/20000 | Loss: 0.001497 | Test MSE: 0.000917 | Avg R²: 0.9583 | {'alpha_plus': 1.5211, 'alpha_minus': -17.9971}
+  Epoch 18000/20000 | Loss: 0.001486 | Test MSE: 0.000898 | Avg R²: 0.9590 | {'alpha_plus': 1.5213, 'alpha_minus': -17.9247}
+  Epoch 19000/20000 | Loss: 0.001477 | Test MSE: 0.000902 | Avg R²: 0.9592 | {'alpha_plus': 1.5215, 'alpha_minus': -17.8546}
+  Epoch 20000/20000 | Loss: 0.001468 | Test MSE: 0.000907 | Avg R²: 0.9593 | {'alpha_plus': 1.5216, 'alpha_minus': -17.786}
+
+Final: r2_train={'ut': 0.9283028253398028, 'uc': 0.9791683342927948}, r2_test={'ss': 0.9685825879952298}, avg_r2=0.9587
+Params: {'alpha_plus': 1.5209340472207464, 'alpha_minus': -18.38225327083181, 'w_id_plus': 5.0055864548500926e-05, 'w_id_minus': 0.00846184094651632, 'w_exp1_plus': 1e-06, 'w_exp2_plus': 1e-06, 'w_exp1_minus': 1e-06, 'w_exp2_minus': 1e-06, 'w_ln1_plus': 0.0, 'w_ln2_plus': 0.0, 'w_ln1_minus': 0.0, 'w_ln2_minus': 0.0}
+Prediction artifact saved to outputs/predictions/brain_combined_gicann.json
+
+=== ALL RESULTS ===
+GI-CANN rubber positive: avg_r2=0.9986
+GI-CANN rubber negative: avg_r2=0.3476
+GI-CANN rubber combined: avg_r2=0.9993
+GI-CANN brain positive: avg_r2=0.5459
+GI-CANN brain negative: avg_r2=0.9608
+GI-CANN brain combined: avg_r2=0.9587

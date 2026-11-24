@@ -1,0 +1,6 @@
+brain_combined_gicann.json := brain_combined_sicann.json
+brain_negative_gicann.json := brain_negative_sicann.json
+brain_positive_gicann.json := brain_positive_sicann.json
+rubber_combined_gicann.json := rubber_combined_sicann.json
+rubber_negative_gicann.json := rubber_negative_sicann.json
+rubber_positive_gicann.json := rubber_positive_sicann.json

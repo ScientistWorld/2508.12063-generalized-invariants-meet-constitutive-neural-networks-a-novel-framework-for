@@ -1,0 +1,5 @@
+[hidden_test] /home/user/redteam/check_failed_runs/empty rc=0
+[hidden_test] /home/user/redteam/check_failed_runs/nan rc=0
+[hidden_test] /home/user/redteam/check_failed_runs/missing_gi rc=0
+[hidden_test] /home/user/redteam/check_failed_runs/crash_leftover_ckpts rc=0
+[hidden_test] /home/user/redteam/check_failed_runs/crash_nothing rc=0

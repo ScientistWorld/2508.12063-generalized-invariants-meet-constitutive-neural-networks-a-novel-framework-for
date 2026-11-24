@@ -1,0 +1,25 @@
+Evaluating brain_combined.pt
+  GI-CANN | brain | combined | avg_r2=0.9444
+Evaluating brain_combined_sicann.pt
+  SI-CANN | brain | combined | avg_r2=0.4130
+Evaluating brain_negative.pt
+  GI-CANN | brain | negative | avg_r2=0.9419
+Evaluating brain_negative_sicann.pt
+  SI-CANN | brain | negative | avg_r2=0.6451
+Evaluating brain_positive.pt
+  GI-CANN | brain | positive | avg_r2=0.4804
+Evaluating brain_positive_sicann.pt
+  SI-CANN | brain | positive | avg_r2=0.4135
+Evaluating rubber_combined.pt
+  GI-CANN | rubber | combined | avg_r2=0.9994
+Evaluating rubber_combined_sicann.pt
+  SI-CANN | rubber | combined | avg_r2=0.9135
+Evaluating rubber_negative.pt
+  GI-CANN | rubber | negative | avg_r2=0.3039
+Evaluating rubber_negative_sicann.pt
+  SI-CANN | rubber | negative | avg_r2=0.1700
+Evaluating rubber_positive.pt
+  GI-CANN | rubber | positive | avg_r2=0.9987
+Evaluating rubber_positive_sicann.pt
+  SI-CANN | rubber | positive | avg_r2=0.9840
+Scores written to scoring/scores_train.json

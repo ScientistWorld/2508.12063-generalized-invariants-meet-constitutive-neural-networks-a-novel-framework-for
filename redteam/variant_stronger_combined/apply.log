@@ -1,0 +1,2 @@
+rubber_positive_gicann.json: predictions copied from rubber_combined_gicann.json; alpha_star now 1.8130047709741073
+brain_negative_gicann.json: predictions copied from brain_combined_gicann.json; alpha_star now -17.79178634106692
