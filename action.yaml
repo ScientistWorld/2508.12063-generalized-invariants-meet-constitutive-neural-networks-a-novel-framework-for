@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 0
-test: false
+action: done
 milestone: majority
-notes: "Hardening job (CPU): retrain reference GI-CANN + SI-CANN baseline (best of 20 paper runs per law, with convergence) on the authors' exact data, regenerate scores.json/scores_train.json/scores_test.json, determinism check, then variants and shortcuts through the hidden test (redteam/hardening/run_checks.sh), validate.py."
+notes: "Hardened: laws scored by eval (no method numbers), authors' exact data, hidden test on new materials; all red-team shortcuts closed; dev-tuned variant beats reference (+0.22 norm vs 0.001 noise); brute force/PS-CANN do not outrank; see HARDENING.md."
