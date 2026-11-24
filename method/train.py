@@ -5,9 +5,10 @@ Reference procedure: for every (material, family) the paper's training run (meth
 mini-batch Adam with early stopping, then full-batch convergence of the same objective) is
 repeated from 20 random initializations (seeds 0-19) and the run with the lowest value of the
 paper's own training objective (loss on the training curves) is kept. Single runs from a random
-start often stop in a local optimum; on the paper's cortex data 3 of 20 starts reach the global
-optimum alpha* = -18.02 (identity term only), which is the law the paper reports (alpha* = -18.016,
-w = 0.009 kPa). No held-out data is used anywhere.
+start often stop in a local optimum (on the paper's cortex data most starts end near alpha = -15
+with an extra exp or ln term); the selected law is the global optimum, alpha* = -18.11 with one
+identity term, w = 0.0092 kPa, the law the paper reports (alpha* = -18.016, w = 0.009 kPa).
+No held-out data is used anywhere.
 
 Each (model, material, family, seed, epochs) run is cached as outputs/runs/<tag>.json, so an
 interrupted job resumes where it stopped. Runs are independent and deterministic (pure Python,

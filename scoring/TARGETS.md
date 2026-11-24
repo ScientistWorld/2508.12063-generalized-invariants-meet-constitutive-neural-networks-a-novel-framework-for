@@ -29,14 +29,17 @@ term) have coefficient 0.
 
 ## Per experiment
 
-| experiment | family | weight | reference (hidden test) |
-|---|---|---|---|
-| rubber_generalization | positive | 0.30 | see `scoring/scores_test.json` |
-| brain_generalization | negative | 0.30 | see `scoring/scores_test.json` |
-| rubber_combined_ablation | combined | 0.15 | see `scoring/scores_test.json` |
-| brain_combined_ablation | combined | 0.15 | see `scoring/scores_test.json` |
-| rubber_negative_ablation | negative | 0.05 | see `scoring/scores_test.json` |
-| brain_positive_ablation | positive | 0.05 | see `scoring/scores_test.json` |
+Reference GI-CANN on the hidden test (avg_r2 / held-out R2 / held-out relative error / n_terms),
+with the fixed SI-CANN baseline for scale:
+
+| experiment | family | weight | GI-CANN (reference) | SI-CANN (baseline) |
+|---|---|---|---|---|
+| rubber_generalization | positive | 0.30 | 0.9939 / 0.9966 / 0.111 / 2 | 0.9751 / 0.9724 / 0.114 / 3 |
+| brain_generalization | negative | 0.30 | 0.9544 / 0.9037 / 0.201 / 1 | 0.5429 / 0.8695 / 0.431 / 1 |
+| rubber_combined_ablation | combined | 0.15 | 0.9974 / 0.9946 / 0.078 / 3 | 0.9969 / 0.9963 / 0.111 / 3 |
+| brain_combined_ablation | combined | 0.15 | 0.9544 / 0.9037 / 0.201 / 1 | 0.5429 / 0.8695 / 0.431 / 1 |
+| rubber_negative_ablation | negative | 0.05 | 0.3287 / 0.1250 / 0.623 / 2 | 0.3321 / 0.0000 / 0.923 / 2 |
+| brain_positive_ablation | positive | 0.05 | 0.4835 / 0.8967 / 0.383 / 1 | 0.4987 / 0.8872 / 0.398 / 1 |
 
 ## Commands
 

@@ -37,5 +37,10 @@
 - Final verifier reviewed folder separation, method-agnostic docs, scoring coefficients, split evaluators, download portability, and reproduced numbers.
 - Re-ran artifact-based full/train/test evaluation and `python3 validate.py --compare`; all checks passed and the `majority` milestone remains the final judgment.
 
+### [2026-11-24 01:30] - majority (iteration 11, hardening)
+- Gym rebuilt around declared strain-energy laws scored by `eval/` (no method-written numbers), the authors' exact data files, and a hidden test on Treloar rubber at 50 C and the corona radiata / basal ganglia (held-out curves only in `eval/test/`).
+- Reference GI-CANN retrained from the final code following the authors' notebooks (plus convergence and best-of-20 by training objective): paper materials reproduce Tables 3/4 (rubber 0.9987 vs 0.998, cortex 0.9669 vs 0.966; alpha* 1.676 and -18.11 vs 1.675 and -18.016); GI beats SI on the hidden test (rubber 0.9939 vs 0.9751, brain 0.9544 vs 0.5429).
+- All red-team shortcuts closed (fail or no effect); a dev-tuned L1 variant beats the reference by +0.22 normalized against a reference-procedure noise of +0.001; brute force and PS-CANN do not outrank. Details in `HARDENING.md`.
+
 ## Stop Justification
 - Completed at milestone `majority`.

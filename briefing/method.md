@@ -40,9 +40,9 @@ reach the law the paper reports instead of a random local stop:
   at random places along it);
 - each law is the best of 20 runs from random initializations, selected by the training objective
   (on the paper's cortex data only some starts escape a local optimum near alpha = -15).
-On the paper's cortex data this gives alpha* = -18.02 with one identity term, w = 0.0092 kPa
-(paper: -18.016, 0.009 kPa); on its rubber data alpha* = 1.69 with identity + exponential terms
-(paper: 1.675).
+On the paper's cortex data this gives alpha* = -18.11 with one identity term, w = 0.0092 kPa
+(paper: -18.016, 0.009 kPa); on its rubber data alpha* = 1.676 with w_id = 0.231 MPa and
+exponential weights 0.109, 0.282 MPa (paper Eq. 19: 1.675, 0.227, 0.107, 0.297).
 
 ## Main Claims
 
