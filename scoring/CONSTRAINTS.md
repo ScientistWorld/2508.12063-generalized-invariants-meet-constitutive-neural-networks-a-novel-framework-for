@@ -1,44 +1,40 @@
 # Constraints
 
-These constraints define what must stay fixed so that improvements come from better constitutive modeling, not from changing the task.
+What must stay fixed so that a better score means a better constitutive law.
 
-## Data Constraints
+## Data
 
-Use the paper’s Table A.5 stress-stretch values as loaded by [`data/load_data.py`](/home/user/data/load_data.py).
+- Fit each material's law on its training modes only: rubber uniaxial + equibiaxial tension,
+  brain uniaxial tension + compression (`data/curves.json`, `data/load_data.py`).
+- The held-out curves of the development materials (rubber_T20 pure shear, brain_CX and brain_CC
+  simple shear) may be used to develop and compare methods, never as fitting data for a test
+  material's law.
+- Never use held-out curves of the test materials (rubber_T50 pure shear, brain_CR and brain_BG
+  simple shear) from any source (for instance the authors' public data files).
 
-- Rubber:
-  - Train on `ut` + `bt`
-  - Test on `ps`
-- Brain cortex:
-  - Train on `ut` + `uc`
-  - Test on `ss`
+## Model
 
-Do not change the numeric data, deformation modes, or train/test partition.
+- Submit laws in the schema of `briefing/evaluation.md`: sums of identity, exponential and
+  logarithmic terms of generalized invariants J_alpha (optional power of J_alpha - 3 in [1, 3]).
+  Any procedure may produce them.
+- Weights non-negative; exponents obey the family (positive: > 0, negative: < 0, combined: any);
+  |alpha| <= 60; the ln term's argument must stay positive wherever the law is evaluated.
+- At most 12 active terms; fewer is better (`n_terms` is scored).
 
-## Model Constraints
+## Physics
 
-The task is constitutive-law discovery for isotropic incompressible hyperelasticity.
+Isotropic, incompressible hyperelasticity. The evaluator derives the stress of every loading mode
+from the declared energy: uniaxial tension/compression and pure shear (sigma_11), equibiaxial
+tension (sigma_11 = sigma_22), simple shear (sigma_12). Every admissible law is stress-free in the
+reference state.
 
-- Predictions must come from a valid constitutive model, not a direct black-box mapping from input curve coordinates to output stresses.
-- The model should stay compact and interpretable enough that a future scientist can inspect the learned constitutive law.
-- Improvements should come from better constitutive modeling or better training, not from adding large generic function approximators.
+## Evaluation
 
-## Physics Constraints
+`bash scripts/evaluate_train.sh` (development) and `bash scripts/evaluate_test.sh` (hidden test)
+take no arguments and score every file in `outputs/laws/`; `outputs/laws/GI-CANN.json` is the
+ranked entry. The SI-CANN baseline is fixed inside `eval/`.
 
-- Respect incompressibility in the deformation descriptions used by the benchmark.
-- Predict the appropriate Cauchy stress component for each loading mode.
-- Preserve the same deformation definitions for `ut`, `uc`, `bt`, `ps`, and `ss`.
+## Resources
 
-## Evaluation Constraints
-
-Evaluate with [`scripts/evaluate.sh`](/home/user/scripts/evaluate.sh), which writes [`scoring/scores.json`](/home/user/scoring/scores.json).
-
-- Rubber metric set: `r2_ut`, `r2_bt`, `r2_ps`, `avg_r2`, `alpha_star`
-- Brain metric set: `r2_ut`, `r2_uc`, `r2_ss`, `avg_r2`, `alpha_star`
-
-`avg_r2` remains the primary metric. `alpha_star` is included as a report-only descriptor because interpretability matters, but it is not scored directly.
-
-## Resource Constraints
-
-- No pretrained external model weights
-- Keep the method small enough that gains reflect modeling quality rather than raw capacity
+No pretrained weights or external data. CPU is enough: the reference trains in about 20
+CPU-minutes.

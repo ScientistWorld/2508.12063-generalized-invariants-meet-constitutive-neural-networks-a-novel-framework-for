@@ -1,28 +1,8 @@
 #!/bin/bash
-# Evaluation script — the standard way to evaluate work in this environment.
-#
-# This script evaluates neutral prediction artifacts in outputs/predictions/
-# and produces scoring/scores.json. If no prediction artifacts are present,
-# it falls back to legacy checkpoint reconstruction for the packaged GI/SI-CANN
-# checkpoints.
-#
-# OUTPUT CONTRACT: This script MUST write scoring/scores.json containing
-# a JSON dict nested by experiment, matching the structure in scoring/reference.json.
-#
-# Usage:
-#   ./evaluate.sh                            # evaluate all checkpoints
-#   ./evaluate.sh --checkpoint ckpt.pt       # evaluate a specific checkpoint
-#   ./evaluate.sh --experiment brain_generalization
-#                                           # keep only selected experiment(s)
-
-set -e
-
+# Paper view: score every law file in outputs/laws/ on the paper's own two materials
+# (Treloar rubber at 20 C, human cortex) and write scoring/scores.json, comparable to the paper's
+# Tables 3 and 4 (scoring/reference.json). Not ranked.
+set -euo pipefail
 cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python3}
-
-mkdir -p scoring
-
-${PYTHON} eval/evaluate.py \
-    --checkpoints-dir checkpoints \
-    --scores-json scoring/scores.json \
-    "$@"
+${PYTHON} eval/train/evaluate.py --materials rubber_T20,brain_CX --scores-json scoring/scores.json "$@"

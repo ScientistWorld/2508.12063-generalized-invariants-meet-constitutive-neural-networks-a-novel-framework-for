@@ -1,0 +1,125 @@
+{
+ "schema": "generalized_invariant_laws_v1",
+ "method": "SI-CANN",
+ "note": "fixed baseline installed by scripts/baseline.sh (SI-CANN: exponents fixed at +-2)",
+ "laws": {
+  "rubber_T50": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 2.0,
+      "w": 0.2166192636634711
+     },
+     {
+      "fn": "exp",
+      "alpha": 2.0,
+      "w1": 0.0907834521687557,
+      "w2": 0.03273814833291758
+     }
+    ],
+    "seed": 0,
+    "train_objective": 24.08430679337181
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": -2.0,
+      "w1": 0.018549825380334322,
+      "w2": 0.9402690304932824
+     }
+    ],
+    "seed": 0,
+    "train_objective": 3.308464650117718e+18
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": -2.0,
+      "w1": 0.006229483509889617,
+      "w2": 0.5840690534253634
+     }
+    ],
+    "seed": 0,
+    "train_objective": 1662101.0142887777
+   }
+  },
+  "brain_CR": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": 2.0,
+      "w1": 0.7525501221228553,
+      "w2": 0.7324597951533313
+     }
+    ],
+    "seed": 0,
+    "train_objective": 0.04409799225549172
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": -2.0,
+      "w1": 0.7720978280106962,
+      "w2": 0.7400704286431264
+     }
+    ],
+    "seed": 0,
+    "train_objective": 0.03694809214778609
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": -2.0,
+      "w1": 0.776158420383864,
+      "w2": 0.736158223203558
+     }
+    ],
+    "seed": 0,
+    "train_objective": 0.03694756362989928
+   }
+  },
+  "brain_BG": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": 2.0,
+      "w1": 0.6917470789273552,
+      "w2": 0.6722328274143461
+     }
+    ],
+    "seed": 0,
+    "train_objective": 0.025226798528331876
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "exp",
+      "alpha": -2.0,
+      "w1": 0.7023854505816087,
+      "w2": 0.6784261233796961
+     }
+    ],
+    "seed": 0,
+    "train_objective": 0.02154962426843561
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 2.0,
+      "w": 0.4700183386199774
+     }
+    ],
+    "seed": 0,
+    "train_objective": 0.02542920500106527
+   }
+  }
+ }
+}

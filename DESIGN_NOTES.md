@@ -1,3 +1,5 @@
+> **Superseded (iteration 11).** This file describes the gym before the hardening pass. The current design (declared strain-energy laws scored by `eval/`, the authors' exact data, development and test materials) is described in `HARDENING.md`, `briefing/` and `scoring/`.
+
 # Evaluation Split Design Notes
 
 ## Checked

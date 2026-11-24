@@ -2,15 +2,23 @@
 
 - **Paper ID:** 2508.12063
 - **Title:** Generalized invariants meet constitutive neural networks: A novel framework for hyperelastic materials
-- **Domain:** Computational Mechanics / Constitutive Modeling
-- **TL;DR:** A neural network (GI-CANN) that simultaneously discovers the optimal exponent for generalized invariants and the strain energy function from stress-strain data, enabling automated interpretable model discovery for hyperelastic materials.
+- **Domain:** Computational mechanics / constitutive modeling
+- **TL;DR:** GI-CANN makes the exponent of the generalized invariant J_alpha = sum l_i^alpha a trainable parameter of a constitutive neural network, so the invariant and the strain energy are discovered together from stress-stretch data.
 
 ## Short Summary
 
-The paper addresses the challenge of automatically discovering physically meaningful constitutive models for isotropic incompressible hyperelastic materials from experimental stress-strain data. The proposed GI-CANN (Generalized Invariant Constitutive Artificial Neural Network) learns a trainable exponent α in the generalized invariant J_α = Σ λᵢ^α, and combines it with a structured neural network that outputs the strain energy function via three parallel branches (identity, exponential, logarithmic). Unlike prior approaches that require fixed invariants or sequential two-step fitting, GI-CANN discovers both the invariant and the strain energy function in a single training procedure. The method is validated on rubber (Treloar data) and brain cortex (Budday et al. data), demonstrating that it automatically identifies the appropriate invariant formulation for each material — stretch-dominated behavior (rubber) prefers positive exponents near α=1.7, while shear-dominated behavior (brain tissue) prefers large negative exponents α≈-18.
+Classical hyperelastic models fix their invariants (I1, I2) and functional form in advance.
+GI-CANN learns the generalized-invariant exponent together with a sparse strain energy built from
+identity, exponential and logarithmic terms, trained on some loading modes and tested on another.
+On Treloar's rubber it finds an I1-like law (alpha* = 1.675, avg R2 0.998); on human cortex a
+single strongly I2-like term (alpha* = -18.016, avg R2 0.966), both clearly better than the same
+network with alpha fixed at +-2 (0.982, 0.610).
 
-## Key Results
+## The gym
 
-- **Rubber**: GI-CANN with single positive exponent achieves average R² = 0.998 (trained on uniaxial + equibiaxial, tested on pure shear), compared to SI-CANN's R² = 0.982
-- **Brain tissue**: GI-CANN with single negative exponent achieves average R² = 0.966 (trained on uniaxial tension + compression, tested on simple shear), significantly outperforming SI-CANN's R² = 0.527 with α+=2
-- **Interpretability**: The discovered models correspond to closed-form strain energy functions (e.g., ψ = 0.227 MPa · (J_1.675 - 3) + 0.297 MPa · [exp(0.107 · (J_1.675 - 3)) - 1] for rubber)
+Laws are scored, not stress predictions: a method declares its strain energy per material and
+exponent family, the evaluator computes the stresses. The paper's two materials and the corpus
+callosum are the development side; Treloar rubber at 50 C and the corona radiata and basal
+ganglia (same studies, same protocol) form the hidden test, whose held-out-mode curves are not in
+the workspace. Metrics: per-mode R2 (clipped at 0, as in the paper), mean relative error on the
+held-out mode, and the number of active terms. See `briefing/evaluation.md`.

@@ -1,16 +1,8 @@
 #!/bin/bash
-# Train-slice evaluation entry point.
-#
-# Mirrors scripts/evaluate.sh but writes scoring/scores_train.json.
-
-set -e
-
+# Development-side evaluation: scores every law file in outputs/laws/ (plus the fixed SI-CANN
+# baseline) on the development materials and writes scoring/scores_train.json.
+# Usage: bash scripts/evaluate_train.sh        (no arguments)
+set -euo pipefail
 cd "$(dirname "$0")/.."
 PYTHON=${PYTHON:-python3}
-
-mkdir -p scoring
-
-${PYTHON} eval/train/evaluate.py \
-    --checkpoints-dir checkpoints \
-    --scores-json scoring/scores_train.json \
-    "$@"
+${PYTHON} eval/train/evaluate.py

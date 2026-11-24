@@ -1,37 +1,33 @@
 #!/bin/bash
-# CPU scoring job: export model-agnostic prediction artifacts from the packaged
-# checkpoints, regenerate all scoring files, and run structural checks.
-
+# CPU job: reproduce the reference end to end from the final code, then run the hardening checks
+# (variants and shortcuts through the hidden test). Resumable: training runs are cached in
+# outputs/runs/ and outputs/variant_runs/, finished checks carry a DONE file.
 set -euo pipefail
-
 cd "$(dirname "$0")/.."
-mkdir -p logs outputs/predictions scoring
+export PYTHONDONTWRITEBYTECODE=1
+LOG=redteam/hardening/logs
+mkdir -p "$LOG"
+JOBS=$(nproc)
+echo "cpus: $JOBS  start: $(date)"
 
-echo "========================================="
-echo "GI-CANN artifact export and validation"
-echo "========================================="
+# 1. Reference (runs alone): SI-CANN baseline and GI-CANN, best of 20 paper runs per law.
+python3 method/train.py --model SI-CANN --jobs "$JOBS" --out outputs/baselines/SI-CANN.json > "$LOG/train_sicann.log" 2>&1
+python3 scripts/install_baselines.py outputs/baselines/SI-CANN.json
+python3 method/train.py --model GI-CANN --jobs "$JOBS" --out outputs/laws/GI-CANN.json > "$LOG/train_gicann.log" 2>&1
+tail -n 1 "$LOG/train_sicann.log" "$LOG/train_gicann.log"
+bash scripts/evaluate.sh       > "$LOG/evaluate_paper.log" 2>&1
+bash scripts/evaluate_train.sh > "$LOG/evaluate_train.log" 2>&1
+bash scripts/evaluate_test.sh  > "$LOG/evaluate_test.log" 2>&1
+cat "$LOG/evaluate_paper.log" "$LOG/evaluate_test.log"
+echo "reference done: $(date)"
 
-rm -f outputs/predictions/*.json
+# 2. Determinism: a few reference runs repeated alone must be bit-identical.
+python3 redteam/hardening/lib/determinism.py 2>&1 | tee "$LOG/determinism.log"
 
-python3 method/export_predictions.py \
-  --checkpoints-dir checkpoints \
-  --predictions-dir outputs/predictions \
-  --device cpu \
-  2>&1 | tee logs/export_predictions.log
+# 3. Hardening checks through the hidden test.
+bash redteam/hardening/run_checks.sh > "$LOG/run_checks.log" 2>&1 || true
+tail -n 60 "$LOG/run_checks.log"
 
-echo "--- Evaluating full benchmark from prediction artifacts ---"
-bash scripts/evaluate.sh 2>&1 | tee logs/evaluate.log
-
-echo "--- Evaluating train slice from prediction artifacts ---"
-bash scripts/evaluate_train.sh 2>&1 | tee logs/evaluate_train.log
-
-echo "--- Evaluating held-out test slice from prediction artifacts ---"
-bash scripts/evaluate_test.sh 2>&1 | tee logs/evaluate_test.log
-
-echo "--- Validating generated score files ---"
-python3 validate.py --compare 2>&1 | tee logs/validate_compare.log
-
-echo ""
-echo "========================================="
-echo "Done! Results in scoring/scores.json, scoring/scores_train.json, and scoring/scores_test.json"
-echo "========================================="
+# 4. Structural validation.
+python3 validate.py 2>&1 | tee "$LOG/validate.log" || true
+echo "end: $(date)"

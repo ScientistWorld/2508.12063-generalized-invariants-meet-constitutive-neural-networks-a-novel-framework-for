@@ -1,27 +1,31 @@
 # Experiment Overview
 
-This document describes what each experiment in `scores.json` is trying to establish.
+Every experiment asks the same question for one material class and one exponent family: fitted
+on the training loading modes only, how well does the discovered constitutive law reproduce
+those modes and predict the held-out mode, and how compact is it? Scores average over the
+experiment's materials: the paper's material(s) on the development side, other materials from
+the same studies on the hidden test (see `briefing/evaluation.md`).
 
-## rubber_generalization
+## rubber_generalization (weight 0.30)
 
-Tests whether a constitutive model trained on rubber uniaxial tension and equibiaxial tension can generalize to held-out pure shear. This is the main rubber benchmark and measures whether the learned constitutive law transfers across loading modes rather than only matching the training curves.
+Rubber, exponents > 0 only (I1-like generalized invariants). Fit uniaxial + equibiaxial tension,
+predict pure shear. The main rubber benchmark: stretch-dominated entropic elasticity at large
+stretches (to 7-8), where small errors in the invariant choice show up in the held-out mode and
+in the relative error at small stretches.
 
-## rubber_negative_ablation
+## brain_generalization (weight 0.30)
 
-Tests a restricted rubber setting intended to check whether a shear-dominated descriptor family is sufficient for this material. Poor performance is expected and serves as a sanity check that the benchmark can distinguish materially inappropriate constitutive choices.
+Brain tissue, exponents < 0 only (I2-like). Fit uniaxial tension + compression, predict simple
+shear. The main soft-tissue benchmark: a small-strain, tension/compression-asymmetric material
+whose shear response is not determined by a fixed classical invariant.
 
-## rubber_combined_ablation
+## rubber_combined_ablation (weight 0.15) and brain_combined_ablation (weight 0.15)
 
-Tests whether a richer rubber constitutive description improves on the main single-family setting. This experiment asks whether combining complementary descriptors yields a measurable gain beyond the already strong primary rubber benchmark.
+Exponents of either sign. Asks whether mixing I1-like and I2-like generalized invariants gives a
+better (or equally good, more general) law than the single-family setting.
 
-## brain_generalization
+## rubber_negative_ablation (weight 0.05) and brain_positive_ablation (weight 0.05)
 
-Tests whether a constitutive model trained on brain-cortex uniaxial tension and compression can generalize to held-out simple shear. This is the hardest experiment in the workspace and is the most informative check of cross-mode transfer for soft biological tissue.
-
-## brain_positive_ablation
-
-Tests a restricted brain setting intended to check whether a stretch-dominated descriptor family is sufficient for this material. Poor performance is expected and helps verify that the benchmark remains sensitive to constitutive mismatch.
-
-## brain_combined_ablation
-
-Tests whether a richer brain constitutive description improves on the main single-family setting. This experiment checks whether extra flexibility materially helps once the model already captures the key shear-sensitive response.
+The mismatched family for each material (I2-like only for rubber, I1-like only for brain). Laws
+are expected to be poor here; the experiments check that the benchmark separates appropriate from
+inappropriate invariant families, and reward a better law even within the restricted family.

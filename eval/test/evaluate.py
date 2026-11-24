@@ -1,389 +1,370 @@
 #!/usr/bin/env python3
-"""Held-out test-slice evaluation for the GI-CANN benchmark."""
+"""Hidden-test evaluator: scores declared strain-energy laws on the test materials.
+
+What is scored
+--------------
+A method submits constitutive laws, never stresses. Each file outputs/laws/<METHOD>.json holds,
+for every material and exponent family, a strain energy built from generalized invariants
+J_a = l1^a + l2^a + l3^a (incompressible, l1 l2 l3 = 1):
+
+    psi = sum over terms of
+          id : w  * x                     x = (J_alpha - 3)^power
+          exp: w2 * (exp(w1 * x) - 1)
+          ln : -w2 * ln(1 - w1 * x)
+
+with every weight >= 0, power in [1, 3] (default 1) and the ln argument positive wherever the law
+is evaluated. This evaluator recomputes the Cauchy stress of every loading mode from the law
+itself (closed-form stress for uniaxial, equibiaxial, pure shear and simple shear) and compares it
+with the frozen ground truth next to this file. Numbers a method writes are never read.
+
+Families: "positive" (every exponent > 0), "negative" (every exponent < 0), "combined" (any sign).
+A law that breaks its family's sign rule, uses a negative or non-finite weight, leaves the ln
+domain, produces a non-finite stress, has no active term or more than MAX_ACTIVE_TERMS active
+terms is invalid. An experiment whose law is missing or invalid for any of its materials is
+scored as failed: every scored metric gets its worst value.
+
+Metrics per experiment (averaged over the experiment's materials on this side):
+  r2_<mode>          coefficient of determination per loading mode, clipped to [0, 1]
+                     (the paper reports negative R2 as 0)
+  avg_r2             mean of the three clipped per-mode R2 (training modes + held-out mode)
+  heldout_rel_error  mean relative stress error on the held-out mode, |s - s_hat| / |s_hat| per
+                     loaded point, each point capped at 1
+  n_terms            number of active terms (a term is active if its stress contribution reaches
+                     1% of the measured stress range of some loading mode)
+  alpha_star         exponent of the dominant term (report only)
+
+Usage: python eval/test/evaluate.py [--laws-dir outputs/laws] [--scores-json scoring/scores_test.json]
+       [--materials m1,m2]   (default: every material in ground_truth.json)
+Standard library only.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
+import re
 import sys
+import tempfile
 from pathlib import Path
 
-import numpy as np
+SIDE = "test"
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+DEFAULT_SCORES = ROOT / "scoring" / ("scores_%s.json" % SIDE)
+GROUND_TRUTH = HERE / "ground_truth.json"
+BASELINES_DIR = HERE / "baselines"
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
+EXPERIMENTS = {
+    "rubber_generalization": ("rubber", "positive"),
+    "rubber_negative_ablation": ("rubber", "negative"),
+    "rubber_combined_ablation": ("rubber", "combined"),
+    "brain_generalization": ("brain", "negative"),
+    "brain_positive_ablation": ("brain", "positive"),
+    "brain_combined_ablation": ("brain", "combined"),
+}
+MODES = {"rubber": ("ut", "bt", "ps"), "brain": ("ut", "uc", "ss")}
+HELDOUT = {"rubber": "ps", "brain": "ss"}
+PRIMARY_SLOT = "GI-CANN"  # always reported; worst values when its law file is missing
 
-# Older checkpoints can contain pickled NumPy objects under the internal
-# ``numpy._core`` module path, while the container ships NumPy exposing the
-# same objects via ``numpy.core``. Alias the old path so torch.load can
-# deserialize the trusted local checkpoints.
-if "numpy._core" not in sys.modules:
-    sys.modules["numpy._core"] = np.core
-if "numpy._core.multiarray" not in sys.modules:
-    sys.modules["numpy._core.multiarray"] = np.core.multiarray
-
-from data.load_data import (  # noqa: E402
-    BRAIN_SS,
-    BRAIN_UC,
-    BRAIN_UT,
-    RUBBER_BT,
-    RUBBER_PS,
-    RUBBER_UT,
-    HyperelasticDataset,
-    compute_r2,
-    extract_observed_stress,
-)
-from eval.artifacts import build_scores_from_artifacts, load_prediction_artifacts  # noqa: E402
-from eval.artifacts import curve_quality_metrics  # noqa: E402
-
-torch = None
-MinimalGICANN = None
-MinimalSICANN = None
+MAX_FILE_BYTES = 5_000_000
+MAX_DECLARED_TERMS = 64
+MAX_ACTIVE_TERMS = 12
+ALPHA_MAX = 60.0
+ALPHA_ZERO = 1e-12
+POWER_MIN, POWER_MAX = 1.0, 3.0
+ACTIVE_FRACTION = 0.01
+REL_ERR_CAP = 1.0
+NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.+\-]{0,63}$")
 
 
-def score_entries(scores: dict, experiments_filter: set[str] | None = None) -> set[tuple[str, str]]:
-    entries = set()
-    for exp_name, exp_info in scores.get("experiments", {}).items():
-        if experiments_filter and exp_name not in experiments_filter:
-            continue
-        for method_name in exp_info.get("results", {}):
-            entries.add((exp_name, method_name))
-    return entries
+class InvalidLaw(Exception):
+    pass
 
 
-def validate_train_entries_present(scores: dict, train_scores_path: str, experiments_filter: set[str] | None = None) -> None:
-    """Ensure held-out scores cover every method entry exposed in train scores."""
-    path = Path(train_scores_path)
-    if not path.exists():
-        print(f"Train score file not found at {path}; skipping train/test entry validation.")
-        return
+# --------------------------------------------------------------------------- kinematics
+def kinematics(mode: str, x: float, alpha: float) -> tuple[float, float]:
+    """Return (J_alpha - 3, g) with observed stress = alpha * dpsi/dJ * g.
 
-    with open(path) as f:
-        train_scores = json.load(f)
-
-    missing = sorted(score_entries(train_scores, experiments_filter) - score_entries(scores, experiments_filter))
-    if missing:
-        formatted = ", ".join(f"{exp}/{method}" for exp, method in missing)
-        raise SystemExit(f"Held-out test scores are missing train-scored method entries: {formatted}")
-
-
-def ensure_checkpoint_dependencies():
-    """Import PyTorch-only dependencies for legacy checkpoint scoring."""
-    global torch, MinimalGICANN, MinimalSICANN
-    if torch is None:
-        import torch as torch_module
-        from eval.models import MinimalGICANN as gicann_cls, MinimalSICANN as sicann_cls
-
-        torch = torch_module
-        MinimalGICANN = gicann_cls
-        MinimalSICANN = sicann_cls
-
-
-def balanced_holdout_indices(data: np.ndarray) -> np.ndarray:
-    """Return a target-balanced nonzero holdout subset for one curve.
-
-    The curves are small enough that every-other rows can make R2 unstable for
-    weak ablations. This target-only partition keeps mean, spread, and endpoint
-    stress statistics similar across the complementary slices.
+    ut/uc: F = diag(l, l^-1/2, l^-1/2)  -> sigma_11
+    bt   : F = diag(l, l, l^-2)         -> sigma_11 = sigma_22
+    ps   : F = diag(l, 1, l^-1)         -> sigma_11
+    ss   : F = [[1, g, 0], [0, 1, 0], [0, 0, 1]], principal stretches l+- = (sqrt(g^2+4) +- g)/2, 1
+           -> sigma_12
     """
-    indices = np.arange(1, len(data), dtype=int)
-    if len(indices) <= 2:
-        return indices[1::2]
-
-    targets = data[indices, 1].astype(float)
-    target_scale = float(np.ptp(targets))
-    if target_scale <= 1e-12:
-        target_scale = max(float(np.max(np.abs(targets))), 1.0)
-
-    holdout_size = len(indices) // 2
-    best_score = None
-    best_subset = None
-    from itertools import combinations
-
-    def summary(rows: np.ndarray) -> np.ndarray:
-        values = data[rows, 1].astype(float)
-        return np.array(
-            [
-                np.mean(values),
-                np.std(values),
-                np.min(values),
-                np.max(values),
-            ],
-            dtype=float,
-        ) / target_scale
-
-    all_set = set(int(i) for i in indices)
-    for subset_tuple in combinations((int(i) for i in indices), holdout_size):
-        subset = np.asarray(subset_tuple, dtype=int)
-        complement = np.asarray(sorted(all_set - set(subset_tuple)), dtype=int)
-        score = float(np.linalg.norm(summary(subset) - summary(complement)))
-        if best_score is None or score < best_score:
-            best_score = score
-            best_subset = subset
-
-    return np.asarray(best_subset, dtype=int)
+    if mode in ("ut", "uc"):
+        p, q = x ** alpha, x ** (-alpha / 2.0)
+        return p + 2.0 * q - 3.0, p - q
+    if mode == "bt":
+        p, q = x ** alpha, x ** (-2.0 * alpha)
+        return 2.0 * p + q - 3.0, p - q
+    if mode == "ps":
+        p, q = x ** alpha, x ** (-alpha)
+        return p + q - 2.0, p - q
+    if mode == "ss":
+        s = math.sqrt(x * x + 4.0)
+        lp, lm = 0.5 * (s + x), 0.5 * (s - x)
+        p, q = lp ** alpha, lm ** alpha
+        return p + q - 2.0, (p - q) / s
+    raise ValueError(mode)
 
 
-def slice_indices(data: np.ndarray) -> np.ndarray:
-    """Return the held-out target-balanced rows for one full deformation curve."""
-    return balanced_holdout_indices(data)
+# --------------------------------------------------------------------------- laws
+def _finite_nonneg(term: dict, key: str) -> float:
+    v = term.get(key)
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        raise InvalidLaw(f"term weight {key!r} missing or not a number")
+    v = float(v)
+    if not math.isfinite(v) or v < 0.0:
+        raise InvalidLaw(f"term weight {key!r}={v!r} must be finite and >= 0")
+    return v
 
 
-def split_rows(data: np.ndarray) -> np.ndarray:
-    """Return this slice's held-out target-balanced nonzero rows."""
-    return data[slice_indices(data)]
-
-
-def rows_by_material() -> dict[str, dict[str, np.ndarray]]:
-    return {
-        "rubber": {
-            "ut": slice_indices(RUBBER_UT),
-            "bt": slice_indices(RUBBER_BT),
-            "ps": slice_indices(RUBBER_PS),
-        },
-        "brain": {
-            "ut": slice_indices(BRAIN_UT),
-            "uc": slice_indices(BRAIN_UC),
-            "ss": slice_indices(BRAIN_SS),
-        },
-    }
-
-
-def get_slice_dataset(material: str) -> tuple[HyperelasticDataset, list[str]]:
-    if material == "rubber":
-        modes = [
-            ("ut", split_rows(RUBBER_UT), "ut"),
-            ("bt", split_rows(RUBBER_BT), "bt"),
-            ("ps", split_rows(RUBBER_PS), "ps"),
-        ]
-        return HyperelasticDataset(modes), ["ut", "bt", "ps"]
-
-    modes = [
-        ("ut", split_rows(BRAIN_UT), "ut"),
-        ("uc", split_rows(BRAIN_UC), "uc"),
-        ("ss", split_rows(BRAIN_SS), "ss"),
-    ]
-    return HyperelasticDataset(modes), ["ut", "uc", "ss"]
-
-
-def extract_params_from_state(model_state: dict, config: dict, is_sicann: bool) -> dict:
-    params = {}
-    for key, value in model_state.items():
-        if torch.is_tensor(value) and value.numel() == 1:
-            params[key] = round(float(value.item()), 4)
-
-    if is_sicann:
-        params["alpha_fixed"] = 2.0 if config.get("mode", "positive") == "positive" else -2.0
-    return params
-
-
-def evaluate_checkpoint(checkpoint_path: Path, device: str = "cpu") -> dict:
-    # These benchmark checkpoints are trusted local reproduction artifacts.
-    # PyTorch 2.6 defaults to weights_only=True, which rejects their NumPy
-    # scalar config metadata before the model state can be read.
-    ensure_checkpoint_dependencies()
-    try:
-        state = torch.load(checkpoint_path, map_location=device, weights_only=False)
-    except TypeError:
-        state = torch.load(checkpoint_path, map_location=device)
-    config = state.get("config", {})
-    stem = checkpoint_path.stem
-    is_sicann = "sicann" in stem.lower()
-    material = "rubber" if "rubber" in stem else "brain"
-    model_type = "SI-CANN" if is_sicann else "GI-CANN"
-
-    if is_sicann:
-        model = MinimalSICANN(config)
-    else:
-        model = MinimalGICANN(config)
-
-    model.load_state_dict(state["model_state"], strict=not is_sicann)
-    model.eval()
-
-    device_obj = torch.device(device)
-    model = model.to(device_obj)
-    dataset, mode_names = get_slice_dataset(material)
-    F = dataset.F.to(device_obj)
-    S = dataset.S.to(device_obj)
-    gamma = dataset.gamma.to(device_obj)
-
-    predictions_by_mode = {}
-    targets_by_mode = {}
-    with torch.no_grad():
-        for mode_name in mode_names:
-            indices = dataset.mode_indices[mode_name]
-            idx_t = torch.tensor(indices, dtype=torch.long, device=device_obj)
-            if mode_name == "ss":
-                pred = model(F[idx_t], gamma_override=gamma[idx_t])
-            else:
-                pred = model(F[idx_t])
-            target = S[idx_t]
-            pred_obs = extract_observed_stress(pred, [mode_name] * len(indices)).cpu().numpy()
-            target_obs = extract_observed_stress(target, [mode_name] * len(indices)).cpu().numpy()
-            predictions_by_mode[mode_name] = pred_obs
-            targets_by_mode[mode_name] = target_obs
-
-    return {
-        "material": material,
-        "mode": config.get("mode", "unknown"),
-        "model_type": model_type,
-        "metrics": curve_quality_metrics(material, predictions_by_mode, targets_by_mode),
-        "params": extract_params_from_state(state["model_state"], config, is_sicann),
-        "checkpoint": str(checkpoint_path),
-    }
-
-
-def experiment_and_method(result: dict) -> tuple[str, str] | tuple[None, None]:
-    material = result["material"]
-    mode = result["mode"]
-    model_type = result["model_type"]
-
-    if material == "rubber":
-        if mode == "positive":
-            return "rubber_generalization", "SI-CANN" if model_type == "SI-CANN" else "GI-CANN"
-        if mode == "negative":
-            return "rubber_negative_ablation", "SI-CANN_Jα-" if model_type == "SI-CANN" else "GI-CANN_Jα-"
-        if mode == "combined":
-            return "rubber_combined_ablation", "SI-CANN_Jα+Jα-" if model_type == "SI-CANN" else "GI-CANN_Jα+Jα-"
-        return None, None
-
-    if mode == "negative":
-        return "brain_generalization", "SI-CANN" if model_type == "SI-CANN" else "GI-CANN"
-    if mode == "positive":
-        return "brain_positive_ablation", "SI-CANN_Jα+" if model_type == "SI-CANN" else "GI-CANN_Jα+"
-    if mode == "combined":
-        return "brain_combined_ablation", "SI-CANN_Jα+Jα-" if model_type == "SI-CANN" else "GI-CANN_Jα+Jα-"
-    return None, None
-
-
-def build_scores_json(results: list[dict], output_path: str, experiments_filter: set[str] | None = None) -> dict:
-    exp_data: dict[str, dict] = {}
-
-    for result in results:
-        exp_name, method_name = experiment_and_method(result)
-        if exp_name is None or method_name is None:
-            continue
-        if experiments_filter and exp_name not in experiments_filter:
-            continue
-
-        metrics = result["metrics"]
-        params = result["params"]
-        mode = result["mode"]
-        model_type = result["model_type"]
-        exp_data.setdefault(exp_name, {"results": {}})
-
-        if result["material"] == "rubber":
-            if model_type == "SI-CANN":
-                alpha_star = params.get("alpha_fixed", 2.0 if mode == "positive" else -2.0)
-            elif mode == "negative":
-                alpha_star = params.get("alpha_minus", 0.0)
-            else:
-                alpha_star = params.get("alpha_plus", params.get("alpha_minus", 0.0))
-            exp_data[exp_name]["results"][method_name] = {
-                "r2_ut": round(metrics["r2_ut"], 4),
-                "r2_bt": round(metrics["r2_bt"], 4),
-                "r2_ps": round(metrics["r2_ps"], 4),
-                "avg_r2": round(metrics["avg_r2"], 4),
-                "avg_normalized_rmse": round(metrics["avg_normalized_rmse"], 4),
-                "tail_normalized_mae": round(metrics["tail_normalized_mae"], 4),
-                "shape_violation_rate": round(metrics["shape_violation_rate"], 4),
-                "alpha_star": round(float(alpha_star), 4),
-            }
+def parse_law(law, family: str) -> list[dict]:
+    if not isinstance(law, dict) or not isinstance(law.get("terms"), list):
+        raise InvalidLaw("law must be an object with a 'terms' list")
+    terms = law["terms"]
+    if not terms:
+        raise InvalidLaw("law has no terms")
+    if len(terms) > MAX_DECLARED_TERMS:
+        raise InvalidLaw(f"law declares {len(terms)} terms (limit {MAX_DECLARED_TERMS})")
+    parsed = []
+    for t in terms:
+        if not isinstance(t, dict):
+            raise InvalidLaw("term must be an object")
+        fn = t.get("fn")
+        if fn not in ("id", "exp", "ln"):
+            raise InvalidLaw(f"unknown term function {fn!r}")
+        a = t.get("alpha")
+        if isinstance(a, bool) or not isinstance(a, (int, float)) or not math.isfinite(float(a)):
+            raise InvalidLaw("term exponent 'alpha' missing or not finite")
+        a = float(a)
+        if abs(a) > ALPHA_MAX:
+            raise InvalidLaw(f"|alpha|={abs(a):.3g} exceeds {ALPHA_MAX}")
+        power = t.get("power", 1.0)
+        if isinstance(power, bool) or not isinstance(power, (int, float)) or not (POWER_MIN <= float(power) <= POWER_MAX):
+            raise InvalidLaw(f"term power {power!r} outside [{POWER_MIN}, {POWER_MAX}]")
+        if fn == "id":
+            weights = {"w": _finite_nonneg(t, "w")}
         else:
-            if model_type == "SI-CANN":
-                alpha_star = params.get("alpha_fixed", 2.0 if mode == "positive" else -2.0)
-            elif mode == "positive":
-                alpha_star = params.get("alpha_plus", 0.0)
-            else:
-                alpha_star = params.get("alpha_minus", params.get("alpha_plus", 0.0))
-            exp_data[exp_name]["results"][method_name] = {
-                "r2_ut": round(metrics["r2_ut"], 4),
-                "r2_uc": round(metrics["r2_uc"], 4),
-                "r2_ss": round(metrics["r2_ss"], 4),
-                "avg_r2": round(metrics["avg_r2"], 4),
-                "avg_normalized_rmse": round(metrics["avg_normalized_rmse"], 4),
-                "tail_normalized_mae": round(metrics["tail_normalized_mae"], 4),
-                "shape_violation_rate": round(metrics["shape_violation_rate"], 4),
-                "alpha_star": round(float(alpha_star), 4),
-            }
+            weights = {"w1": _finite_nonneg(t, "w1"), "w2": _finite_nonneg(t, "w2")}
+        if abs(a) <= ALPHA_ZERO:
+            continue  # J_0 = 3: the term carries no energy
+        if family == "positive" and a <= 0.0:
+            raise InvalidLaw(f"exponent {a:.4g} breaks the positive family")
+        if family == "negative" and a >= 0.0:
+            raise InvalidLaw(f"exponent {a:.4g} breaks the negative family")
+        parsed.append({"fn": fn, "alpha": a, "power": float(power), **weights})
+    return parsed
 
-    scores = {"experiments": dict(sorted(exp_data.items()))}
-    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
-    with open(output_path, "w") as f:
-        json.dump(scores, f, indent=2)
-        f.write("\n")
-    print(f"Scores written to {output_path}")
-    return scores
+
+def term_dpsi(term: dict, X: float) -> float:
+    X = max(X, 0.0)  # J_alpha >= 3 for incompressible stretches; guard round-off
+    pw = term["power"]
+    if pw == 1.0:
+        base, xp = 1.0, X
+    else:
+        base, xp = pw * X ** (pw - 1.0), X ** pw
+    fn = term["fn"]
+    if fn == "id":
+        return term["w"] * base
+    w1, w2 = term["w1"], term["w2"]
+    if fn == "exp":
+        return w2 * w1 * math.exp(w1 * xp) * base
+    denom = 1.0 - w1 * xp
+    if denom <= 0.0:
+        raise InvalidLaw("ln term evaluated outside its domain (1 - w1 * x <= 0)")
+    return w2 * w1 / denom * base
+
+
+def term_stress(term: dict, mode: str, x: float) -> float:
+    X, g = kinematics(mode, x, term["alpha"])
+    s = term["alpha"] * term_dpsi(term, X) * g
+    if not math.isfinite(s):
+        raise InvalidLaw("non-finite stress")
+    return s
+
+
+# --------------------------------------------------------------------------- metrics
+def r2_clipped(pred, y):
+    mean = sum(y) / len(y)
+    ss_tot = sum((v - mean) ** 2 for v in y)
+    ss_res = sum((p - v) ** 2 for p, v in zip(pred, y))
+    if not math.isfinite(ss_res):
+        raise InvalidLaw("non-finite residual")
+    r2 = 1.0 - ss_res / ss_tot
+    return min(1.0, max(0.0, r2))
+
+
+def rel_error(pred, y):
+    errs = [min(abs(p - v) / abs(v), REL_ERR_CAP) for p, v in zip(pred, y) if abs(v) > 1e-12]
+    return sum(errs) / len(errs)
+
+
+def score_material(terms: list[dict], material: dict) -> dict:
+    cls = material["class"]
+    curves = material["curves"]
+    preds = {}
+    contrib_max = [0.0] * len(terms)
+    active_flags = [False] * len(terms)
+    try:
+        for mode in MODES[cls]:
+            pts = curves[mode]
+            scale = max(abs(y) for _, y in pts)
+            total = [0.0] * len(pts)
+            for k, term in enumerate(terms):
+                mx = 0.0
+                for i, (x, _) in enumerate(pts):
+                    s = term_stress(term, mode, x)
+                    total[i] += s
+                    mx = max(mx, abs(s))
+                contrib_max[k] = max(contrib_max[k], mx)
+                if mx >= ACTIVE_FRACTION * scale:
+                    active_flags[k] = True
+            preds[mode] = total
+    except (OverflowError, ZeroDivisionError, ValueError) as exc:
+        raise InvalidLaw(f"stress evaluation failed: {exc}") from None
+    n_active = sum(active_flags)
+    if n_active == 0:
+        raise InvalidLaw("no active term (the law carries no stress)")
+    if n_active > MAX_ACTIVE_TERMS:
+        raise InvalidLaw(f"{n_active} active terms (limit {MAX_ACTIVE_TERMS})")
+    out = {}
+    for mode in MODES[cls]:
+        out["r2_" + mode] = r2_clipped(preds[mode], [y for _, y in curves[mode]])
+    out["avg_r2"] = sum(out["r2_" + m] for m in MODES[cls]) / len(MODES[cls])
+    held = HELDOUT[cls]
+    out["heldout_rel_error"] = rel_error(preds[held], [y for _, y in curves[held]])
+    out["n_terms"] = float(n_active)
+    out["alpha_star"] = terms[max(range(len(terms)), key=lambda k: contrib_max[k])]["alpha"]
+    return out
+
+
+def worst_metrics(cls: str) -> dict:
+    out = {"r2_" + m: 0.0 for m in MODES[cls]}
+    out.update({"avg_r2": 0.0, "heldout_rel_error": REL_ERR_CAP, "n_terms": float(MAX_ACTIVE_TERMS)})
+    return out
+
+
+def score_method(laws, gt_materials: dict, experiments: dict) -> tuple[dict, list[str]]:
+    results, notes = {}, []
+    for exp, (cls, family) in experiments.items():
+        mats = [m for m, info in gt_materials.items() if info["class"] == cls]
+        per_mat, failed = [], None
+        for mat in mats:
+            try:
+                fam_laws = laws.get(mat) if isinstance(laws, dict) else None
+                if not isinstance(fam_laws, dict) or family not in fam_laws:
+                    raise InvalidLaw(f"no '{family}' law for {mat}")
+                terms = parse_law(fam_laws[family], family)
+                if not terms:
+                    raise InvalidLaw("law has only zero-exponent terms")
+                per_mat.append(score_material(terms, gt_materials[mat]))
+            except InvalidLaw as exc:
+                failed = f"{mat}/{family}: {exc}"
+                break
+        if failed or not per_mat:
+            notes.append(f"{exp}: FAILED ({failed or 'no materials'}) -> worst values")
+            results[exp] = worst_metrics(cls)
+            continue
+        keys = per_mat[0].keys()
+        results[exp] = {k: sum(r[k] for r in per_mat) / len(per_mat) for k in keys}
+    return results, notes
+
+
+# --------------------------------------------------------------------------- I/O
+def load_law_file(path: Path):
+    if path.stat().st_size > MAX_FILE_BYTES:
+        raise InvalidLaw(f"file larger than {MAX_FILE_BYTES} bytes")
+    try:
+        payload = json.loads(path.read_text())
+    except (OSError, ValueError) as exc:
+        raise InvalidLaw(f"unreadable JSON: {exc}") from None
+    if not isinstance(payload, dict) or not isinstance(payload.get("laws"), dict):
+        raise InvalidLaw("file has no 'laws' object")
+    return payload["laws"]
+
+
+def collect_methods(laws_dir: Path) -> dict:
+    """Map method name -> laws (or the InvalidLaw explaining why the file is unusable)."""
+    methods = {}
+    reserved = {p.stem for p in BASELINES_DIR.glob("*.json")} if BASELINES_DIR.is_dir() else set()
+    if laws_dir.is_dir():
+        for path in sorted(laws_dir.glob("*.json")):
+            name = path.stem
+            if not NAME_RE.match(name):
+                print(f"skipping {path.name}: method names use [A-Za-z0-9_.+-]")
+                continue
+            if name in reserved:
+                name = name + "@outputs"  # eval/ fixes the baselines; an outputs copy is reported separately
+            try:
+                methods[name] = load_law_file(path)
+            except InvalidLaw as exc:
+                methods[name] = exc
+    if PRIMARY_SLOT not in methods:
+        methods[PRIMARY_SLOT] = InvalidLaw(f"{laws_dir}/{PRIMARY_SLOT}.json not found")
+    return methods
+
+
+def round_metrics(d: dict) -> dict:
+    return {k: round(float(v), 6) for k, v in d.items()}
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate GI-CANN checkpoints on the held-out test slice")
-    parser.add_argument("--checkpoint", type=str, default=None)
-    parser.add_argument("--checkpoints-dir", type=str, default="checkpoints")
-    parser.add_argument("--predictions-dir", type=str, default="outputs/predictions")
-    parser.add_argument("--scores-json", type=str, default="scoring/scores_test.json")
-    parser.add_argument("--train-scores-json", type=str, default="scoring/scores_train.json")
-    parser.add_argument("--device", type=str, default="cpu")
-    parser.add_argument(
-        "--prefer-checkpoints",
-        action="store_true",
-        help="Use legacy checkpoint reconstruction even when neutral prediction artifacts exist.",
-    )
-    parser.add_argument(
-        "--experiment",
-        type=str,
-        default=None,
-        help="Optional experiment name or comma-separated list of experiment names to keep in scores.json",
-    )
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description=f"{SIDE}-side evaluator (declared strain-energy laws)")
+    ap.add_argument("--laws-dir", default=str(ROOT / "outputs" / "laws"))
+    ap.add_argument("--scores-json", default=str(DEFAULT_SCORES))
+    ap.add_argument("--materials", default=None, help="comma-separated subset of the ground-truth materials")
+    args = ap.parse_args()
 
-    experiments_filter = None
-    if args.experiment:
-        experiments_filter = {item.strip() for item in args.experiment.split(",") if item.strip()}
+    out_path = Path(args.scores_json)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    if out_path.exists():
+        out_path.unlink()  # never leave a stale score file behind
 
-    if not args.checkpoint and not args.prefer_checkpoints:
-        artifacts = load_prediction_artifacts(args.predictions_dir)
-        if artifacts:
-            print(f"Evaluating {len(artifacts)} prediction artifacts from {args.predictions_dir}")
-            scores = build_scores_from_artifacts(
-                artifacts,
-                args.scores_json,
-                rows_by_material=rows_by_material(),
-                experiments_filter=experiments_filter,
-            )
-            validate_train_entries_present(scores, args.train_scores_json, experiments_filter)
-            return
+    gt = json.loads(GROUND_TRUTH.read_text())["materials"]
+    if args.materials:
+        keep = [m.strip() for m in args.materials.split(",") if m.strip()]
+        unknown = [m for m in keep if m not in gt]
+        if unknown:
+            sys.exit(f"unknown materials: {unknown}")
+        gt = {m: gt[m] for m in keep}
+    classes = {info["class"] for info in gt.values()}
+    experiments = {e: v for e, v in EXPERIMENTS.items() if v[0] in classes}
 
-    results = []
-    if args.checkpoint:
-        ckpt_path = Path(args.checkpoint)
-        if ckpt_path.exists():
-            print(f"Evaluating {ckpt_path}")
-            results.append(evaluate_checkpoint(ckpt_path, args.device))
-        else:
-            print(f"Checkpoint not found: {ckpt_path}")
+    methods = {}
+    if BASELINES_DIR.is_dir():
+        for path in sorted(BASELINES_DIR.glob("*.json")):
+            methods[path.stem] = load_law_file(path)
+    methods.update(collect_methods(Path(args.laws_dir)))
 
-    if args.checkpoints_dir and not args.checkpoint:
-        ckpt_dir = Path(args.checkpoints_dir)
-        if ckpt_dir.exists():
-            for ckpt_path in sorted(ckpt_dir.glob("*.pt")):
-                if ckpt_path.name.startswith("_"):
-                    continue
-                print(f"Evaluating {ckpt_path.name}")
-                try:
-                    result = evaluate_checkpoint(ckpt_path, args.device)
-                    results.append(result)
-                    print(
-                        f"  {result['model_type']} | {result['material']} | "
-                        f"{result['mode']} | avg_r2={result['metrics']['avg_r2']:.4f}"
-                    )
-                except Exception as exc:
-                    print(f"  ERROR: {exc}")
+    scores = {e: {"results": {}} for e in experiments}
+    for name in sorted(methods):
+        laws = methods[name]
+        if isinstance(laws, InvalidLaw):
+            print(f"[{name}] unusable law file ({laws}) -> worst values in every experiment")
+            for exp, (cls, _) in experiments.items():
+                scores[exp]["results"][name] = round_metrics(worst_metrics(cls))
+            continue
+        res, notes = score_method(laws, gt, experiments)
+        for note in notes:
+            print(f"[{name}] {note}")
+        for exp, metrics in res.items():
+            scores[exp]["results"][name] = round_metrics(metrics)
 
-    if results:
-        scores = build_scores_json(results, args.scores_json, experiments_filter)
-        validate_train_entries_present(scores, args.train_scores_json, experiments_filter)
+    payload = {"experiments": scores}
+    fd, tmp = tempfile.mkstemp(dir=str(out_path.parent), suffix=".tmp")
+    with os.fdopen(fd, "w") as f:
+        json.dump(payload, f, indent=2)
+        f.write("\n")
+    os.replace(tmp, out_path)
+    print(f"Scores for {len(methods)} methods x {len(experiments)} experiments written to {out_path}")
+    for exp in experiments:
+        for name, m in scores[exp]["results"].items():
+            held = "r2_" + HELDOUT[EXPERIMENTS[exp][0]]
+            print(f"  {exp:26s} {name:22s} avg_r2={m['avg_r2']:.4f} {held}={m[held]:.4f} "
+                  f"rel_err={m['heldout_rel_error']:.4f} n_terms={m['n_terms']:.2f}")
 
 
 if __name__ == "__main__":

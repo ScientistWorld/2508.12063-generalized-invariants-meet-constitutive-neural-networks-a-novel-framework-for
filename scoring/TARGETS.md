@@ -1,55 +1,46 @@
 # Optimization Targets
 
-This document defines the scored targets for the experiments currently present in [`scoring/scores.json`](/home/user/scoring/scores.json).
+Scored metrics and coefficients are in `scoring/reference.json`; every experiment has the same
+metric set. The ranked file is `scoring/scores_test.json` (hidden test: rubber_T50, brain_CR,
+brain_BG), entry `GI-CANN` (the law file `outputs/laws/GI-CANN.json`).
 
-## Primary Targets
+## Benefit metrics (every experiment)
 
-### `rubber_generalization`
+| metric | direction | coefficient | what it measures |
+|---|---|---|---|
+| `avg_r2` (primary) | higher | 1.0 | mean clipped R2 over the two training modes and the held-out mode (paper Tables 3/4) |
+| `r2_ps` (rubber) / `r2_ss` (brain) | higher | 1.0 | clipped R2 of the held-out loading mode |
+| `heldout_rel_error` | lower | 0.5 | mean relative stress error on the held-out mode (paper Figs. 4/5) |
 
-- What it tests: cross-mode generalization on rubber, training on `ut` + `bt` and evaluating transfer to held-out `ps`
-- Primary metric: `avg_r2` (`higher_is_better`)
-- Important held-out metric: `r2_ps` (`higher_is_better`)
-- Report-only descriptor: `alpha_star`
-- Evaluation: `bash scripts/evaluate.sh --experiment rubber_generalization`
+## Constraint metric (every experiment)
 
-### `brain_generalization`
+| metric | direction | coefficient | what it measures |
+|---|---|---|---|
+| `n_terms` | lower | 0.25 | active terms in the law: the paper's claim is accuracy *with* a compact, interpretable law |
 
-- What it tests: cross-mode generalization on brain cortex, training on `ut` + `uc` and evaluating transfer to held-out `ss`
-- Primary metric: `avg_r2` (`higher_is_better`)
-- Important held-out metric: `r2_ss` (`higher_is_better`)
-- Report-only descriptor: `alpha_star`
-- Evaluation: `bash scripts/evaluate.sh --experiment brain_generalization`
+Hard constraints (a violation fails the experiment, worst value in every metric): non-negative
+weights, the family's exponent sign, a defined energy wherever evaluated, finite stresses, 1 to 12
+active terms.
 
-## Constraint Targets
+## Report-only
 
-### `rubber_negative_ablation`
+`r2_ut`, `r2_bt` / `r2_uc` (included in `avg_r2`) and `alpha_star` (exponent of the dominant
+term) have coefficient 0.
 
-- What it tests: whether the rubber benchmark still penalizes a materially mismatched constitutive description
-- Primary metric: `avg_r2` (`higher_is_better`, but the benchmark should preserve a visible gap versus the main rubber setting)
-- Evaluation: `bash scripts/evaluate.sh --experiment rubber_negative_ablation`
+## Per experiment
 
-### `brain_positive_ablation`
+| experiment | family | weight | reference (hidden test) |
+|---|---|---|---|
+| rubber_generalization | positive | 0.30 | see `scoring/scores_test.json` |
+| brain_generalization | negative | 0.30 | see `scoring/scores_test.json` |
+| rubber_combined_ablation | combined | 0.15 | see `scoring/scores_test.json` |
+| brain_combined_ablation | combined | 0.15 | see `scoring/scores_test.json` |
+| rubber_negative_ablation | negative | 0.05 | see `scoring/scores_test.json` |
+| brain_positive_ablation | positive | 0.05 | see `scoring/scores_test.json` |
 
-- What it tests: whether the brain benchmark still penalizes a materially mismatched constitutive description
-- Primary metric: `avg_r2` (`higher_is_better`, but the benchmark should preserve a visible gap versus the main brain setting)
-- Evaluation: `bash scripts/evaluate.sh --experiment brain_positive_ablation`
-
-## Ablation Targets
-
-### `rubber_combined_ablation`
-
-- What it tests: whether a richer rubber constitutive description changes performance relative to the main rubber benchmark
-- Primary metric: `avg_r2` (`higher_is_better`)
-- Evaluation: `bash scripts/evaluate.sh --experiment rubber_combined_ablation`
-
-### `brain_combined_ablation`
-
-- What it tests: whether a richer brain constitutive description changes performance relative to the main brain benchmark
-- Primary metric: `avg_r2` (`higher_is_better`)
-- Evaluation: `bash scripts/evaluate.sh --experiment brain_combined_ablation`
-
-## Run All Evaluation
+## Commands
 
 ```bash
-bash scripts/evaluate.sh
+bash scripts/evaluate_train.sh   # development side -> scoring/scores_train.json
+bash scripts/evaluate.sh         # paper's materials -> scoring/scores.json (compare with reference.json)
 ```

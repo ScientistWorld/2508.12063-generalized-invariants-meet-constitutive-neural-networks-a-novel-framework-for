@@ -1,48 +1,32 @@
 # Research Direction
 
-Future agents must work within the paper's problem space and a closely related approach family.
-
 ## Problem Space
 
-**Domain**: Hyperelastic constitutive modeling for soft materials.
-
-**Challenge**: Discovering compact constitutive descriptors that characterize material behavior without assuming the best formulation in advance.
-
-**Materials**: Rubber-like elastomers and soft brain tissue, with different generalization behavior across loading modes.
+Automated discovery of hyperelastic constitutive laws for isotropic incompressible soft materials
+(rubber, brain tissue) from a few loading modes, judged on a loading mode never fitted and on
+materials whose held-out response is hidden.
 
 ## Approach Family
 
-Work within physics-aware constitutive model discovery for isotropic incompressible hyperelasticity.
+Physics-based constitutive model discovery with generalized invariants J_a = sum_i l_i^a:
+the choice of invariants (exponents), the choice of functions of them, and how both are learned
+from data. Suitable directions:
 
-Suitable directions include:
-1. Better deformation descriptors or constitutive parameterizations
-2. Better compact constitutive-law representations
-3. Better training or regularization for cross-mode generalization
-4. Better ways to preserve interpretability while improving held-out stress prediction
-
-**Cannot Switch To**:
-- Black-box neural networks that directly map λ → σ
-- Physics-uninformed learning without hyperelasticity constraints
-- Data-driven surrogate models that bypass the physics
-
-## Innovation Directions (Within Framework)
-
-While staying within compact physics-aware constitutive modeling, future agents can:
-
-1. **Constitutive descriptor design**: Different compact descriptor families or parameterizations with the same benchmark protocol
-2. **Initialization strategies**: Better warm-starts for difficult exponent regimes
-3. **Regularization**: Sparsity or smoothness constraints that improve transfer
-4. **Training stability**: Alternative optimizers, schedules, or stabilization methods
-5. **Constitutive combinations**: Different compact combinations of physically meaningful terms
-6. **Material-specific formulations**: Variants tailored to stretch-dominated versus shear-dominated materials
+1. Better discovery of exponents and terms (optimization, initialization, multi-start, sparsity,
+   model selection on the training modes or on the development materials).
+2. Better loss design (mode weighting, scale-free errors, regularization that transfers across
+   loading modes).
+3. Better compact term libraries within the schema (functions, powers, number of invariants).
+4. Using the development materials (rubber_T20, brain_CX, brain_CC, whose held-out curves are
+   visible) to choose procedures that generalize, then applying the procedure to the test
+   materials' training modes.
 
 ## Out of Bounds
 
-Cannot claim improvement by:
-- Using a completely different neural architecture (e.g., MLP, Transformer)
-- Adding model capacity to memorize data
-- Switching to a regression problem without hyperelasticity constraints
-- Using external priors or embeddings not derived from deformation data
-- Simplifying the problem to trivial toy cases
+- Fitting any held-out curve of a test material, from any source.
+- Black-box stress regressors: only declared strain-energy laws are scored.
+- Dense expansions that buy accuracy with many terms: `n_terms` is scored and more than 12 active
+  terms is invalid.
+- Laws that break the family sign rule, use negative weights or leave the ln domain (invalid).
 
-The goal is methodological advancement in compact, interpretable constitutive-law discovery under the same benchmark protocol, not beating the benchmark by leaving the problem setting.
+The goal is laws that generalize better across loading modes while staying compact and readable.

@@ -1,483 +1,335 @@
 #!/usr/bin/env python3
-"""GI-CANN: Generalized Invariant Constitutive Artificial Neural Network.
+"""GI-CANN: generalized-invariant constitutive artificial neural network (paper 2508.12063).
 
-This module implements the GI-CANN model from:
-"Generalized invariants meet constitutive neural networks: A novel framework
-for hyperelastic materials" (Martonova, Goriely, Kuhl, 2025).
+Pure-Python implementation that follows the authors' own notebooks
+(LivingMatterLab/CANN @ d3caca0f, GICANN/*.ipynb):
 
-The model discovers both the optimal exponent α for generalized invariants
-J_α = Σ λ_i^α and the strain energy function ψ(J_α) from stress-strain data.
+  * Generalized invariants J_alpha = l1^alpha + l2^alpha + l3^alpha, one per exponent in S. Each
+    exponent is a trainable variable a_k >= 0 (Keras NonNeg) with a fixed sign, alpha_k = s_k a_k
+    (positive family: s = +1, negative family: s = -1, combined: one of each).
+  * First layer: J_alpha - 3. Second layer, per invariant: identity, exp(.) - 1 and -ln(1 - .)
+    with inner weights w11, w21, w31; output layer wx2 (3 weights per invariant) - Eq. (13):
+        psi = sum_k wx2_k1 w11_k (J_k - 3) + wx2_k2 [exp(w21_k (J_k - 3)) - 1]
+                    + wx2_k3 [-ln(1 - w31_k (J_k - 3))]
+    Every weight is constrained non-negative (Keras NonNeg).
+  * Cauchy stress from psi for uniaxial tension/compression, equibiaxial tension, pure shear and
+    simple shear (Eqs. 15-18; for simple shear J_alpha is evaluated with the stretches raised to
+    alpha, l+^alpha + 1 + l-^alpha).
+  * Loss (Eq. 14 as implemented in the notebooks): sum over training modes of the mean squared
+    stress error, plus r * sum |w| over all weights (r = 0.01, exponents not regularized).
+  * Adam (lr 1e-3), mini-batches of 12 points per mode, reshuffled every epoch; 30,000 epochs
+    (40,000 for the brain two-invariant model); early stopping with patience 3,000 on the epoch's
+    training loss and restoration of the best epoch's weights (Keras EarlyStopping +
+    ModelCheckpoint on "loss").
+  * Initialization: glorot-normal (truncated) for w11, w31 and wx2, uniform(0, 0.1) for w21, and
+    the notebooks' exponent starts (rubber 2.0, or 1.7 / 0.1 for two invariants; brain 5.0, or
+    2.0 / 2.0 for two invariants).
+  * SI-CANN is the same network with every exponent fixed at 2 (S = {2}, {-2} or {2, -2}).
+
+Convergence: after the paper's mini-batch phase the same objective is minimized further with
+full-batch Adam and a learning rate decaying from 1e-3 to 1e-7 (converge(); 20,000 steps), so every
+run ends at a stationary point of the paper's loss instead of wherever early stopping happened to
+halt on a noisy epoch loss. The objective is flat along an (exponent, weight) valley, and where a
+run stops along that valley moves the held-out prediction; finishing the optimization removes that
+randomness. (On the cortex data this lands at alpha* = -18.11, w = 0.0092 kPa; the paper reports
+-18.016 and 0.009 kPa.)
+
+Two numerical guards keep the strain energy defined where the law is evaluated (the Keras code
+has none and would return NaN): after every step w31 is capped so that 1 - w31 (J - 3) >= 1e-3
+and w21 so that w21 (J - 3) <= 10 at the most deformed visible input of each mode (without it, the
+exponential branch of a rubber law with alpha = -2 starts near exp(50) in equibiaxial tension,
+which overflows in the notebooks' float32 and leaves Adam's moment estimates unusable).
+
+The trained network is exported as a declared strain-energy law (terms with exponent, function
+and weights) in the schema the evaluator reads.
 """
 
-import torch
-import torch.nn as nn
-import numpy as np
+from __future__ import annotations
 
-from data.load_data import extract_observed_stress
+import math
+import random
 
+R_L1 = 0.01
+LR = 1e-3
+BETA1, BETA2, EPS = 0.9, 0.999, 1e-7
+BATCH = 12
+PATIENCE = 3000
+A_MAX = 59.0
+EXP_ARG_MAX = 10.0  # cap on w21 * (J - 3) at the most deformed visible input
+TN_CORR = 0.87962566103423978  # Keras truncated-normal std correction
 
-def get_principal_stretches(F):
-    """Return stretches in the loading-order convention used by the paper.
-
-    For the paper's diagonal loading modes, the constitutive equations use the
-    ordered stretches directly from ``F``. Sorting singular values breaks
-    uniaxial compression by swapping the axial and transverse stretches.
-    For non-diagonal deformations such as simple shear, fall back to SVD.
-    """
-    batch = F.shape[0]
-    l1 = torch.zeros(batch, device=F.device, dtype=F.dtype)
-    l2 = torch.zeros(batch, device=F.device, dtype=F.dtype)
-    l3 = torch.zeros(batch, device=F.device, dtype=F.dtype)
-
-    for i in range(batch):
-        Fi = F[i]
-        off_diag = Fi - torch.diag(torch.diagonal(Fi))
-        if torch.all(torch.abs(off_diag) < 1e-10):
-            l1[i] = torch.abs(Fi[0, 0])
-            l2[i] = torch.abs(Fi[1, 1])
-            l3[i] = torch.abs(Fi[2, 2])
-            continue
-        try:
-            _, sv_s, _ = torch.linalg.svd(Fi, full_matrices=False)
-            l1[i] = sv_s[0]
-            l2[i] = sv_s[1]
-            l3[i] = sv_s[2]
-        except Exception:
-            Ci = Fi.T @ Fi
-            eigvals = torch.linalg.eigvalsh(Ci)
-            eigvals = torch.clamp(eigvals, min=1e-12)
-            l1[i] = torch.sqrt(eigvals[2])
-            l2[i] = torch.sqrt(eigvals[1])
-            l3[i] = torch.sqrt(eigvals[0])
-
-    return (
-        torch.clamp(l1, min=1e-8),
-        torch.clamp(l2, min=1e-8),
-        torch.clamp(l3, min=1e-8),
-    )
+# Paper notebook settings by material class and exponent family.
+PAPER_CONFIG = {
+    ("rubber", "positive"): {"signs": [1], "a0": [2.0], "epochs": 30000},
+    ("rubber", "negative"): {"signs": [-1], "a0": [2.0], "epochs": 30000},
+    ("rubber", "combined"): {"signs": [1, -1], "a0": [1.7, 0.1], "epochs": 30000},
+    ("brain", "positive"): {"signs": [1], "a0": [5.0], "epochs": 30000},
+    ("brain", "negative"): {"signs": [-1], "a0": [5.0], "epochs": 30000},
+    ("brain", "combined"): {"signs": [1, -1], "a0": [2.0, 2.0], "epochs": 40000},
+}
 
 
-def get_ss_b_eigenvalues(F, gamma):
-    """Get B-eigenvalues for simple shear.
+class Point:
+    __slots__ = ("mode", "x", "y", "L", "s")
 
-    For SS, F = [[1, γ, 0], [0, 1, 0], [0, 0, 1]].
-    B = FF^T = [[1+γ², γ, 0], [γ, 1, 0], [0, 0, 1]].
-
-    The 2×2 block [[1+γ², γ], [γ, 1]] has eigenvalues (1+γ² ± γ√(γ²+4))/2.
-    Taking square roots: l1 = √((1+γ²+γ√(γ²+4))/2), l3 = √((1+γ²-γ√(γ²+4))/2).
-    These simplify to l1 = √(1+γ), l3 = √(1-γ) (eigenvalues of B^½, not B itself).
-
-    For stress computation, we need B-eigenvalues = eigenvalues of B^½:
-    l1_B = √(1+γ), l2_B = 1, l3_B = √(1-γ).
-
-    For the J_α computation in SS, we use l1 = √(1+γ), l3 = √(1-γ).
-
-    Args:
-        F: (batch, 3, 3) deformation gradients (SS mode)
-        gamma: (batch,) shear strains
-
-    Returns:
-        l1_B, l3_B: (batch,) B-eigenvalues for SS
-    """
-    batch = F.shape[0]
-    gamma = gamma.view(batch)
-    l1_B = torch.sqrt(1.0 + gamma)
-    l3_B = torch.sqrt(torch.clamp(1.0 - gamma, min=1e-8))
-    return l1_B, l3_B
-
-
-def detect_deformation_mode(l1, l2, l3, F=None):
-    """Detect deformation mode from principal stretches.
-
-    For incompressible isotropic materials:
-    - uniaxial (ut/uc): l2 ≈ l3 (within 5%)
-    - equibiaxial (bt): l1 ≈ l2 (within 5%)
-    - pure shear (ps): l2 ≈ 1 (within 5%)
-    - simple shear (ss): determined by off-diagonal components of F
-
-    Args:
-        l1, l2, l3: (batch,) principal stretches
-        F: (batch, 3, 3) optional deformation gradients for SS detection
-
-    Returns:
-        modes: list of mode strings
-    """
-    batch = l1.shape[0]
-    modes = []
-
-    for i in range(batch):
-        if F is not None:
-            Fi = F[i]
-            if (abs(Fi[0, 1]) > 1e-10 or abs(Fi[1, 0]) > 1e-10 or
-                abs(Fi[0, 2]) > 1e-10 or abs(Fi[2, 0]) > 1e-10):
-                modes.append('ss')
-                continue
-            if abs(Fi[1, 1] - 1.0) < 1e-10:
-                modes.append('ps')
-                continue
-            if abs(Fi[0, 0] - Fi[1, 1]) < 1e-10:
-                modes.append('bt')
-                continue
-            if abs(Fi[1, 1] - Fi[2, 2]) < 1e-10:
-                if Fi[0, 0] >= 1.0:
-                    modes.append('ut')
-                else:
-                    modes.append('uc')
-                continue
-
-        l1_i = l1[i].item()
-        l2_i = l2[i].item()
-        l3_i = l3[i].item()
-
-        # Ratios
-        r23 = abs(l2_i - l3_i) / max(l2_i, l3_i, 1e-8)
-        r12 = abs(l1_i - l2_i) / max(l1_i, l2_i, 1e-8)
-        r2_1 = abs(l2_i - 1.0)
-
-        if r12 < 0.05:
-            # l1 ≈ l2: equibiaxial
-            modes.append('bt')
-        elif r23 < 0.05:
-            # l2 ≈ l3: uniaxial
-            modes.append('ut')
-        elif r2_1 < 0.05:
-            # l2 ≈ 1: pure shear
-            modes.append('ps')
+    def __init__(self, mode: str, x: float, y: float = 0.0):
+        self.mode, self.x, self.y = mode, float(x), float(y)
+        if mode == "ss":
+            self.s = math.sqrt(self.x * self.x + 4.0)
+            self.L = math.log(0.5 * (self.s + self.x))  # ln(l+), l- = 1 / l+
         else:
-            # Default
-            modes.append('ut' if l1_i >= 1.0 else 'uc')
-
-    return modes
+            self.s = 1.0
+            self.L = math.log(self.x)
 
 
-class GICANN(nn.Module):
-    """GI-CANN model for hyperelastic constitutive modeling.
+def kinematics(pt: Point, alpha: float):
+    """(J - 3, g, dJ/dalpha, dg/dalpha) with observed stress = alpha * dpsi/dJ * g."""
+    L, m = pt.L, pt.mode
+    if m == "ut" or m == "uc":
+        p, q = math.exp(alpha * L), math.exp(-0.5 * alpha * L)
+        g = p - q
+        return p + 2.0 * q - 3.0, g, L * g, L * p + 0.5 * L * q
+    if m == "bt":
+        p, q = math.exp(alpha * L), math.exp(-2.0 * alpha * L)
+        g = p - q
+        return 2.0 * p + q - 3.0, g, 2.0 * L * g, L * p + 2.0 * L * q
+    p, q = math.exp(alpha * L), math.exp(-alpha * L)
+    if m == "ps":
+        return p + q - 2.0, p - q, L * (p - q), L * (p + q)
+    if m == "ss":
+        s = pt.s
+        return p + q - 2.0, (p - q) / s, L * (p - q), L * (p + q) / s
+    raise ValueError(m)
 
-    The network has three parallel branches computing different forms
-    of the strain energy function ψ(J_α), plus a trainable exponent α.
 
-    Strain energy function branches (Eq. 13 in paper):
-    1. Identity:   ψ_id  = w_id  * (J_α - 3)
-    2. Exponential: ψ_exp = w_exp2 * [exp(w_exp1 * (J_α - 3)) - 1]
-    3. Logarithmic: ψ_ln  = w_ln2  * ln(1 - w_ln1 * (J_α - 3))
+def _tn(rng: random.Random, std: float) -> float:
+    while True:
+        z = rng.gauss(0.0, 1.0)
+        if abs(z) <= 2.0:
+            return z * std
 
-    Total: ψ = ψ_id + ψ_exp + ψ_ln
-    Cauchy stress is derived by differentiating ψ with respect to F.
 
-    Args:
-        config: Configuration dict with keys:
-            - mode: 'positive', 'negative', or 'combined'
-            - r: L1 regularization coefficient
-    """
+class CANN:
+    """Parameters theta = [a_0..a_K-1, w11_k, w21_k, w31_k, wx2_k1..3]."""
 
-    def __init__(self, config=None):
-        super().__init__()
-        if config is None:
-            config = {}
+    def __init__(self, signs, a0, train_alpha=True, seed=0, extremes=None):
+        self.K = K = len(signs)
+        self.signs = [float(s) for s in signs]
+        self.train_alpha = train_alpha
+        self.extremes = extremes or []  # most deformed visible input per mode
+        rng = random.Random(seed)
+        std1 = math.sqrt(2.0 / 2.0) / TN_CORR
+        std2 = math.sqrt(2.0 / (3 * K + 1)) / TN_CORR
+        th = [float(a) for a in a0]
+        th += [_tn(rng, std1) for _ in range(K)]          # w11
+        th += [rng.uniform(0.0, 0.1) for _ in range(K)]   # w21
+        th += [_tn(rng, std1) for _ in range(K)]          # w31
+        th += [_tn(rng, std2) for _ in range(3 * K)]      # wx2
+        self.theta = th
+        self.project()
 
-        self.mode = config.get('mode', 'positive')
-        self.r = config.get('r', 0.01)
+    # index helpers
+    def ia(self, k): return k
+    def i11(self, k): return self.K + k
+    def i21(self, k): return 2 * self.K + k
+    def i31(self, k): return 3 * self.K + k
+    def iv(self, k, j): return 4 * self.K + 3 * k + j
 
-        # --- Trainable exponents α ---
-        # Initialize near expected values to avoid numerical issues.
-        # For rubber: α* ≈ 1.675 (stretch-dominated). For brain: α* ≈ -18 (shear-dominated).
-        if self.mode == 'positive':
-            self.alpha_plus = nn.Parameter(torch.tensor(1.5, dtype=torch.float64))
-        elif self.mode == 'negative':
-            self.alpha_minus = nn.Parameter(torch.tensor(-2.0, dtype=torch.float64))
-        elif self.mode == 'combined':
-            self.alpha_plus = nn.Parameter(torch.tensor(1.5, dtype=torch.float64))
-            self.alpha_minus = nn.Parameter(torch.tensor(-2.0, dtype=torch.float64))
+    def alphas(self):
+        return [self.signs[k] * self.theta[k] for k in range(self.K)]
 
-        # --- Branch 1: Identity ψ_id = w_id * (J_α - 3) ---
-        # Scale weights by material stress magnitude:
-        # - Rubber: stress 0-32 MPa → w_id ~ 1-5 MPa
-        # - Brain: stress 0-0.5 kPa → w_id ~ 0.01-0.1 kPa
-        if self.mode in ('positive', 'combined'):
-            self.w_id_plus = nn.Parameter(torch.tensor(2.0, dtype=torch.float64))
-        if self.mode in ('negative', 'combined'):
-            self.w_id_minus = nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
+    def project(self):
+        th = self.theta
+        for i in range(len(th)):
+            if not th[i] > 0.0:
+                th[i] = 0.0
+        for k in range(self.K):
+            th[k] = min(th[k], A_MAX)
+            alpha = self.signs[k] * th[k]
+            xmax = 0.0
+            for pt in self.extremes:
+                X = kinematics(pt, alpha)[0]
+                xmax = max(xmax, X)
+            if xmax > 0.0:
+                th[self.i31(k)] = min(th[self.i31(k)], 0.999 / xmax)
+                th[self.i21(k)] = min(th[self.i21(k)], EXP_ARG_MAX / xmax)
 
-        # --- Branch 2: Exponential ψ_exp = w_exp2 * [exp(w_exp1 * (J_α - 3)) - 1] ---
-        # CRITICAL: w_exp1 must be small to avoid exp overflow.
-        # For rubber with α≈2: J-3 up to ~50 → w_exp1 * 50 must be < ~10
-        #   → w_exp1 ≈ 0.01-0.05. Use 0.02 as a safe default.
-        # For brain: J-3 up to ~0.03 → w_exp1 ≈ 1-10. Use 0.1.
-        if self.mode in ('positive', 'combined'):
-            self.w_exp1_plus = nn.Parameter(torch.tensor(0.02, dtype=torch.float64))
-            self.w_exp2_plus = nn.Parameter(torch.tensor(5.0, dtype=torch.float64))
-        if self.mode in ('negative', 'combined'):
-            self.w_exp1_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_exp2_minus = nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
+    def stress(self, pt: Point) -> float:
+        th, s = self.theta, 0.0
+        for k in range(self.K):
+            alpha = self.signs[k] * th[k]
+            X, g, _, _ = kinematics(pt, alpha)
+            w11, w21, w31 = th[self.i11(k)], th[self.i21(k)], th[self.i31(k)]
+            v0, v1, v2 = th[self.iv(k, 0)], th[self.iv(k, 1)], th[self.iv(k, 2)]
+            P = v0 * w11 + v1 * w21 * math.exp(w21 * X) + v2 * w31 / (1.0 - w31 * X)
+            s += alpha * P * g
+        return s
 
-        # --- Branch 3: Logarithmic ψ_ln = w_ln2 * ln(1 - w_ln1 * (J_α - 3)) ---
-        if self.mode in ('positive', 'combined'):
-            self.w_ln1_plus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_ln2_plus = nn.Parameter(torch.tensor(2.0, dtype=torch.float64))
-        if self.mode in ('negative', 'combined'):
-            self.w_ln1_minus = nn.Parameter(torch.tensor(0.1, dtype=torch.float64))
-            self.w_ln2_minus = nn.Parameter(torch.tensor(0.01, dtype=torch.float64))
+    def l1(self) -> float:
+        return R_L1 * sum(abs(v) for v in self.theta[self.K:])
 
-    def get_strain_energy_weights(self):
-        """Return the weights w (excluding α) for L1 regularization."""
-        return [p for n, p in self.named_parameters() if not n.startswith('alpha')]
-
-    def get_parameters_dict(self):
-        """Return discovered parameters as a dict."""
-        params = {}
-        if self.mode == 'positive':
-            params['alpha_plus'] = self.alpha_plus.item()
-        elif self.mode == 'negative':
-            params['alpha_minus'] = self.alpha_minus.item()
-        elif self.mode == 'combined':
-            params['alpha_plus'] = self.alpha_plus.item()
-            params['alpha_minus'] = self.alpha_minus.item()
-        for n, p in self.named_parameters():
-            if n.startswith('alpha'):
+    def loss_and_grad(self, chunks):
+        """chunks: list of point lists (one per training mode). Returns (loss, grad)."""
+        th, K = self.theta, self.K
+        grad = [0.0] * len(th)
+        loss = 0.0
+        for pts in chunks:
+            n = len(pts)
+            if n == 0:
                 continue
-            params[n] = p.item()
-        return params
+            for pt in pts:
+                cache = []
+                sig = 0.0
+                for k in range(K):
+                    alpha = self.signs[k] * th[k]
+                    X, g, dX, dg = kinematics(pt, alpha)
+                    w21, w31 = th[2 * K + k], th[3 * K + k]
+                    E = math.exp(w21 * X)
+                    D = 1.0 - w31 * X
+                    if D <= 0.0:
+                        return math.inf, grad
+                    P = th[4 * K + 3 * k] * th[K + k] + th[4 * K + 3 * k + 1] * w21 * E + th[4 * K + 3 * k + 2] * w31 / D
+                    sig += alpha * P * g
+                    cache.append((alpha, X, g, dX, dg, E, D, P))
+                e = sig - pt.y
+                loss += e * e / n
+                c = 2.0 * e / n
+                for k in range(K):
+                    alpha, X, g, dX, dg, E, D, P = cache[k]
+                    ag = c * alpha * g
+                    i11, i21, i31 = K + k, 2 * K + k, 3 * K + k
+                    i0 = 4 * K + 3 * k
+                    w11, w21, w31 = th[i11], th[i21], th[i31]
+                    v0, v1, v2 = th[i0], th[i0 + 1], th[i0 + 2]
+                    grad[i11] += ag * v0
+                    grad[i0] += ag * w11
+                    grad[i0 + 1] += ag * w21 * E
+                    grad[i21] += ag * v1 * E * (1.0 + w21 * X)
+                    grad[i0 + 2] += ag * w31 / D
+                    grad[i31] += ag * v2 / (D * D)
+                    if self.train_alpha:
+                        dPdX = v1 * w21 * w21 * E + v2 * w31 * w31 / (D * D)
+                        grad[k] += c * self.signs[k] * (P * g + alpha * (dPdX * dX * g + P * dg))
+        for i in range(K, len(th)):
+            v = th[i]
+            loss += R_L1 * abs(v)
+            if v > 0.0:
+                grad[i] += R_L1
+            elif v < 0.0:
+                grad[i] -= R_L1
+        return loss, grad
 
-    def _dpsi_dJ(self, J_minus_3, branch):
-        """Compute dψ/dJ for a specific branch.
+    def objective(self, train_pts: dict) -> float:
+        """Paper loss on the full training curves (sum of per-mode MSE + L1)."""
+        total = 0.0
+        for pts in train_pts.values():
+            total += sum((self.stress(p) - p.y) ** 2 for p in pts) / len(pts)
+        return total + self.l1()
 
-        Args:
-            J_minus_3: tensor of (J - 3) values
-            branch: 'plus' or 'minus'
+    def export_law(self) -> dict:
+        th, K, terms = self.theta, self.K, []
+        for k in range(K):
+            alpha = self.signs[k] * th[k]
+            if abs(alpha) <= 1e-12:
+                continue
+            w11, w21, w31 = th[K + k], th[2 * K + k], th[3 * K + k]
+            v0, v1, v2 = th[4 * K + 3 * k], th[4 * K + 3 * k + 1], th[4 * K + 3 * k + 2]
+            if v0 * w11 > 0.0:
+                terms.append({"fn": "id", "alpha": alpha, "w": v0 * w11})
+            if v1 > 0.0 and w21 > 0.0:
+                terms.append({"fn": "exp", "alpha": alpha, "w1": w21, "w2": v1})
+            if v2 > 0.0 and w31 > 0.0:
+                terms.append({"fn": "ln", "alpha": alpha, "w1": w31, "w2": v2})
+        return {"terms": terms}
 
-        Returns:
-            dpsi_dJ: tensor of same shape
-        """
-        if branch == 'plus':
-            dpsi = self.w_id_plus * torch.ones_like(J_minus_3)
-            # Clamp exp argument to prevent overflow. The rubber data has J-3 up to ~50
-            # for α=2, but α*≈1.675 keeps it to ~4-7. Clamp to 10 for safety.
-            exp_arg = torch.clamp(self.w_exp1_plus * J_minus_3, max=10.0)
-            dpsi = dpsi + self.w_exp2_plus * self.w_exp1_plus * torch.exp(exp_arg)
-            ln_denom = 1.0 - self.w_ln1_plus * J_minus_3
-            ln_denom = torch.clamp(ln_denom, min=1e-6)
-            dpsi = dpsi - self.w_ln2_plus * self.w_ln1_plus / ln_denom
+
+def train(model: CANN, train_pts: dict, epochs: int, seed: int = 0, patience: int = PATIENCE,
+          lr: float = LR, batch: int = BATCH, log_every: int = 0, log=print) -> dict:
+    """Keras-style training: shuffled mini-batches per mode, Adam, NonNeg projection,
+    early stopping on the epoch's training loss with restoration of the best epoch."""
+    rng = random.Random(10_000 + seed)
+    modes = list(train_pts)
+    n_par = len(model.theta)
+    m1, m2 = [0.0] * n_par, [0.0] * n_par
+    t = 0
+    best_loss, best_theta, best_epoch, wait = math.inf, list(model.theta), -1, 0
+    stop_reason = "epochs"
+    epoch = -1
+    for epoch in range(epochs):
+        perms = {}
+        for mode in modes:
+            idx = list(range(len(train_pts[mode])))
+            rng.shuffle(idx)
+            perms[mode] = idx
+        nb = max(-(-len(train_pts[m]) // batch) for m in modes)
+        ep_sum, ep_cnt, bad = 0.0, 0, False
+        for b in range(nb):
+            chunks = [[train_pts[m][i] for i in perms[m][b * batch:(b + 1) * batch]] for m in modes]
+            loss, grad = model.loss_and_grad(chunks)
+            if not math.isfinite(loss) or not all(math.isfinite(gv) for gv in grad):
+                bad = True
+                break
+            size = max(len(c) for c in chunks)
+            ep_sum += loss * size
+            ep_cnt += size
+            t += 1
+            c1, c2 = 1.0 - BETA1 ** t, 1.0 - BETA2 ** t
+            th = model.theta
+            for i in range(n_par):
+                gi = grad[i]
+                if i < model.K and not model.train_alpha:
+                    continue
+                m1[i] = BETA1 * m1[i] + (1.0 - BETA1) * gi
+                m2[i] = BETA2 * m2[i] + (1.0 - BETA2) * gi * gi
+                th[i] -= lr * (m1[i] / c1) / (math.sqrt(m2[i] / c2) + EPS)
+            model.project()
+        if bad:
+            stop_reason = "non-finite loss"
+            break
+        ep_loss = ep_sum / ep_cnt
+        if ep_loss < best_loss:
+            best_loss, best_theta, best_epoch, wait = ep_loss, list(model.theta), epoch, 0
         else:
-            dpsi = self.w_id_minus * torch.ones_like(J_minus_3)
-            exp_arg = torch.clamp(self.w_exp1_minus * J_minus_3, max=10.0)
-            dpsi = dpsi + self.w_exp2_minus * self.w_exp1_minus * torch.exp(exp_arg)
-            ln_denom = 1.0 - self.w_ln1_minus * J_minus_3
-            ln_denom = torch.clamp(ln_denom, min=1e-6)
-            dpsi = dpsi - self.w_ln2_minus * self.w_ln1_minus / ln_denom
-        return dpsi
+            wait += 1
+            if wait >= patience:
+                stop_reason = "early stopping"
+                break
+        if log_every and (epoch + 1) % log_every == 0:
+            log(f"    epoch {epoch + 1:6d} loss {ep_loss:.6g} alphas {[round(a, 4) for a in model.alphas()]}")
+    model.theta = best_theta
+    return {"epochs_run": epoch + 1, "best_epoch": best_epoch + 1, "best_epoch_loss": best_loss,
+            "stop_reason": stop_reason}
 
-    def _dJ_dF(self, l1, l2, l3, mode, gamma=None, batch_idx=None):
-        """Compute dJ_α/dF_{ij} for each deformation mode.
 
-        For the stress formula: σ_ij = α * dψ/dJ * dJ_α/dF_{ij} * F_{ji}
-        But since we're computing individual components, we return the factor
-        that multiplies (α * dψ/dJ).
-
-        Actually, for the specific stress components we need:
-        - Uniaxial: σ_11 = α * dψ/dJ * α * (l1^(α-1) * dl1/dλ1) * (l1 - l3^α/l1^(α-1))
-                   = α * dψ/dJ * (l1^α - l3^α)
-        - Equibiaxial: σ_11 = σ_22 = α * dψ/dJ * (l1^α - l3^α)
-        - Simple shear: σ_12 = α/2^α * dψ/dJ * [(γ+√)/2]^α-1 * [(γ+√) - (-γ+√)] / √
-                      = α/2^α * dψ/dJ * [(γ+√)/2]^(α-1) * (2γ) / √
-        where γ is the engineering shear strain.
-        """
-        return None  # We compute stress directly
-
-    def compute_stress(self, F, gamma_override=None):
-        """Compute Cauchy stress tensor from deformation gradient.
-
-        Args:
-            F: (batch, 3, 3) deformation gradient tensors
-            gamma_override: optional (batch,) tensor of shear strains for SS mode
-
-        Returns:
-            sigma: (batch, 3, 3) Cauchy stress tensors
-        """
-        batch = F.shape[0]
-        l1, l2, l3 = get_principal_stretches(F)
-        modes = detect_deformation_mode(l1, l2, l3, F)
-
-        sigma = torch.zeros((batch, 3, 3), dtype=F.dtype, device=F.device)
-
-        # Group samples by mode
-        mode_groups = {}
-        for i, mode in enumerate(modes):
-            if mode not in mode_groups:
-                mode_groups[mode] = []
-            mode_groups[mode].append(i)
-
-        for mode, indices in mode_groups.items():
-            indices_t = torch.tensor(indices, device=F.device, dtype=torch.long)
-            F_m = F[indices_t]
-            l1_m = F_m[:, 0, 0]
-            l2_m = F_m[:, 1, 1]
-            l3_m = F_m[:, 2, 2]
-
-            if mode == 'ss' and gamma_override is not None:
-                gamma_m = gamma_override[indices_t]
-            elif mode == 'ss':
-                # For simple shear, extract gamma from the off-diagonal of F
-                # For proper simple shear: F = [1 γ 0; 0 1 0; 0 0 1]
-                # But we may have a general F with off-diagonal components
-                gamma_m = F_m[:, 0, 1] + F_m[:, 1, 0]
-                gamma_m = gamma_m / 2  # engineering strain
-            else:
-                gamma_m = None
-
-            if mode in ('ut', 'uc', 'ps'):
-                sigma_batch = self._stress_uniaxial(l1_m, l2_m, l3_m, mode)
-                for idx, sample_idx in enumerate(indices):
-                    sigma[sample_idx] = sigma_batch[idx]
-
-            elif mode == 'bt':
-                sigma_batch = self._stress_equibiaxial(l1_m, l2_m, l3_m)
-                for idx, sample_idx in enumerate(indices):
-                    sigma[sample_idx] = sigma_batch[idx]
-
-            elif mode == 'ss':
-                sigma_batch = self._stress_simple_shear(l1_m, l2_m, l3_m, gamma_m)
-                for idx, sample_idx in enumerate(indices):
-                    sigma[sample_idx] = sigma_batch[idx]
-
-        return sigma
-
-    def _stress_uniaxial(self, l1, l2, l3, mode):
-        """Compute Cauchy stress for uniaxial deformation.
-
-        Paper Eq. (15):
-        σ_11 = α (∂ψ/∂J_α) (λ_1^α - λ_1^(-α/2))
-        """
-        batch = l1.shape[0]
-        sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
-
-        # Compute J - 3 and dψ/dJ for each branch (fully tensor-based)
-        if self.mode in ('positive', 'combined'):
-            J_minus_3_plus = l1 ** self.alpha_plus + l2 ** self.alpha_plus + l3 ** self.alpha_plus - 3.0
-            dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
-
-        if self.mode in ('negative', 'combined'):
-            J_minus_3_minus = (l1 ** self.alpha_minus + l2 ** self.alpha_minus +
-                               l3 ** self.alpha_minus - 3.0)
-            dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
-
-        if self.mode == 'combined':
-            s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
-                   self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus))
-        elif self.mode == 'positive':
-            s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
-        else:  # negative
-            s11 = self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus)
-
-        sigma[:, 0, 0] = s11
-        return sigma
-
-    def _stress_equibiaxial(self, l1, l2, l3):
-        """Compute Cauchy stress for equibiaxial deformation.
-
-        Paper Eq. (16):
-        σ_11 = α (∂ψ/∂J_α) (λ_1^α - λ_1^(-2α))
-        """
-        batch = l1.shape[0]
-        sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
-
-        # Compute J - 3 and dψ/dJ for each branch (fully tensor-based)
-        if self.mode in ('positive', 'combined'):
-            J_minus_3_plus = l1 ** self.alpha_plus + l2 ** self.alpha_plus + l3 ** self.alpha_plus - 3.0
-            dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
-
-        if self.mode in ('negative', 'combined'):
-            J_minus_3_minus = (l1 ** self.alpha_minus + l2 ** self.alpha_minus +
-                               l3 ** self.alpha_minus - 3.0)
-            dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
-
-        if self.mode == 'combined':
-            s11 = (self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus) +
-                   self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus))
-        elif self.mode == 'positive':
-            s11 = self.alpha_plus * dpsi_plus * (l1 ** self.alpha_plus - l3 ** self.alpha_plus)
-        else:  # negative
-            s11 = self.alpha_minus * dpsi_minus * (l1 ** self.alpha_minus - l3 ** self.alpha_minus)
-
-        sigma[:, 0, 0] = s11
-        sigma[:, 1, 1] = s11
-        return sigma
-
-    def _stress_simple_shear(self, l1, l2, l3, gamma):
-        """Compute Cauchy stress for simple shear deformation.
-
-        Paper Eq. (18):
-        λ_± = (sqrt(γ² + 4) ± γ) / 2
-        J_α = λ_+^α + 1 + λ_-^α
-        σ_12 = (α / 2^α) (∂ψ/∂J_α)
-              * [ (γ + sqrt(γ²+4))^α - (-γ + sqrt(γ²+4))^α ] / sqrt(γ²+4)
-        """
-        batch = l1.shape[0]
-        sigma = torch.zeros((batch, 3, 3), dtype=l1.dtype, device=l1.device)
-
-        gamma = gamma.view(batch)
-        sqrt_term = torch.sqrt(gamma ** 2 + 4.0)
-        lambda_plus = 0.5 * (sqrt_term + gamma)
-        lambda_minus = 0.5 * (sqrt_term - gamma)
-        ones = torch.ones(batch, dtype=l1.dtype, device=l1.device)
-
-        if self.mode in ('positive', 'combined'):
-            J_minus_3_plus = lambda_plus ** self.alpha_plus + ones + lambda_minus ** self.alpha_plus - 3.0
-            dpsi_plus = self._dpsi_dJ(J_minus_3_plus, 'plus')
-
-        if self.mode in ('negative', 'combined'):
-            J_minus_3_minus = lambda_plus ** self.alpha_minus + ones + lambda_minus ** self.alpha_minus - 3.0
-            dpsi_minus = self._dpsi_dJ(J_minus_3_minus, 'minus')
-
-        if self.mode == 'combined':
-            s12_pos = (
-                (self.alpha_plus / (2.0 ** self.alpha_plus)) * dpsi_plus *
-                ((gamma + sqrt_term) ** self.alpha_plus - (-gamma + sqrt_term) ** self.alpha_plus) / sqrt_term
-            )
-            s12_neg = (
-                (self.alpha_minus / (2.0 ** self.alpha_minus)) * dpsi_minus *
-                ((gamma + sqrt_term) ** self.alpha_minus - (-gamma + sqrt_term) ** self.alpha_minus) / sqrt_term
-            )
-            s12 = s12_pos + s12_neg
-        elif self.mode == 'positive':
-            s12 = (
-                (self.alpha_plus / (2.0 ** self.alpha_plus)) * dpsi_plus *
-                ((gamma + sqrt_term) ** self.alpha_plus - (-gamma + sqrt_term) ** self.alpha_plus) / sqrt_term
-            )
-        else:  # negative
-            s12 = (
-                (self.alpha_minus / (2.0 ** self.alpha_minus)) * dpsi_minus *
-                ((gamma + sqrt_term) ** self.alpha_minus - (-gamma + sqrt_term) ** self.alpha_minus) / sqrt_term
-            )
-
-        sigma[:, 0, 1] = s12
-        sigma[:, 1, 0] = s12
-        return sigma
-
-    def forward(self, F, gamma_override=None):
-        """Forward pass: predict Cauchy stress from deformation gradient.
-
-        Args:
-            F: (batch, 3, 3) deformation gradient tensors
-            gamma_override: optional (batch,) shear strains for SS mode
-
-        Returns:
-            sigma: (batch, 3, 3) predicted Cauchy stress tensors
-        """
-        return self.compute_stress(F, gamma_override=gamma_override)
-
-    def loss(self, F, S_target, gamma=None):
-        """Compute loss = MSE(stress) + L1 regularization."""
-        S_pred = self.compute_stress(F, gamma_override=gamma)
-        l1, l2, l3 = get_principal_stretches(F)
-        mode_names = detect_deformation_mode(l1, l2, l3, F)
-        pred_obs = extract_observed_stress(S_pred, mode_names)
-        target_obs = extract_observed_stress(S_target, mode_names)
-        mse = torch.mean((pred_obs - target_obs) ** 2)
-        l1_loss = self.r * sum(torch.sum(torch.abs(w)) for w in self.get_strain_energy_weights())
-        return mse + l1_loss, mse
-
-    def predict_stress(self, F, gamma=None):
-        """Predict Cauchy stress as numpy array."""
-        with torch.no_grad():
-            sigma = self.compute_stress(F, gamma_override=gamma)
-        return sigma.detach().numpy()
+def converge(model: CANN, train_pts: dict, steps: int = 20000, lr0: float = 1e-3, lr1: float = 1e-7) -> dict:
+    """Finish minimizing the paper's objective: full-batch Adam, learning rate decaying
+    geometrically from lr0 to lr1, same constraints; keeps the best objective seen."""
+    chunks = [list(train_pts[m]) for m in train_pts]
+    n_par = len(model.theta)
+    m1, m2 = [0.0] * n_par, [0.0] * n_par
+    start = model.objective(train_pts)
+    best, best_theta = start, list(model.theta)
+    ratio = (lr1 / lr0) ** (1.0 / max(1, steps - 1))
+    lr = lr0
+    for t in range(1, steps + 1):
+        loss, grad = model.loss_and_grad(chunks)
+        if not math.isfinite(loss) or not all(math.isfinite(g) for g in grad):
+            break
+        if loss < best:
+            best, best_theta = loss, list(model.theta)
+        c1, c2 = 1.0 - BETA1 ** t, 1.0 - BETA2 ** t
+        th = model.theta
+        for i in range(n_par):
+            if i < model.K and not model.train_alpha:
+                continue
+            gi = grad[i]
+            m1[i] = BETA1 * m1[i] + (1.0 - BETA1) * gi
+            m2[i] = BETA2 * m2[i] + (1.0 - BETA2) * gi * gi
+            th[i] -= lr * (m1[i] / c1) / (math.sqrt(m2[i] / c2) + EPS)
+        model.project()
+        lr *= ratio
+    final = model.objective(train_pts)
+    if final < best:
+        best, best_theta = final, list(model.theta)
+    model.theta = best_theta
+    return {"objective_before_converge": start, "objective_after_converge": best}

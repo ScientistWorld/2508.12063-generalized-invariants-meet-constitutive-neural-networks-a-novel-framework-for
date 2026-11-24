@@ -10,7 +10,7 @@
 - [x] `scoring/reference.json` — paper's reported numbers
 - [x] Workspace validated via `python validate.py`
 - [x] `scoring/scores.json` — reproduced numbers
-- [x] Artifact-based full/train/test score regeneration validated in container job `47926f28-2ce`
+- [x] Score files regenerated from the reference laws in the iteration-11 job (see `HARDENING.md`)
 - [x] `scoring/TARGETS.md` — filled in
 - [x] `scoring/CONSTRAINTS.md` — filled in
 - [x] `scoring/DIRECTION.md` — filled in
@@ -18,16 +18,16 @@
 
 ## Code
 - [x] Evaluation code in `eval/`
-- [x] Model-agnostic prediction artifact scoring path in `eval/artifacts.py`
+- [x] Law-based scoring: `eval/train/evaluate.py` and `eval/test/evaluate.py` recompute stresses from declared strain-energy laws
 - [x] Method implementation in `method/`
-- [x] Baseline implementation in `baseline/` (via sicann.py)
+- [x] SI-CANN baseline (`method/train.py --model SI-CANN`), installed as a fixed baseline in `eval/*/baselines/`
 - [x] Data loading in `data/`
-- [x] Import separation (eval/models.py created for validation)
+- [x] Import separation (eval/ is standard-library only)
 
 ## Scripts
 - [x] `scripts/evaluate.sh`
 - [x] `scripts/reproduce.sh`
-- [x] `scripts/download.sh` (idempotent, data embedded)
+- [x] `scripts/download.sh` (fetches the authors' data files at a pinned commit, sha256-checked)
 - [x] `scripts/baseline.sh`
 - [x] `scripts/method.sh`
 - [x] `scripts/run.sh`
@@ -36,7 +36,7 @@
 - [x] `environment/container.def` + `environment/setup.sh`
 
 ## Data
-- [x] Dataset acquired (embedded in data/load_data.py from Table A.5)
+- [x] Dataset acquired (authors' spreadsheets, LivingMatterLab/CANN@d3caca0f -> `data/curves.json`)
 - [x] Pretrained models downloaded if needed (N/A — no external models)
 
 ## Milestones

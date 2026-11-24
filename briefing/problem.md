@@ -2,19 +2,55 @@
 
 ## Research Question
 
-The central challenge is: given experimental stress-strain data for an isotropic incompressible hyperelastic material (such as rubber or brain tissue), how do we automatically discover an accurate and interpretable strain-energy law without hand-designing the final constitutive form in advance?
+Given stress-stretch measurements of an isotropic, incompressible hyperelastic material in a few
+loading modes, discover a strain energy function that (1) reproduces those measurements, (2)
+predicts the material's response in a loading mode it was never fitted to, and (3) stays a
+compact, closed-form, physically admissible constitutive law that an engineer can read.
 
-Classical hyperelastic constitutive models (neo-Hookean, Mooney-Rivlin, Ogden, etc.) require an engineer to manually choose a strain energy function form and invariants a priori. This choice is often based on intuition or trial-and-error and may not suit all materials. Data-driven approaches using neural networks can fit stress-strain data but often lack interpretability or require the user to pre-specify which invariants to use.
+Classical models (neo-Hookean, Mooney-Rivlin, Ogden, Gent, ...) fix the invariants and the
+functional form in advance; generic regressors fit curves but give no constitutive law. The task
+is automated discovery of the law itself.
+
+## Data
+
+Real experimental data, the curves used by the paper (its authors' own data files):
+
+| material | source | training modes (fit) | held-out mode (predict) |
+|---|---|---|---|
+| rubber_T20 | Treloar (1944), 20 C | uniaxial tension, equibiaxial tension | pure shear |
+| rubber_T50 | Treloar (1944), 50 C | uniaxial tension, equibiaxial tension | pure shear |
+| brain_CX | Budday et al. (2017), cortex | uniaxial tension, uniaxial compression | simple shear |
+| brain_CC | Budday et al. (2017), corpus callosum | uniaxial tension, uniaxial compression | simple shear |
+| brain_CR | Budday et al. (2017), corona radiata | uniaxial tension, uniaxial compression | simple shear |
+| brain_BG | Budday et al. (2017), basal ganglia | uniaxial tension, uniaxial compression | simple shear |
+
+Rubber stretches reach 5-8 (stresses in MPa); brain tissue is tested to 10% stretch and 0.2 shear
+(stresses in kPa) and is soft, nonlinear and stiffer in compression than in tension.
+
+`data/curves.json` (loaded by `data/load_data.py`) holds every training-mode curve, and the
+held-out curve of the development materials (rubber_T20, brain_CX, brain_CC). For the test
+materials (rubber_T50, brain_CR, brain_BG) only the stretches / shears at which the held-out
+mode is evaluated are given; their held-out stresses are the hidden test.
+
+## Exponent families
+
+The task is posed for three families of laws built on generalized invariants
+`J_a = l1^a + l2^a + l3^a` (principal stretches l_i, l1 l2 l3 = 1): exponents a > 0 only
+("positive", I1-like; a = 2 gives I1), a < 0 only ("negative", I2-like; a = -2 gives I2), or
+either sign ("combined"). Each material is studied in all three.
 
 ## Why It Matters
 
-Hyperelastic materials (rubber, silicone, brain tissue, etc.) are used in critical applications: automotive components, biomedical devices, soft robotics, and personalized medical simulations. Accurate constitutive models are essential for predictive simulations. Automatically discovering interpretable material models from experimental data would dramatically accelerate the model development process and improve predictive accuracy across different loading conditions.
+Hyperelastic laws drive simulations of tyres, seals, soft robots, medical devices and brain
+mechanics. A law that only fits the tests it was calibrated on fails in the multiaxial states that
+matter in practice; one that generalizes across loading modes, and stays interpretable, is what
+model discovery is for.
 
 ## Success Criteria
 
-A successful solution should:
-1. **Discover interpretable models** directly from experimental stress-strain data, without requiring manual specification of the strain energy function form
-2. **Predict accurately** across multiple deformation modes — training on some loading conditions (e.g., uniaxial tension) and testing on unseen ones (e.g., pure shear or simple shear)
-3. **Outperform classical approaches** that rely on fixed, pre-specified invariants (I₁ or I₂)
-4. **Handle diverse materials** — both rubber-like materials dominated by stretch and soft biological tissues with shear-sensitive behavior
-5. **Output physically meaningful** strain energy function formulations that can be written in closed form, not just black-box neural network predictions
+1. High accuracy on the held-out loading mode of materials whose held-out mode was never seen.
+2. Faithful fit of the training modes.
+3. Small relative stress errors, including at small strains.
+4. A compact law: few active terms, every term a closed-form function of a generalized invariant.
+5. Physical admissibility: non-negative energy contributions, a stress-free reference state, a
+   well-defined energy wherever the law is evaluated.

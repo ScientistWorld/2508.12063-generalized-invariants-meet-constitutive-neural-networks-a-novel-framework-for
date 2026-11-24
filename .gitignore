@@ -223,3 +223,6 @@ wheels/
 python_wheels/
 *.bundle
 *.bundle.lock
+
+# Hardening (iteration 11) job logs are part of the record
+!redteam/hardening/logs/

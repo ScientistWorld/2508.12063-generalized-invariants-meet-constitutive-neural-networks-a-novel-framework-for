@@ -1,49 +1,48 @@
 {
+  "_note": "Paper numbers (Tables 3/4; n_terms counted from Tables B.6/B.7) are for the paper's materials, Treloar rubber at 20 C and human cortex. The gym scores the same protocol on more materials from the same studies: scores.json reproduces the paper's two materials; scoring/scores_train.json (development side) averages over rubber_T20 and brain_CX + brain_CC; the hidden test averages over rubber_T50 and brain_CR + brain_BG, so its values are not on the paper's scale.",
+  "_scale_note": "Per-metric improvements are divided by their spread across ranked attempts, so coefficients set relative importance, not units.",
   "experiments": {
     "rubber_generalization": {
-      "description": "Rubber: train on uniaxial tension + equibiaxial tension, test on pure shear. Comparing SI-CANN (fixed α+=2) vs GI-CANN (learned α+*). This is the core claim for rubber: GI-CANN discovers α*≈1.675 and achieves near-perfect R².",
-      "weight": 0.4,
+      "description": "Rubber, positive-exponent family (I1-like generalized invariants). Fit uniaxial + equibiaxial tension, predict held-out pure shear. Paper: GI-CANN discovers alpha* = 1.675 and beats SI-CANN (alpha fixed at 2).",
+      "family": "positive",
+      "material_class": "rubber",
+      "weight": 0.3,
       "primary_metric": "avg_r2",
       "metrics": {
         "r2_ut": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_bt": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Equibiaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the equibiaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_ps": {
           "higher_is_better": true,
-          "coefficient": 1.2,
-          "description": "Pure-shear R2 on the evaluated slice."
+          "coefficient": 1.0,
+          "description": "Coefficient of determination of the pure shear (held out) stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials."
         },
         "avg_r2": {
           "higher_is_better": true,
-          "coefficient": 0.4,
-          "description": "Mean R2 across all deformation modes in this experiment."
+          "coefficient": 1.0,
+          "description": "Mean of the three clipped per-mode R2 (two training modes + held-out mode), the paper's Table 3/4 metric, averaged over the experiment's materials."
         },
-        "avg_normalized_rmse": {
+        "heldout_rel_error": {
           "higher_is_better": false,
-          "coefficient": -0.5,
-          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+          "coefficient": 0.5,
+          "description": "Mean relative stress error |s - s_hat| / |s_hat| over the loaded points of the held-out mode (each point capped at 1), the paper's Fig. 4/5 measure; weights the small-strain response that R2 hardly sees."
         },
-        "tail_normalized_mae": {
+        "n_terms": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
-        },
-        "shape_violation_rate": {
-          "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+          "coefficient": 0.25,
+          "description": "Constraint: number of active strain-energy terms (stress contribution >= 1% of a mode's measured stress range). The paper's claim is accuracy without giving up a compact, interpretable law; dense expansions pay here. Laws with more than 12 active terms are invalid."
         },
         "alpha_star": {
-          "higher_is_better": false,
+          "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+          "description": "Exponent of the dominant term, report only (zero coefficient: matching the paper's exponent is not rewarded)."
         }
       },
       "results": {
@@ -53,7 +52,8 @@
           "r2_bt": 0.96,
           "r2_ps": 0.996,
           "avg_r2": 0.982,
-          "alpha_star": 2.0
+          "alpha_star": 2.0,
+          "n_terms": 2
         },
         "GI-CANN": {
           "type": "proposed",
@@ -61,180 +61,178 @@
           "r2_bt": 0.997,
           "r2_ps": 0.998,
           "avg_r2": 0.998,
-          "alpha_star": 1.675
+          "alpha_star": 1.675,
+          "n_terms": 2
         }
       }
     },
     "rubber_negative_ablation": {
-      "description": "Rubber with negative exponent (I₂-like behavior). Shows that negative exponents perform poorly for rubber — an ablation confirming that stretch-dominated materials prefer positive exponents.",
+      "description": "Rubber, negative-exponent family only (I2-like). Mismatched family: the paper finds it fails for rubber.",
+      "family": "negative",
+      "material_class": "rubber",
       "weight": 0.05,
       "primary_metric": "avg_r2",
       "metrics": {
         "r2_ut": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_bt": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Equibiaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the equibiaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_ps": {
           "higher_is_better": true,
-          "coefficient": 0.0,
-          "description": "Pure-shear R2 on the evaluated slice."
+          "coefficient": 1.0,
+          "description": "Coefficient of determination of the pure shear (held out) stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials."
         },
         "avg_r2": {
           "higher_is_better": true,
-          "coefficient": 0.8,
-          "description": "Mean R2 across all deformation modes in this experiment."
+          "coefficient": 1.0,
+          "description": "Mean of the three clipped per-mode R2 (two training modes + held-out mode), the paper's Table 3/4 metric, averaged over the experiment's materials."
         },
-        "avg_normalized_rmse": {
+        "heldout_rel_error": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+          "coefficient": 0.5,
+          "description": "Mean relative stress error |s - s_hat| / |s_hat| over the loaded points of the held-out mode (each point capped at 1), the paper's Fig. 4/5 measure; weights the small-strain response that R2 hardly sees."
         },
-        "tail_normalized_mae": {
+        "n_terms": {
           "higher_is_better": false,
-          "coefficient": -0.15,
-          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
-        },
-        "shape_violation_rate": {
-          "higher_is_better": false,
-          "coefficient": -0.1,
-          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+          "coefficient": 0.25,
+          "description": "Constraint: number of active strain-energy terms (stress contribution >= 1% of a mode's measured stress range). The paper's claim is accuracy without giving up a compact, interpretable law; dense expansions pay here. Laws with more than 12 active terms are invalid."
         },
         "alpha_star": {
-          "higher_is_better": false,
+          "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+          "description": "Exponent of the dominant term, report only (zero coefficient: matching the paper's exponent is not rewarded)."
         }
       },
       "results": {
-        "SI-CANN_Jα-": {
+        "SI-CANN": {
           "type": "baseline",
           "r2_ut": 0.0,
           "r2_bt": 0.954,
           "r2_ps": 0.0,
-          "avg_r2": 0.318
+          "avg_r2": 0.318,
+          "alpha_star": -2.0,
+          "n_terms": 1
         },
-        "GI-CANN_Jα-": {
+        "GI-CANN": {
           "type": "proposed",
           "r2_ut": 0.166,
           "r2_bt": 0.0,
           "r2_ps": 0.627,
-          "avg_r2": 0.264
+          "avg_r2": 0.264,
+          "n_terms": 1
         }
       }
     },
     "rubber_combined_ablation": {
-      "description": "Rubber with both positive and negative exponents simultaneously. Shows that using both α+ and α- gives the best results (R²=0.999). Ablation confirming multi-invariant formulation is optimal for rubber.",
-      "weight": 0.05,
+      "description": "Rubber, exponents of either sign. Paper: two generalized invariants (alpha+ = 1.797, alpha- = -0.879) give the best rubber fit.",
+      "family": "combined",
+      "material_class": "rubber",
+      "weight": 0.15,
       "primary_metric": "avg_r2",
       "metrics": {
         "r2_ut": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_bt": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Equibiaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the equibiaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_ps": {
           "higher_is_better": true,
-          "coefficient": 0.0,
-          "description": "Pure-shear R2 on the evaluated slice."
+          "coefficient": 1.0,
+          "description": "Coefficient of determination of the pure shear (held out) stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials."
         },
         "avg_r2": {
           "higher_is_better": true,
-          "coefficient": 0.8,
-          "description": "Mean R2 across all deformation modes in this experiment."
+          "coefficient": 1.0,
+          "description": "Mean of the three clipped per-mode R2 (two training modes + held-out mode), the paper's Table 3/4 metric, averaged over the experiment's materials."
         },
-        "avg_normalized_rmse": {
+        "heldout_rel_error": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+          "coefficient": 0.5,
+          "description": "Mean relative stress error |s - s_hat| / |s_hat| over the loaded points of the held-out mode (each point capped at 1), the paper's Fig. 4/5 measure; weights the small-strain response that R2 hardly sees."
         },
-        "tail_normalized_mae": {
+        "n_terms": {
           "higher_is_better": false,
-          "coefficient": -0.15,
-          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
-        },
-        "shape_violation_rate": {
-          "higher_is_better": false,
-          "coefficient": -0.1,
-          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+          "coefficient": 0.25,
+          "description": "Constraint: number of active strain-energy terms (stress contribution >= 1% of a mode's measured stress range). The paper's claim is accuracy without giving up a compact, interpretable law; dense expansions pay here. Laws with more than 12 active terms are invalid."
         },
         "alpha_star": {
-          "higher_is_better": false,
+          "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+          "description": "Exponent of the dominant term, report only (zero coefficient: matching the paper's exponent is not rewarded)."
         }
       },
       "results": {
-        "SI-CANN_Jα+Jα-": {
+        "SI-CANN": {
           "type": "baseline",
           "r2_ut": 0.994,
           "r2_bt": 0.984,
           "r2_ps": 0.952,
-          "avg_r2": 0.977
+          "avg_r2": 0.977,
+          "n_terms": 3
         },
-        "GI-CANN_Jα+Jα-": {
+        "GI-CANN": {
           "type": "proposed",
           "r2_ut": 0.998,
           "r2_bt": 0.999,
           "r2_ps": 1.0,
-          "avg_r2": 0.999
+          "avg_r2": 0.999,
+          "alpha_star": 1.797,
+          "n_terms": 3
         }
       }
     },
     "brain_generalization": {
-      "description": "Brain cortex: train on uniaxial tension + uniaxial compression, test on simple shear. Comparing SI-CANN (fixed α-=-2) vs GI-CANN (learned α-*≈-18). This is the core claim for brain tissue: GI-CANN discovers a large negative exponent capturing shear-sensitive behavior.",
-      "weight": 0.4,
+      "description": "Brain tissue, negative-exponent family (I2-like). Fit uniaxial tension + compression, predict held-out simple shear. Paper: GI-CANN discovers alpha* = -18.016 and beats SI-CANN (alpha fixed at -2) by a wide margin.",
+      "family": "negative",
+      "material_class": "brain",
+      "weight": 0.3,
       "primary_metric": "avg_r2",
       "metrics": {
         "r2_ut": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_uc": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-compression R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial compression stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_ss": {
           "higher_is_better": true,
-          "coefficient": 1.2,
-          "description": "Simple-shear R2 on the evaluated slice."
+          "coefficient": 1.0,
+          "description": "Coefficient of determination of the simple shear (held out) stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials."
         },
         "avg_r2": {
           "higher_is_better": true,
-          "coefficient": 0.4,
-          "description": "Mean R2 across all deformation modes in this experiment."
+          "coefficient": 1.0,
+          "description": "Mean of the three clipped per-mode R2 (two training modes + held-out mode), the paper's Table 3/4 metric, averaged over the experiment's materials."
         },
-        "avg_normalized_rmse": {
+        "heldout_rel_error": {
           "higher_is_better": false,
-          "coefficient": -0.5,
-          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+          "coefficient": 0.5,
+          "description": "Mean relative stress error |s - s_hat| / |s_hat| over the loaded points of the held-out mode (each point capped at 1), the paper's Fig. 4/5 measure; weights the small-strain response that R2 hardly sees."
         },
-        "tail_normalized_mae": {
+        "n_terms": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
-        },
-        "shape_violation_rate": {
-          "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+          "coefficient": 0.25,
+          "description": "Constraint: number of active strain-energy terms (stress contribution >= 1% of a mode's measured stress range). The paper's claim is accuracy without giving up a compact, interpretable law; dense expansions pay here. Laws with more than 12 active terms are invalid."
         },
         "alpha_star": {
-          "higher_is_better": false,
+          "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+          "description": "Exponent of the dominant term, report only (zero coefficient: matching the paper's exponent is not rewarded)."
         }
       },
       "results": {
@@ -244,7 +242,8 @@
           "r2_uc": 0.836,
           "r2_ss": 0.879,
           "avg_r2": 0.61,
-          "alpha_star": -2.0
+          "alpha_star": -2.0,
+          "n_terms": 1
         },
         "GI-CANN": {
           "type": "proposed",
@@ -252,133 +251,135 @@
           "r2_uc": 0.998,
           "r2_ss": 0.97,
           "avg_r2": 0.966,
-          "alpha_star": -18.016
+          "alpha_star": -18.016,
+          "n_terms": 1
         }
       }
     },
     "brain_positive_ablation": {
-      "description": "Brain cortex with positive exponent (I₁-like behavior). Shows that positive exponents perform poorly for brain tissue — an ablation confirming that shear-sensitive materials prefer negative exponents.",
+      "description": "Brain tissue, positive-exponent family only (I1-like). Mismatched family: the paper finds it fails for brain.",
+      "family": "positive",
+      "material_class": "brain",
       "weight": 0.05,
       "primary_metric": "avg_r2",
       "metrics": {
         "r2_ut": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_uc": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-compression R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial compression stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_ss": {
           "higher_is_better": true,
-          "coefficient": 0.0,
-          "description": "Simple-shear R2 on the evaluated slice."
+          "coefficient": 1.0,
+          "description": "Coefficient of determination of the simple shear (held out) stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials."
         },
         "avg_r2": {
           "higher_is_better": true,
-          "coefficient": 0.8,
-          "description": "Mean R2 across all deformation modes in this experiment."
+          "coefficient": 1.0,
+          "description": "Mean of the three clipped per-mode R2 (two training modes + held-out mode), the paper's Table 3/4 metric, averaged over the experiment's materials."
         },
-        "avg_normalized_rmse": {
+        "heldout_rel_error": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+          "coefficient": 0.5,
+          "description": "Mean relative stress error |s - s_hat| / |s_hat| over the loaded points of the held-out mode (each point capped at 1), the paper's Fig. 4/5 measure; weights the small-strain response that R2 hardly sees."
         },
-        "tail_normalized_mae": {
+        "n_terms": {
           "higher_is_better": false,
-          "coefficient": -0.15,
-          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
-        },
-        "shape_violation_rate": {
-          "higher_is_better": false,
-          "coefficient": -0.1,
-          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+          "coefficient": 0.25,
+          "description": "Constraint: number of active strain-energy terms (stress contribution >= 1% of a mode's measured stress range). The paper's claim is accuracy without giving up a compact, interpretable law; dense expansions pay here. Laws with more than 12 active terms are invalid."
         },
         "alpha_star": {
-          "higher_is_better": false,
+          "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+          "description": "Exponent of the dominant term, report only (zero coefficient: matching the paper's exponent is not rewarded)."
         }
       },
       "results": {
-        "SI-CANN_Jα+": {
+        "SI-CANN": {
           "type": "baseline",
           "r2_ut": 0.0,
           "r2_uc": 0.706,
           "r2_ss": 0.875,
-          "avg_r2": 0.527
+          "avg_r2": 0.527,
+          "alpha_star": 2.0,
+          "n_terms": 1
         },
-        "GI-CANN_Jα+": {
+        "GI-CANN": {
           "type": "proposed",
           "r2_ut": 0.0,
           "r2_uc": 0.7,
           "r2_ss": 0.879,
-          "avg_r2": 0.526
+          "avg_r2": 0.526,
+          "alpha_star": 2.971,
+          "n_terms": 1
         }
       }
     },
     "brain_combined_ablation": {
-      "description": "Brain cortex with both positive and negative exponents simultaneously. Shows that combined invariants give good results, but a single optimized negative exponent is sufficient and more interpretable.",
-      "weight": 0.05,
+      "description": "Brain tissue, exponents of either sign. Paper: the negative invariant dominates (alpha- = -18.223) and the fit matches the single-invariant model.",
+      "family": "combined",
+      "material_class": "brain",
+      "weight": 0.15,
       "primary_metric": "avg_r2",
       "metrics": {
         "r2_ut": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-tension R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial tension stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_uc": {
           "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Uniaxial-compression R2 on the evaluated slice."
+          "description": "Coefficient of determination of the uniaxial compression stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials (enters avg_r2)."
         },
         "r2_ss": {
           "higher_is_better": true,
-          "coefficient": 0.0,
-          "description": "Simple-shear R2 on the evaluated slice."
+          "coefficient": 1.0,
+          "description": "Coefficient of determination of the simple shear (held out) stress, clipped to [0, 1] as in the paper, averaged over the experiment's materials."
         },
         "avg_r2": {
           "higher_is_better": true,
-          "coefficient": 0.8,
-          "description": "Mean R2 across all deformation modes in this experiment."
+          "coefficient": 1.0,
+          "description": "Mean of the three clipped per-mode R2 (two training modes + held-out mode), the paper's Table 3/4 metric, averaged over the experiment's materials."
         },
-        "avg_normalized_rmse": {
+        "heldout_rel_error": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Average RMSE normalized by each mode's stress range; catches poor magnitude fit even when R2 is high."
+          "coefficient": 0.5,
+          "description": "Mean relative stress error |s - s_hat| / |s_hat| over the loaded points of the held-out mode (each point capped at 1), the paper's Fig. 4/5 measure; weights the small-strain response that R2 hardly sees."
         },
-        "tail_normalized_mae": {
+        "n_terms": {
           "higher_is_better": false,
-          "coefficient": -0.15,
-          "description": "Average absolute error at the largest-deformation evaluated row, normalized by stress range."
-        },
-        "shape_violation_rate": {
-          "higher_is_better": false,
-          "coefficient": -0.1,
-          "description": "Fraction of adjacent evaluated intervals where prediction trend reverses the observed stress trend."
+          "coefficient": 0.25,
+          "description": "Constraint: number of active strain-energy terms (stress contribution >= 1% of a mode's measured stress range). The paper's claim is accuracy without giving up a compact, interpretable law; dense expansions pay here. Laws with more than 12 active terms are invalid."
         },
         "alpha_star": {
-          "higher_is_better": false,
+          "higher_is_better": true,
           "coefficient": 0.0,
-          "description": "Reported learned or fixed exponent for interpretability auditing; zero coefficient avoids rewarding paper-value matching."
+          "description": "Exponent of the dominant term, report only (zero coefficient: matching the paper's exponent is not rewarded)."
         }
       },
       "results": {
-        "SI-CANN_Jα+Jα-": {
+        "SI-CANN": {
           "type": "baseline",
           "r2_ut": 0.14,
           "r2_uc": 0.832,
           "r2_ss": 0.878,
-          "avg_r2": 0.617
+          "avg_r2": 0.617,
+          "n_terms": 1
         },
-        "GI-CANN_Jα+Jα-": {
+        "GI-CANN": {
           "type": "proposed",
           "r2_ut": 0.93,
           "r2_uc": 0.997,
           "r2_ss": 0.972,
-          "avg_r2": 0.966
+          "avg_r2": 0.966,
+          "alpha_star": -18.223,
+          "n_terms": 1
         }
       }
     }
