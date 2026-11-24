@@ -2,18 +2,26 @@
 
 - **Paper ID:** 2508.12063
 - **Title:** Generalized invariants meet constitutive neural networks: A novel framework for hyperelastic materials
-- **Domain:** Computational Mechanics / Constitutive Modeling
-- **TL;DR:** A neural network (GI-CANN) that simultaneously discovers the optimal exponent for generalized invariants and the strain energy function from stress-strain data, enabling automated interpretable model discovery for hyperelastic materials.
+- **Domain:** Computational mechanics / constitutive modeling
+- **TL;DR:** GI-CANN makes the exponent of the generalized invariant J_alpha = sum l_i^alpha a trainable parameter of a constitutive neural network, so the invariant and the strain energy are discovered together from stress-stretch data.
 
 ## Short Summary
 
-The paper addresses the challenge of automatically discovering physically meaningful constitutive models for isotropic incompressible hyperelastic materials from experimental stress-strain data. The proposed GI-CANN (Generalized Invariant Constitutive Artificial Neural Network) learns a trainable exponent α in the generalized invariant J_α = Σ λᵢ^α, and combines it with a structured neural network that outputs the strain energy function via three parallel branches (identity, exponential, logarithmic). Unlike prior approaches that require fixed invariants or sequential two-step fitting, GI-CANN discovers both the invariant and the strain energy function in a single training procedure. The method is validated on rubber (Treloar data) and brain cortex (Budday et al. data), demonstrating that it automatically identifies the appropriate invariant formulation for each material — stretch-dominated behavior (rubber) prefers positive exponents near α=1.7, while shear-dominated behavior (brain tissue) prefers large negative exponents α≈-18.
+Classical hyperelastic models fix their invariants (I1, I2) and functional form in advance.
+GI-CANN learns the generalized-invariant exponent together with a sparse strain energy built from
+identity, exponential and logarithmic terms, trained on some loading modes and tested on another.
+On Treloar's rubber it finds an I1-like law (alpha* = 1.675, avg R2 0.998); on human cortex a
+single strongly I2-like term (alpha* = -18.016, avg R2 0.966), both clearly better than the same
+network with alpha fixed at +-2 (0.982, 0.610).
 
-## Key Results
+## The gym
 
-- **Rubber**: GI-CANN with single positive exponent achieves average R² = 0.998 (trained on uniaxial + equibiaxial, tested on pure shear), compared to SI-CANN's R² = 0.982
-- **Brain tissue**: GI-CANN with single negative exponent achieves average R² = 0.966 (trained on uniaxial tension + compression, tested on simple shear), significantly outperforming SI-CANN's R² = 0.527 with α+=2
-- **Interpretability**: The discovered models correspond to closed-form strain energy functions (e.g., ψ = 0.227 MPa · (J_1.675 - 3) + 0.297 MPa · [exp(0.107 · (J_1.675 - 3)) - 1] for rubber)
+Laws are scored, not stress predictions: a method declares its strain energy per material and
+exponent family, the evaluator computes the stresses. The paper's two materials and the corpus
+callosum are the development side; Treloar rubber at 50 C and the corona radiata and basal
+ganglia (same studies, same protocol) form the hidden test, whose held-out-mode curves are not in
+the workspace. Metrics: per-mode R2 (clipped at 0, as in the paper), mean relative error on the
+held-out mode, and the number of active terms. See `briefing/evaluation.md`.
 
 ---
 
@@ -21,131 +29,199 @@ The paper addresses the challenge of automatically discovering physically meanin
 
 ## Research Question
 
-The central challenge is: given experimental stress-strain data for an isotropic incompressible hyperelastic material (such as rubber or brain tissue), how do we automatically discover an accurate and interpretable strain-energy law without hand-designing the final constitutive form in advance?
+Given stress-stretch measurements of an isotropic, incompressible hyperelastic material in a few
+loading modes, discover a strain energy function that (1) reproduces those measurements, (2)
+predicts the material's response in a loading mode it was never fitted to, and (3) stays a
+compact, closed-form, physically admissible constitutive law that an engineer can read.
 
-Classical hyperelastic constitutive models (neo-Hookean, Mooney-Rivlin, Ogden, etc.) require an engineer to manually choose a strain energy function form and invariants a priori. This choice is often based on intuition or trial-and-error and may not suit all materials. Data-driven approaches using neural networks can fit stress-strain data but often lack interpretability or require the user to pre-specify which invariants to use.
+Classical models (neo-Hookean, Mooney-Rivlin, Ogden, Gent, ...) fix the invariants and the
+functional form in advance; generic regressors fit curves but give no constitutive law. The task
+is automated discovery of the law itself.
+
+## Data
+
+Real experimental data, the curves used by the paper (its authors' own data files):
+
+| material | source | training modes (fit) | held-out mode (predict) |
+|---|---|---|---|
+| rubber_T20 | Treloar (1944), 20 C | uniaxial tension, equibiaxial tension | pure shear |
+| rubber_T50 | Treloar (1944), 50 C | uniaxial tension, equibiaxial tension | pure shear |
+| brain_CX | Budday et al. (2017), cortex | uniaxial tension, uniaxial compression | simple shear |
+| brain_CC | Budday et al. (2017), corpus callosum | uniaxial tension, uniaxial compression | simple shear |
+| brain_CR | Budday et al. (2017), corona radiata | uniaxial tension, uniaxial compression | simple shear |
+| brain_BG | Budday et al. (2017), basal ganglia | uniaxial tension, uniaxial compression | simple shear |
+
+Rubber stretches reach 5-8 (stresses in MPa); brain tissue is tested to 10% stretch and 0.2 shear
+(stresses in kPa) and is soft, nonlinear and stiffer in compression than in tension.
+
+`data/curves.json` (loaded by `data/load_data.py`) holds every training-mode curve, and the
+held-out curve of the development materials (rubber_T20, brain_CX, brain_CC). For the test
+materials (rubber_T50, brain_CR, brain_BG) only the stretches / shears at which the held-out
+mode is evaluated are given; their held-out stresses are the hidden test.
+
+## Exponent families
+
+The task is posed for three families of laws built on generalized invariants
+`J_a = l1^a + l2^a + l3^a` (principal stretches l_i, l1 l2 l3 = 1): exponents a > 0 only
+("positive", I1-like; a = 2 gives I1), a < 0 only ("negative", I2-like; a = -2 gives I2), or
+either sign ("combined"). Each material is studied in all three.
 
 ## Why It Matters
 
-Hyperelastic materials (rubber, silicone, brain tissue, etc.) are used in critical applications: automotive components, biomedical devices, soft robotics, and personalized medical simulations. Accurate constitutive models are essential for predictive simulations. Automatically discovering interpretable material models from experimental data would dramatically accelerate the model development process and improve predictive accuracy across different loading conditions.
+Hyperelastic laws drive simulations of tyres, seals, soft robots, medical devices and brain
+mechanics. A law that only fits the tests it was calibrated on fails in the multiaxial states that
+matter in practice; one that generalizes across loading modes, and stays interpretable, is what
+model discovery is for.
 
 ## Success Criteria
 
-A successful solution should:
-1. **Discover interpretable models** directly from experimental stress-strain data, without requiring manual specification of the strain energy function form
-2. **Predict accurately** across multiple deformation modes — training on some loading conditions (e.g., uniaxial tension) and testing on unseen ones (e.g., pure shear or simple shear)
-3. **Outperform classical approaches** that rely on fixed, pre-specified invariants (I₁ or I₂)
-4. **Handle diverse materials** — both rubber-like materials dominated by stretch and soft biological tissues with shear-sensitive behavior
-5. **Output physically meaningful** strain energy function formulations that can be written in closed form, not just black-box neural network predictions
+1. High accuracy on the held-out loading mode of materials whose held-out mode was never seen.
+2. Faithful fit of the training modes.
+3. Small relative stress errors, including at small strains.
+4. A compact law: few active terms, every term a closed-form function of a generalized invariant.
+5. Physical admissibility: non-negative energy contributions, a stress-free reference state, a
+   well-defined energy wherever the law is evaluated.
 
 ---
 
 # Paper's Method
 
-How the paper approaches the problem, i.e. the paper's core contributions.
-
 ## Key Contribution
 
-The paper proposes **GI-CANN (Generalized Invariant Constitutive Artificial Neural Networks)**, which simultaneously discovers the optimal generalized invariant exponent α and the corresponding strain energy function directly from experimental stress-strain data. Unlike prior methods that require manual selection of invariants or sequential two-step fitting, GI-CANN integrates discovery into a single end-to-end neural network training procedure.
+GI-CANN (generalized-invariant constitutive artificial neural network) learns the invariant
+itself. Instead of fixing I1 or I2, it uses generalized invariants J_alpha = l1^alpha + l2^alpha
++ l3^alpha with the exponent alpha as a trainable network parameter, and learns it together with
+the strain energy function in one training run (no two-step "find alpha, then fit psi").
 
-## Approach
+## Architecture (Eq. 13)
 
-### Generalized Invariants
+For every exponent alpha_k in the set S:
 
-The method uses generalized invariants defined as:
+    psi = sum_k  wx2_k1 * w11_k * (J_k - 3)
+               + wx2_k2 * [exp(w21_k (J_k - 3)) - 1]
+               + wx2_k3 * [-ln(1 - w31_k (J_k - 3))]
 
-    J_α = λ₁^α + λ₂^α + λ₃^α
+All weights are non-negative. alpha = 2 gives J = I1 and alpha = -2 gives J = I2, so the
+SI-CANN (S = {2}, {-2} or {2, -2}) is the special case with fixed exponents. Stresses follow from
+psi in closed form for uniaxial tension/compression, equibiaxial tension, pure shear and simple
+shear (Eqs. 15-18).
 
-where λᵢ are the principal stretches and α ∈ ℝ is a trainable parameter. For incompressible materials (λ₁λ₂λ₃ = 1):
-- α = 2 recovers the first invariant: J₂ = I₁ = tr(C)
-- α = -2 recovers the second invariant: J_{-2} = I₂
+## Training (as in the authors' notebooks, LivingMatterLab/CANN/GICANN)
 
-The key innovation is making α a trainable parameter that the network learns from data, rather than fixing it to classical values.
+- Loss (Eq. 14): sum over training modes of the mean squared stress error, plus L1 with r = 0.01
+  on every weight.
+- Adam, learning rate 1e-3, mini-batches of 12, 30,000 epochs (40,000 for the brain
+  two-invariant model), early stopping with patience 3,000 on the training loss, best epoch
+  restored.
+- Exponent starts: rubber 2.0 (two invariants: 1.7 and -0.1), brain 5.0 in magnitude (two
+  invariants: 2 and -2).
+- Families: positive (one alpha > 0), negative (one alpha < 0), combined (one of each).
 
-### Network Architecture
+## Reproduction in this gym (method/gicann.py, method/train.py)
 
-The GI-CANN has a structured architecture with three parallel branches computing the strain energy function ψ:
-
-1. **Identity branch**: ψ_id = w_id · (J_α - 3)
-2. **Exponential branch**: ψ_exp = w_exp2 · [exp(w_exp1 · (J_α - 3)) - 1]
-3. **Logarithmic branch**: ψ_ln = w_ln2 · ln(1 - w_ln1 · (J_α - 3))
-
-The total strain energy is the sum of all active branches: ψ = ψ_id + ψ_exp + ψ_ln
-
-The Cauchy stress is computed by differentiating ψ with respect to the deformation gradient F.
-
-### Loss Function
-
-    L(α, w; F) = (1/n_data) Σ ||σ^α(J_α(F), w) - σ_measured||² + r Σ |w_i|
-
-The loss is MSE between predicted and measured Cauchy stress, plus L1 regularization (r = 0.01) on network weights to induce sparsity and improve interpretability.
-
-### Training Configuration
-
-Three variants are tested:
-- **GI-CANN (R+)**: Only positive exponents (stretch-dominated, I₁-like behavior)
-- **GI-CANN (R-)**: Only negative exponents (shear-dominated, I₂-like behavior)
-- **GI-CANN (R)**: Both positive and negative exponents simultaneously
+Pure-Python implementation of the above with analytic gradients. Two additions make the reference
+reach the law the paper reports instead of a random local stop:
+- after the mini-batch phase, full-batch Adam with a decaying learning rate finishes minimizing the
+  same objective (the objective is flat along an (alpha, weight) valley and early stopping halts
+  at random places along it);
+- each law is the best of 20 runs from random initializations, selected by the training objective
+  (on the paper's cortex data only some starts escape a local optimum near alpha = -15).
+On the paper's cortex data this gives alpha* = -18.11 with one identity term, w = 0.0092 kPa
+(paper: -18.016, 0.009 kPa); on its rubber data alpha* = 1.676 with w_id = 0.231 MPa and
+exponential weights 0.109, 0.282 MPa (paper Eq. 19: 1.675, 0.227, 0.107, 0.297).
 
 ## Main Claims
 
-1. **Primary claim**: GI-CANN discovers interpretable strain energy functions with optimal exponents α* directly from data, achieving average R² > 0.99 on rubber and R² > 0.96 on brain tissue
-2. **Secondary claim**: For rubber, the best exponent is α* ≈ 1.675 (close to I₁), consistent with stretch-dominated entropic elasticity
-3. **Secondary claim**: For brain tissue, the best exponent is α* ≈ -18 (large negative, I₂-like), capturing shear-sensitive nonlinear behavior
-4. **Generalization claim**: Models trained on uniaxial/equibiaxial tension generalize to pure shear for rubber; models trained on uniaxial tension/compression generalize to simple shear for brain tissue
+1. A learned exponent beats the fixed classical invariant: rubber avg R2 0.998 vs 0.982 (SI-CANN),
+   brain 0.966 vs 0.610.
+2. Rubber prefers positive (I1-like) exponents, alpha* ~ 1.7; negative exponents fail (0.264).
+3. Brain tissue prefers a single large negative exponent, alpha* ~ -18; positive ones fail (0.526).
+4. Combining both signs gives the best or an equally good fit (rubber 0.999, brain 0.966).
+5. The discovered laws are sparse and interpretable (one or two active terms), close to dense
+   PS-CANN or FNN accuracy.
 
 ---
 
 # Evaluation
 
-## Metrics
+## What a method submits
 
-**Primary metric: Coefficient of Determination (R²)**
+A method submits constitutive laws, never stresses. One JSON file per method in `outputs/laws/`;
+the file `outputs/laws/GI-CANN.json` is the ranked entry (other files are scored too and reported
+under their file name). The file holds a law for every material and family:
 
-For each deformation mode, R² measures how well the predicted Cauchy stress components match the experimentally measured stress:
+```json
+{"schema": "generalized_invariant_laws_v1",
+ "laws": {"brain_CR": {"negative": {"terms": [{"fn": "id", "alpha": -24.2, "w": 0.0024}]},
+                       "positive": {"terms": [...]}, "combined": {"terms": [...]}},
+          "rubber_T50": {...}, ...}}
+```
 
-R² = 1 - (SS_res / SS_tot)
+Every term is a function of one generalized invariant `J_alpha` (x = (J_alpha - 3)^power,
+power in [1, 3], default 1):
 
-where:
-- SS_res = Σ (σ_predicted - σ_measured)² (residual sum of squares)
-- SS_tot = Σ (σ_measured - σ_mean)² (total sum of squares)
+| fn | energy | weights |
+|---|---|---|
+| `id` | `w * x` | `w >= 0` |
+| `exp` | `w2 * (exp(w1 * x) - 1)` | `w1, w2 >= 0` |
+| `ln` | `-w2 * ln(1 - w1 * x)` | `w1, w2 >= 0`, `1 - w1 x > 0` wherever evaluated |
 
-Higher R² is better. R² = 1.0 means perfect prediction. R² = 0 means the prediction is no better than predicting the mean. Negative R² means the prediction is worse than the mean.
+The evaluator computes the Cauchy stress of every loading mode from the declared energy (closed
+form for uniaxial tension/compression, equibiaxial tension, pure shear and simple shear) and
+compares it with the measured curves. Nothing a method writes besides the law is read.
 
-R² is computed separately for each deformation mode (e.g., uniaxial tension R², pure shear R², etc.), then averaged across modes.
+## Validity (a failed law scores as a failed run)
 
-## Targets
+A law is invalid if it: breaks its family's sign rule (positive: every exponent > 0; negative:
+every exponent < 0), has a negative or non-finite weight, |alpha| > 60, leaves the ln domain,
+gives a non-finite stress, has no active term, or has more than 12 active terms. An experiment
+whose law is missing or invalid for any of its materials receives the worst value of every
+metric (R2 = 0, relative error = 1, n_terms = 12). A missing or unreadable `GI-CANN.json` scores
+the worst value everywhere.
 
-The benchmark is centered on cross-mode generalization.
+## Metrics (per experiment, averaged over its materials)
 
-- A strong method should fit the observed loading modes well and generalize to the held-out loading mode.
-- Rubber is the easier of the two settings and strong methods are expected to approach near-perfect `R²`.
-- Brain cortex is harder and more sensitive to modeling choices; it should not be treated as solved unless the held-out simple-shear score is also strong.
+- `r2_<mode>`: coefficient of determination of each loading mode's stress, clipped to [0, 1]
+  (a negative R2 counts as 0). The held-out mode's R2 (`r2_ps` / `r2_ss`) is scored.
+- `avg_r2` (primary): mean of the three clipped per-mode R2.
+- `heldout_rel_error`: mean of |sigma - sigma_hat| / |sigma_hat| over the loaded points of the
+  held-out mode, each point capped at 1 (lower is better). Sensitive to small-strain response.
+- `n_terms`: number of active terms, a term being active if its stress reaches 1% of a mode's
+  measured stress range (lower is better): accuracy should not come from piling up terms.
+- `alpha_star`: exponent of the dominant term, reported only.
 
-## Evaluation Protocol
+R2 is computed on every point of each curve, including the undeformed state.
 
-### Datasets
+## Experiments
 
-Two experimental datasets are used:
+| experiment | material class | family | weight |
+|---|---|---|---|
+| rubber_generalization | rubber | positive | 0.30 |
+| brain_generalization | brain | negative | 0.30 |
+| rubber_combined_ablation | rubber | combined | 0.15 |
+| brain_combined_ablation | brain | combined | 0.15 |
+| rubber_negative_ablation | rubber | negative | 0.05 |
+| brain_positive_ablation | brain | positive | 0.05 |
 
-**Rubber (Treloar 1944):**
-- Training: uniaxial tension (ut), equibiaxial tension (bt)
-- Testing: pure shear (ps)
-- Units: MPa
+## Splits
 
-**Brain cortex (Budday et al. 2017):**
-- Training: uniaxial tension (ut), uniaxial compression (uc)
-- Testing: simple shear (ss)
-- Units: kPa
+- `scoring/scores.json` (`bash scripts/evaluate.sh`): the paper's own materials (rubber_T20,
+  brain_CX), comparable with the paper's tables in `scoring/reference.json`.
+- `scoring/scores_train.json` (`bash scripts/evaluate_train.sh`): development materials
+  (rubber experiments: rubber_T20; brain experiments: brain_CX and brain_CC). Everything they
+  are scored on is visible.
+- `scoring/scores_test.json` (`bash scripts/evaluate_test.sh`, hidden test): rubber_T50 and
+  brain_CR + brain_BG. Their held-out-mode stresses are not in the workspace.
 
-### Protocol
+Laws for the test materials must be fitted from their visible training modes only. Fitting any
+held-out curve of a test material (for example one obtained from outside the workspace) is a
+protocol violation.
 
-1. Load the experimental stress-strain data for the specified training modes
-2. Train the model to predict Cauchy stress components from deformation data
-3. Evaluate on the held-out test deformation mode
-4. Compute R² for each deformation mode (training modes + test mode)
-5. Report average R² across all modes
-6. Report any additional scalar descriptors needed to summarize the fitted constitutive response
+## Ranking
+
+The rank sums, over experiments, weight x coefficient x improvement over the reference in each
+scored metric (in its better direction), each improvement divided by that metric's spread across
+ranked attempts. Coefficients are in `scoring/reference.json`.
 
 ---
 
@@ -984,6 +1060,54 @@ Two experimental datasets are used:
 ### [2026-05-22 08:49] - majority
 - Final verifier reviewed folder separation, method-agnostic docs, scoring coefficients, split evaluators, download portability, and reproduced numbers.
 - Re-ran artifact-based full/train/test evaluation and `python3 validate.py --compare`; all checks passed and the `majority` milestone remains the final judgment.
+
+</details>
+
+### Iteration 11: claude-opus-5-5 (hardener)
+- **Milestone**: `majority` | **Status**: done
+- **Working time**: 51m | **GPU**: 0.0h
+- **Jobs**: 2 total (2 completed, 0 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-05-22 08:45] - majority
+- Re-verified that `method/` implements GI-CANN with trainable generalized invariant exponent(s), Eq. 13 derivative branches, paper loading-mode stresses, and L1 sparsity.
+- `scoring/scores.json` reproduces the rubber and brain GI-CANN core claims and the main positive/negative/combined ablation grid.
+- Added a model-agnostic prediction-artifact scoring path so future methods can be evaluated without matching GI-CANN checkpoint internals.
+
+### [2026-05-22 08:50] - majority
+- Audited the latest job records and confirmed the artifact-export validation job has not yet run in the container.
+- Keeping the milestone at `majority` and submitting a CPU test job to export neutral prediction artifacts, regenerate full/train/test scores from those artifacts, and run `validate.py --compare`.
+
+### [2026-05-22 08:55] - majority
+- Reviewed completed job `47926f28-2ce`: artifact export produced 12 prediction JSON files, artifact-based full/train/test evaluation completed, and `validate.py --compare` passed.
+- Final verified score files reproduce both paper core claims and the main ablation grid through the reusable artifact evaluator.
+
+### [2026-05-22 09:10] - majority
+- Reviewed completed split-evaluation job `6487ae0e-790`: the full benchmark and both train/test split score files validate successfully.
+- Confirmed the actual method supports the core claim in `scoring/scores.json`: GI-CANN improves over SI-CANN on rubber generalization (`avg_r2` 0.9988 vs 0.9847, learned `alpha_star` 1.6769) and brain generalization (`avg_r2` 0.9590 vs 0.6974, learned `alpha_star` -17.9399).
+
+### [2026-05-22 09:20] - majority
+- Moved the active trainer from the repository root to `method/training_runner.py` and updated `scripts/method.sh`, `scripts/baseline.sh`, `scripts/reproduce.sh`, and `method/export_predictions.py`.
+- Re-ran syntax checks, artifact-based `scripts/evaluate.sh`, and `python3 validate.py --compare`; all checks passed with the same `majority` results.
+
+### [2026-05-22 09:35] - majority
+- Completed final verification of folder separation, method-agnostic documentation, scoring coefficients, artifact-based evaluation, and train/test split integrity.
+- Re-ran `python3 validate.py --compare`; validation passed and the `majority` milestone remains justified.
+
+### [2026-05-22 08:46] - majority
+- Continuation audit re-read the paper's core GI-CANN algorithm and checked the packaged code against the actual method: trainable generalized invariant exponents, Eq. 13 strain-energy branches, loading-mode stress formulas, and L1 sparsity are present.
+- Re-ran `python3 validate.py --compare`; validation passed using the existing artifact-based score files and the `majority` milestone remains justified.
+
+### [2026-05-22 08:49] - majority
+- Final verifier reviewed folder separation, method-agnostic docs, scoring coefficients, split evaluators, download portability, and reproduced numbers.
+- Re-ran artifact-based full/train/test evaluation and `python3 validate.py --compare`; all checks passed and the `majority` milestone remains the final judgment.
+
+### [2026-11-24 01:30] - majority (iteration 11, hardening)
+- Gym rebuilt around declared strain-energy laws scored by `eval/` (no method-written numbers), the authors' exact data files, and a hidden test on Treloar rubber at 50 C and the corona radiata / basal ganglia (held-out curves only in `eval/test/`).
+- Reference GI-CANN retrained from the final code following the authors' notebooks (plus convergence and best-of-20 by training objective): paper materials reproduce Tables 3/4 (rubber 0.9987 vs 0.998, cortex 0.9669 vs 0.966; alpha* 1.676 and -18.11 vs 1.675 and -18.016); GI beats SI on the hidden test (rubber 0.9939 vs 0.9751, brain 0.9544 vs 0.5429).
+- All red-team shortcuts closed (fail or no effect); a dev-tuned L1 variant beats the reference by +0.22 normalized against a reference-procedure noise of +0.001; brute force and PS-CANN do not outrank. Details in `HARDENING.md`.
 
 </details>
 
