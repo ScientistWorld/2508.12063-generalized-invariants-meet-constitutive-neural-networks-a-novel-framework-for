@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 0
-test: false
+action: done
 milestone: majority
-notes: "Red-team audit: 22 sandboxed runs (reference rescore/rerun, 3 init-jitter seeds, weaker/stronger variants, brute-force alpha grid, shortcuts) each followed by the hidden test; CPU only, ~2h serial."
+notes: "Red-team done: better models score higher (PS-CANN +0.0185 raw), but copy-targets, stale scores file, editing data/load_data.py and relabelled ablations all beat the reference; failed runs (NaN/missing/crash) tie it. See REDTEAM.md."
