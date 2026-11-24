@@ -1,0 +1,43 @@
+per-metric sd across the 4 reference-trainer runs (scored metrics only):
+  rubber_generalization      r2_ps                  sd=0.00005  ref=0.9994
+  rubber_generalization      avg_r2                 sd=0.00005  ref=0.9988
+  rubber_generalization      avg_normalized_rmse    sd=0.00025  ref=0.011
+  rubber_generalization      tail_normalized_mae    sd=0.00079  ref=0.016
+  rubber_generalization      shape_violation_rate   sd=0.00000  ref=0.0
+  rubber_negative_ablation   avg_r2                 sd=0.00130  ref=0.3109
+  rubber_negative_ablation   avg_normalized_rmse    sd=0.00022  ref=0.2786
+  rubber_negative_ablation   tail_normalized_mae    sd=0.00211  ref=0.4241
+  rubber_negative_ablation   shape_violation_rate   sd=0.00000  ref=0.0
+  rubber_combined_ablation   avg_r2                 sd=0.00101  ref=0.9993
+  rubber_combined_ablation   avg_normalized_rmse    sd=0.00330  ref=0.009
+  rubber_combined_ablation   tail_normalized_mae    sd=0.00682  ref=0.0189
+  rubber_combined_ablation   shape_violation_rate   sd=0.00000  ref=0.0
+  brain_generalization       r2_ss                  sd=0.00099  ref=0.9683
+  brain_generalization       avg_r2                 sd=0.00036  ref=0.9643
+  brain_generalization       avg_normalized_rmse    sd=0.00036  ref=0.0649
+  brain_generalization       tail_normalized_mae    sd=0.00493  ref=0.1021
+  brain_generalization       shape_violation_rate   sd=0.00000  ref=0.0
+  brain_positive_ablation    avg_r2                 sd=0.03310  ref=0.4668
+  brain_positive_ablation    avg_normalized_rmse    sd=0.00749  ref=0.233
+  brain_positive_ablation    tail_normalized_mae    sd=0.01393  ref=0.3652
+  brain_positive_ablation    shape_violation_rate   sd=0.00000  ref=0.0
+  brain_combined_ablation    avg_r2                 sd=0.00088  ref=0.965
+  brain_combined_ablation    avg_normalized_rmse    sd=0.00092  ref=0.0644
+  brain_combined_ablation    tail_normalized_mae    sd=0.00694  ref=0.0985
+  brain_combined_ablation    shape_violation_rate   sd=0.00000  ref=0.0
+
+normalized delta (sum w*|c|*sign*delta/sd, metrics with sd>0), main experiments / all:
+  seed_jitter_1                      main=    -5.36  all=    -5.52
+  seed_jitter_2                      main=    -5.90  all=    -6.01
+  seed_jitter_3                      main=    -5.93  all=    -6.08
+  check_rerun_reference              main=    -5.37  all=    -5.35
+  variant_pscann                     main=   +20.35  all=   +20.35
+  variant_stronger_combined          main=    +5.97  all=    +5.97
+  check_no_heldout_selection         main=    -7.55  all=    -8.00
+  brute_alpha_grid                   main=   -11.45  all=   -18.97
+  check_brain_generic_alpha_init     main=    -8.76  all=    -8.77
+  variant_weak_fixed_alpha           main=  -378.24  all=  -418.35
+  shortcut_train_on_heldout_mode     main=    +1.59  all=    +1.27
+  shortcut_relabel_ablations         main=    +0.00  all=   +42.20
+  shortcut_drop_bad_modes            main=    +0.00  all=    +6.80
+  shortcut_copy_targets              main=   +90.59  all=  +136.70
