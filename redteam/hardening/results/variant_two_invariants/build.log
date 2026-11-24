@@ -1,0 +1,18 @@
+rubber_T20 positive: alphas=[1.744, 1.386] obj=0.056752
+rubber_T20 negative: alphas=[-1.995, -0.132] obj=95.2648
+rubber_T20 combined: alphas=[1.789, 4.011, -0.06, -1.278] obj=0.0257985
+brain_CX positive: alphas=[3.27, 9.977] obj=0.0622324
+brain_CX negative: alphas=[-4.926, -18.109] obj=0.00322131
+brain_CX combined: alphas=[1.96, 9.865, -1.834, -18.109] obj=0.00322131
+brain_CC positive: alphas=[6.059, 9.982] obj=0.016201
+brain_CC negative: alphas=[-5.026, -26.329] obj=0.000757054
+brain_CC combined: alphas=[2.0, 10.0, -1.949, -26.329] obj=0.000757054
+rubber_T50 positive: alphas=[1.894, 0.485] obj=2.06522
+rubber_T50 negative: alphas=[-1.928, -0.195] obj=527.164
+rubber_T50 combined: alphas=[2.013, 3.99, -0.09, -1.082] obj=1.09491
+brain_CR positive: alphas=[4.072, 9.95] obj=0.0400864
+brain_CR negative: alphas=[-4.926, -24.183] obj=0.00148372
+brain_CR combined: alphas=[2.0, 10.0, -1.952, -24.183] obj=0.00148372
+brain_BG positive: alphas=[5.136, 9.976] obj=0.0198684
+brain_BG negative: alphas=[-5.039, -19.112] obj=0.00149551
+brain_BG combined: alphas=[2.0, 10.0, -1.951, -19.112] obj=0.00149551

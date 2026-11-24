@@ -1,0 +1,292 @@
+{
+ "schema": "generalized_invariant_laws_v1",
+ "method": "GI-CANN",
+ "settings": {
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "select": "best-objective",
+  "epochs": "paper"
+ },
+ "laws": {
+  "rubber_T20": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 1.675882747200524,
+      "w": NaN
+     },
+     {
+      "fn": "exp",
+      "alpha": 1.675882747200524,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 9,
+    "train_objective": 0.06954949949839283
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -0.1452818769204665,
+      "w": NaN
+     },
+     {
+      "fn": "exp",
+      "alpha": -0.1452818769204665,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 9,
+    "train_objective": 96.00432530944208
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 1.939411417372551,
+      "w": NaN
+     },
+     {
+      "fn": "exp",
+      "alpha": 1.939411417372551,
+      "w1": NaN,
+      "w2": NaN
+     },
+     {
+      "fn": "id",
+      "alpha": -1.097375395082244,
+      "w": NaN
+     }
+    ],
+    "seed": 11,
+    "train_objective": 0.031447832904445264
+   }
+  },
+  "brain_CX": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "ln",
+      "alpha": 3.2699814133323364,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 9,
+    "train_objective": 0.062232360930755834
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -18.108841517132788,
+      "w": NaN
+     }
+    ],
+    "seed": 14,
+    "train_objective": 0.0032213078255751626
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -18.108841516159984,
+      "w": NaN
+     }
+    ],
+    "seed": 13,
+    "train_objective": 0.0032213078255751626
+   }
+  },
+  "brain_CC": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "ln",
+      "alpha": 6.058743200582815,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 2,
+    "train_objective": 0.016201039985965192
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -26.329362455109145,
+      "w": NaN
+     }
+    ],
+    "seed": 5,
+    "train_objective": 0.0007570543288613054
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -26.329362504355046,
+      "w": NaN
+     }
+    ],
+    "seed": 2,
+    "train_objective": 0.0007570543288613054
+   }
+  },
+  "rubber_T50": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 1.82493826129021,
+      "w": NaN
+     },
+     {
+      "fn": "exp",
+      "alpha": 1.82493826129021,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 9,
+    "train_objective": 6.283931344376022
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -0.25721399855818605,
+      "w": NaN
+     },
+     {
+      "fn": "exp",
+      "alpha": -0.25721399855818605,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 9,
+    "train_objective": 566.1567415782118
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 1.994488606521328,
+      "w": NaN
+     },
+     {
+      "fn": "exp",
+      "alpha": 1.994488606521328,
+      "w1": NaN,
+      "w2": NaN
+     },
+     {
+      "fn": "id",
+      "alpha": -0.8981369884222782,
+      "w": NaN
+     }
+    ],
+    "seed": 0,
+    "train_objective": 1.0770215093951436
+   }
+  },
+  "brain_CR": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "ln",
+      "alpha": 4.071775272789854,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 2,
+    "train_objective": 0.04008637278501982
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -24.182950328346053,
+      "w": NaN
+     }
+    ],
+    "seed": 5,
+    "train_objective": 0.001483716381202013
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -24.182950328430916,
+      "w": NaN
+     }
+    ],
+    "seed": 17,
+    "train_objective": 0.0014837163812020128
+   }
+  },
+  "brain_BG": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "ln",
+      "alpha": 5.135550763903736,
+      "w1": NaN,
+      "w2": NaN
+     }
+    ],
+    "seed": 12,
+    "train_objective": 0.019868359163333016
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -19.11161509587087,
+      "w": NaN
+     }
+    ],
+    "seed": 5,
+    "train_objective": 0.0014955082822614148
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": -19.111615097649175,
+      "w": NaN
+     }
+    ],
+    "seed": 13,
+    "train_objective": 0.0014955082822614148
+   }
+  }
+ }
+}

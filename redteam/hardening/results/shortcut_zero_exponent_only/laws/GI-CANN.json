@@ -1,0 +1,206 @@
+{
+ "schema": "generalized_invariant_laws_v1",
+ "method": "GI-CANN",
+ "settings": {
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "select": "best-objective",
+  "epochs": "paper"
+ },
+ "laws": {
+  "rubber_T20": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   }
+  },
+  "brain_CX": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   }
+  },
+  "brain_CC": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   }
+  },
+  "rubber_T50": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   }
+  },
+  "brain_CR": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   }
+  },
+  "brain_BG": {
+   "positive": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "negative": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   },
+   "combined": {
+    "terms": [
+     {
+      "fn": "id",
+      "alpha": 0.0,
+      "w": 1.0
+     }
+    ]
+   }
+  }
+ }
+}

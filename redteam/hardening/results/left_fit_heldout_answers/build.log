@@ -1,0 +1,6 @@
+rubber_T20 {'positive': [('id', 1.68), ('exp', 1.68)], 'negative': [('id', -0.2)], 'combined': [('id', 3.9), ('id', -0.7)]}
+brain_CX {'positive': [('id', 2.7)], 'negative': [('id', -17.6)], 'combined': [('id', 40.0), ('id', -19.0)]}
+brain_CC {'positive': [('id', 3.5)], 'negative': [('id', -24.9)], 'combined': [('id', -25.0)]}
+rubber_T50 {'positive': [('id', 1.82), ('exp', 1.82)], 'negative': [('id', -0.2)], 'combined': [('id', 6.3), ('id', -2.1)]}
+brain_CR {'positive': [('id', 2.9)], 'negative': [('id', -23.9)], 'combined': [('id', -24.0)]}
+brain_BG {'positive': [('id', 3.4)], 'negative': [('id', -18.1)], 'combined': [('id', -18.0)]}

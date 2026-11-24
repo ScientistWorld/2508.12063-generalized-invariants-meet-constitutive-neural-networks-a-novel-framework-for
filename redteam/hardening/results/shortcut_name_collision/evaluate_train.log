@@ -1,0 +1,19 @@
+Scores for 3 methods x 6 experiments written to /home/user/redteam/hardening/results/shortcut_name_collision/scores_train.json
+  rubber_generalization      AnotherMethod          avg_r2=0.0000 r2_ps=0.0000 rel_err=0.8173 n_terms=2.00
+  rubber_generalization      GI-CANN                avg_r2=0.9987 r2_ps=0.9990 rel_err=0.0272 n_terms=2.00
+  rubber_generalization      SI-CANN                avg_r2=0.9816 r2_ps=0.9986 rel_err=0.0811 n_terms=3.00
+  rubber_negative_ablation   AnotherMethod          avg_r2=0.1285 r2_ps=0.0941 rel_err=0.3752 n_terms=2.00
+  rubber_negative_ablation   GI-CANN                avg_r2=0.2611 r2_ps=0.6062 rel_err=0.7445 n_terms=2.00
+  rubber_negative_ablation   SI-CANN                avg_r2=0.3169 r2_ps=0.0000 rel_err=0.9088 n_terms=1.00
+  rubber_combined_ablation   AnotherMethod          avg_r2=0.0000 r2_ps=0.0000 rel_err=0.8333 n_terms=2.00
+  rubber_combined_ablation   GI-CANN                avg_r2=0.9997 r2_ps=0.9994 rel_err=0.0513 n_terms=3.00
+  rubber_combined_ablation   SI-CANN                avg_r2=0.9989 r2_ps=0.9989 rel_err=0.0817 n_terms=3.00
+  brain_generalization       AnotherMethod          avg_r2=0.0000 r2_ss=0.0000 rel_err=0.7536 n_terms=1.00
+  brain_generalization       GI-CANN                avg_r2=0.9440 r2_ss=0.8758 rel_err=0.2004 n_terms=1.00
+  brain_generalization       SI-CANN                avg_r2=0.5562 r2_ss=0.8758 rel_err=0.4335 n_terms=1.00
+  brain_positive_ablation    AnotherMethod          avg_r2=0.0048 r2_ss=0.0000 rel_err=0.6657 n_terms=1.00
+  brain_positive_ablation    GI-CANN                avg_r2=0.4827 r2_ss=0.8921 rel_err=0.4030 n_terms=1.00
+  brain_positive_ablation    SI-CANN                avg_r2=0.4955 r2_ss=0.8884 rel_err=0.4061 n_terms=1.00
+  brain_combined_ablation    AnotherMethod          avg_r2=0.0000 r2_ss=0.0000 rel_err=0.7536 n_terms=1.00
+  brain_combined_ablation    GI-CANN                avg_r2=0.9440 r2_ss=0.8758 rel_err=0.2004 n_terms=1.00
+  brain_combined_ablation    SI-CANN                avg_r2=0.5562 r2_ss=0.8758 rel_err=0.4335 n_terms=1.00

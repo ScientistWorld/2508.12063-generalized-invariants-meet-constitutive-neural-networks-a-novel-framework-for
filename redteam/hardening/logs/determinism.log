@@ -1,0 +1,5 @@
+GI-CANN_brain_CX_negative_s5_e30000_v3: identical alphas=[-18.10884152099735] obj=0.0032213078255751634
+GI-CANN_rubber_T50_positive_s0_e30000_v3: identical alphas=[1.8249422900618983] obj=6.287722717216157
+GI-CANN_brain_CR_combined_s3_e40000_v3: identical alphas=[1.950268846653834, -24.182950328346053] obj=0.001483716381202013
+SI-CANN_brain_BG_negative_s7_e30000_v3: identical alphas=[-2.0] obj=0.021545839305962412
+determinism: OK

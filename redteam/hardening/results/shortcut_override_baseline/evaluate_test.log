@@ -1,0 +1,22 @@
+[SI-CANN@outputs] rubber_generalization: FAILED (rubber_T50/positive: no active term (the law carries no stress)) -> worst values
+[SI-CANN@outputs] rubber_negative_ablation: FAILED (rubber_T50/negative: no active term (the law carries no stress)) -> worst values
+[SI-CANN@outputs] rubber_combined_ablation: FAILED (rubber_T50/combined: no active term (the law carries no stress)) -> worst values
+Scores for 3 methods x 6 experiments written to /tmp/hardening_sandboxes/shortcut_override_baseline/scoring/scores_test.json
+  rubber_generalization      GI-CANN                avg_r2=0.9939 r2_ps=0.9966 rel_err=0.1107 n_terms=2.00
+  rubber_generalization      SI-CANN                avg_r2=0.9751 r2_ps=0.9724 rel_err=0.1143 n_terms=3.00
+  rubber_generalization      SI-CANN@outputs        avg_r2=0.0000 r2_ps=0.0000 rel_err=1.0000 n_terms=12.00
+  rubber_negative_ablation   GI-CANN                avg_r2=0.3287 r2_ps=0.1250 rel_err=0.6232 n_terms=2.00
+  rubber_negative_ablation   SI-CANN                avg_r2=0.3321 r2_ps=0.0000 rel_err=0.9234 n_terms=2.00
+  rubber_negative_ablation   SI-CANN@outputs        avg_r2=0.0000 r2_ps=0.0000 rel_err=1.0000 n_terms=12.00
+  rubber_combined_ablation   GI-CANN                avg_r2=0.9974 r2_ps=0.9946 rel_err=0.0781 n_terms=3.00
+  rubber_combined_ablation   SI-CANN                avg_r2=0.9969 r2_ps=0.9963 rel_err=0.1111 n_terms=3.00
+  rubber_combined_ablation   SI-CANN@outputs        avg_r2=0.0000 r2_ps=0.0000 rel_err=1.0000 n_terms=12.00
+  brain_generalization       GI-CANN                avg_r2=0.9544 r2_ss=0.9037 rel_err=0.2011 n_terms=1.00
+  brain_generalization       SI-CANN                avg_r2=0.5429 r2_ss=0.8695 rel_err=0.4313 n_terms=1.00
+  brain_generalization       SI-CANN@outputs        avg_r2=0.0000 r2_ss=0.0000 rel_err=0.9859 n_terms=1.00
+  brain_positive_ablation    GI-CANN                avg_r2=0.4835 r2_ss=0.8967 rel_err=0.3829 n_terms=1.00
+  brain_positive_ablation    SI-CANN                avg_r2=0.4987 r2_ss=0.8872 rel_err=0.3982 n_terms=1.00
+  brain_positive_ablation    SI-CANN@outputs        avg_r2=0.0000 r2_ss=0.0000 rel_err=0.9863 n_terms=1.00
+  brain_combined_ablation    GI-CANN                avg_r2=0.9544 r2_ss=0.9037 rel_err=0.2011 n_terms=1.00
+  brain_combined_ablation    SI-CANN                avg_r2=0.5429 r2_ss=0.8695 rel_err=0.4313 n_terms=1.00
+  brain_combined_ablation    SI-CANN@outputs        avg_r2=0.0000 r2_ss=0.0000 rel_err=0.9859 n_terms=1.00

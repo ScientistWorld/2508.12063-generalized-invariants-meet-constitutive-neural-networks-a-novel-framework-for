@@ -1,0 +1,19 @@
+  GI-CANN_rubber_T20_positive_s3_e30000_v3: alphas=[1.676] obj=0.0696677 epochs=23354 (early stopping) 9.1s
+  GI-CANN_rubber_T20_negative_s3_e30000_v3: alphas=[-0.492] obj=121.952 epochs=4343 (early stopping) 4.0s
+  GI-CANN_rubber_T20_combined_s3_e30000_v3: alphas=[1.933, -1.099] obj=0.0333998 epochs=20584 (early stopping) 12.3s
+  GI-CANN_brain_CX_positive_s3_e30000_v3: alphas=[3.27] obj=0.0622324 epochs=26365 (early stopping) 4.5s
+  GI-CANN_brain_CX_negative_s3_e30000_v3: alphas=[-15.002] obj=0.00410362 epochs=30000 (epochs) 26.3s
+  GI-CANN_brain_CX_combined_s3_e40000_v3: alphas=[2.02, -18.109] obj=0.00322131 epochs=36880 (early stopping) 16.0s
+  GI-CANN_brain_CC_positive_s3_e30000_v3: alphas=[6.059] obj=0.016201 epochs=23057 (early stopping) 14.2s
+  GI-CANN_brain_CC_negative_s3_e30000_v3: alphas=[-22.558] obj=0.00103742 epochs=30000 (epochs) 11.3s
+  GI-CANN_brain_CC_combined_s3_e40000_v3: alphas=[1.931, -26.329] obj=0.000757054 epochs=36138 (early stopping) 27.8s
+  GI-CANN_rubber_T50_positive_s3_e30000_v3: alphas=[1.825] obj=6.2841 epochs=12086 (early stopping) 6.0s
+  GI-CANN_rubber_T50_negative_s3_e30000_v3: alphas=[-1.99] obj=795.96 epochs=5217 (early stopping) 9.0s
+  GI-CANN_rubber_T50_combined_s3_e30000_v3: alphas=[1.997, -0.729] obj=1.10088 epochs=9724 (early stopping) 24.2s
+  GI-CANN_brain_CR_negative_s3_e30000_v3: alphas=[-20.782] obj=0.00231781 epochs=30000 (epochs) 5.7s
+  GI-CANN_brain_CR_combined_s3_e40000_v3: alphas=[1.95, -24.183] obj=0.00148372 epochs=40000 (epochs) 38.0s
+  GI-CANN_brain_BG_positive_s3_e30000_v3: alphas=[5.136] obj=0.0198684 epochs=9540 (early stopping) 3.9s
+  GI-CANN_brain_CR_positive_s3_e30000_v3: alphas=[4.072] obj=0.0400864 epochs=20881 (early stopping) 7.6s
+  GI-CANN_brain_BG_combined_s3_e40000_v3: alphas=[1.944, -19.112] obj=0.00149551 epochs=27078 (early stopping) 16.1s
+  GI-CANN_brain_BG_negative_s3_e30000_v3: alphas=[-16.41] obj=0.0019222 epochs=25234 (early stopping) 8.0s
+wrote outputs/laws/GI-CANN.json (6 materials x 3 families)

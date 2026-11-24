@@ -1,0 +1,136 @@
+{
+  "experiments": {
+    "rubber_generalization": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.999775,
+          "r2_bt": 0.997387,
+          "r2_ps": 0.99904,
+          "avg_r2": 0.998734,
+          "heldout_rel_error": 0.027207,
+          "n_terms": 2.0,
+          "alpha_star": 1.675883
+        },
+        "SI-CANN": {
+          "r2_ut": 0.998338,
+          "r2_bt": 0.947927,
+          "r2_ps": 0.998559,
+          "avg_r2": 0.981608,
+          "heldout_rel_error": 0.081056,
+          "n_terms": 3.0,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "rubber_negative_ablation": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.17715,
+          "r2_bt": 0.0,
+          "r2_ps": 0.606239,
+          "avg_r2": 0.26113,
+          "heldout_rel_error": 0.744542,
+          "n_terms": 2.0,
+          "alpha_star": -0.145282
+        },
+        "SI-CANN": {
+          "r2_ut": 0.0,
+          "r2_bt": 0.950668,
+          "r2_ps": 0.0,
+          "avg_r2": 0.316889,
+          "heldout_rel_error": 0.908848,
+          "n_terms": 1.0,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "rubber_combined_ablation": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.999888,
+          "r2_bt": 0.99968,
+          "r2_ps": 0.999421,
+          "avg_r2": 0.999663,
+          "heldout_rel_error": 0.051308,
+          "n_terms": 3.0,
+          "alpha_star": 1.939411
+        },
+        "SI-CANN": {
+          "r2_ut": 0.99984,
+          "r2_bt": 0.997817,
+          "r2_ps": 0.998918,
+          "avg_r2": 0.998858,
+          "heldout_rel_error": 0.081698,
+          "n_terms": 3.0,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "brain_generalization": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.956821,
+          "r2_uc": 0.992491,
+          "r2_ss": 0.884114,
+          "avg_r2": 0.944475,
+          "heldout_rel_error": 0.171422,
+          "n_terms": 1.0,
+          "alpha_star": -23.14601
+        },
+        "SI-CANN": {
+          "r2_ut": 0.065927,
+          "r2_uc": 0.726897,
+          "r2_ss": 0.875818,
+          "avg_r2": 0.556214,
+          "heldout_rel_error": 0.433455,
+          "n_terms": 1.0,
+          "alpha_star": -2.0
+        }
+      }
+    },
+    "brain_positive_ablation": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.0,
+          "r2_uc": 0.474018,
+          "r2_ss": 0.919057,
+          "avg_r2": 0.464358,
+          "heldout_rel_error": 0.342701,
+          "n_terms": 1.0,
+          "alpha_star": 6.471407
+        },
+        "SI-CANN": {
+          "r2_ut": 0.0,
+          "r2_uc": 0.598033,
+          "r2_ss": 0.888388,
+          "avg_r2": 0.495474,
+          "heldout_rel_error": 0.406123,
+          "n_terms": 1.0,
+          "alpha_star": 2.0
+        }
+      }
+    },
+    "brain_combined_ablation": {
+      "results": {
+        "GI-CANN": {
+          "r2_ut": 0.956821,
+          "r2_uc": 0.992491,
+          "r2_ss": 0.884114,
+          "avg_r2": 0.944475,
+          "heldout_rel_error": 0.171422,
+          "n_terms": 1.0,
+          "alpha_star": -23.14601
+        },
+        "SI-CANN": {
+          "r2_ut": 0.065927,
+          "r2_uc": 0.726897,
+          "r2_ss": 0.875818,
+          "avg_r2": 0.556214,
+          "heldout_rel_error": 0.433455,
+          "n_terms": 1.0,
+          "alpha_star": -2.0
+        }
+      }
+    }
+  }
+}

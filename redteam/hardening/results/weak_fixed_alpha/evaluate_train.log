@@ -1,0 +1,13 @@
+Scores for 2 methods x 6 experiments written to /home/user/redteam/hardening/results/weak_fixed_alpha/scores_train.json
+  rubber_generalization      GI-CANN                avg_r2=0.9816 r2_ps=0.9986 rel_err=0.0811 n_terms=3.00
+  rubber_generalization      SI-CANN                avg_r2=0.9816 r2_ps=0.9986 rel_err=0.0811 n_terms=3.00
+  rubber_negative_ablation   GI-CANN                avg_r2=0.3169 r2_ps=0.0000 rel_err=0.9088 n_terms=1.00
+  rubber_negative_ablation   SI-CANN                avg_r2=0.3169 r2_ps=0.0000 rel_err=0.9088 n_terms=1.00
+  rubber_combined_ablation   GI-CANN                avg_r2=0.9989 r2_ps=0.9989 rel_err=0.0817 n_terms=3.00
+  rubber_combined_ablation   SI-CANN                avg_r2=0.9989 r2_ps=0.9989 rel_err=0.0817 n_terms=3.00
+  brain_generalization       GI-CANN                avg_r2=0.5562 r2_ss=0.8758 rel_err=0.4335 n_terms=1.00
+  brain_generalization       SI-CANN                avg_r2=0.5562 r2_ss=0.8758 rel_err=0.4335 n_terms=1.00
+  brain_positive_ablation    GI-CANN                avg_r2=0.4955 r2_ss=0.8884 rel_err=0.4061 n_terms=1.00
+  brain_positive_ablation    SI-CANN                avg_r2=0.4955 r2_ss=0.8884 rel_err=0.4061 n_terms=1.00
+  brain_combined_ablation    GI-CANN                avg_r2=0.5562 r2_ss=0.8758 rel_err=0.4335 n_terms=1.00
+  brain_combined_ablation    SI-CANN                avg_r2=0.5562 r2_ss=0.8758 rel_err=0.4335 n_terms=1.00

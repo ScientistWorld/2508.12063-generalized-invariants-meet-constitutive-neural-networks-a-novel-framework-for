@@ -1,0 +1,361 @@
+  SI-CANN_rubber_T20_positive_s2_e30000_v3: alphas=[2.0] obj=0.865235 epochs=11481 (early stopping) 4.1s
+  SI-CANN_rubber_T20_positive_s1_e30000_v3: alphas=[2.0] obj=0.873421 epochs=15761 (early stopping) 5.0s
+  SI-CANN_rubber_T20_positive_s3_e30000_v3: alphas=[2.0] obj=0.863786 epochs=10568 (early stopping) 3.2s
+  SI-CANN_rubber_T20_positive_s4_e30000_v3: alphas=[2.0] obj=0.863244 epochs=7394 (early stopping) 5.5s
+  SI-CANN_rubber_T20_positive_s5_e30000_v3: alphas=[2.0] obj=0.869314 epochs=9233 (early stopping) 2.4s
+  SI-CANN_rubber_T20_positive_s9_e30000_v3: alphas=[2.0] obj=0.86342 epochs=13451 (early stopping) 3.1s
+  SI-CANN_rubber_T20_positive_s7_e30000_v3: alphas=[2.0] obj=0.866435 epochs=9052 (early stopping) 3.2s
+  SI-CANN_rubber_T20_positive_s8_e30000_v3: alphas=[2.0] obj=0.853912 epochs=12282 (early stopping) 4.0s
+  SI-CANN_rubber_T20_positive_s10_e30000_v3: alphas=[2.0] obj=0.872096 epochs=6565 (early stopping) 2.9s
+  SI-CANN_rubber_T20_positive_s6_e30000_v3: alphas=[2.0] obj=0.864578 epochs=13109 (early stopping) 7.1s
+  SI-CANN_rubber_T20_positive_s0_e30000_v3: alphas=[2.0] obj=0.866768 epochs=4753 (early stopping) 5.7s
+  SI-CANN_rubber_T20_positive_s11_e30000_v3: alphas=[2.0] obj=1.02053 epochs=29141 (early stopping) 4.0s
+  SI-CANN_rubber_T20_positive_s12_e30000_v3: alphas=[2.0] obj=0.863196 epochs=13643 (early stopping) 5.4s
+  SI-CANN_rubber_T20_positive_s14_e30000_v3: alphas=[2.0] obj=8.39831 epochs=11012 (early stopping) 6.4s
+  SI-CANN_rubber_T20_positive_s15_e30000_v3: alphas=[2.0] obj=0.866918 epochs=11561 (early stopping) 2.8s
+  SI-CANN_rubber_T20_positive_s18_e30000_v3: alphas=[2.0] obj=0.864099 epochs=6761 (early stopping) 2.6s
+  SI-CANN_rubber_T20_positive_s17_e30000_v3: alphas=[2.0] obj=1.01738 epochs=30000 (epochs) 5.6s
+  SI-CANN_rubber_T20_positive_s19_e30000_v3: alphas=[2.0] obj=0.968707 epochs=26771 (early stopping) 6.9s
+  SI-CANN_rubber_T20_positive_s16_e30000_v3: alphas=[2.0] obj=0.969 epochs=23443 (early stopping) 4.2s
+  SI-CANN_rubber_T20_negative_s1_e30000_v3: alphas=[-2.0] obj=174.088 epochs=25500 (early stopping) 4.5s
+  SI-CANN_rubber_T20_negative_s0_e30000_v3: alphas=[-2.0] obj=174.237 epochs=21166 (early stopping) 4.3s
+  SI-CANN_rubber_T20_negative_s2_e30000_v3: alphas=[-2.0] obj=171.033 epochs=4834 (early stopping) 1.6s
+  SI-CANN_rubber_T20_negative_s4_e30000_v3: alphas=[-2.0] obj=171.031 epochs=21491 (early stopping) 6.5s
+  SI-CANN_rubber_T20_positive_s13_e30000_v3: alphas=[2.0] obj=0.863744 epochs=12178 (early stopping) 2.2s
+  SI-CANN_rubber_T20_negative_s3_e30000_v3: alphas=[-2.0] obj=171.031 epochs=4343 (early stopping) 2.4s
+  SI-CANN_rubber_T20_negative_s8_e30000_v3: alphas=[-2.0] obj=171.031 epochs=7882 (early stopping) 5.2s
+  SI-CANN_rubber_T20_negative_s6_e30000_v3: alphas=[-2.0] obj=174.083 epochs=30000 (epochs) 6.5s
+  SI-CANN_rubber_T20_negative_s7_e30000_v3: alphas=[-2.0] obj=174.045 epochs=30000 (epochs) 4.6s
+  SI-CANN_rubber_T20_negative_s5_e30000_v3: alphas=[-2.0] obj=171.035 epochs=8612 (early stopping) 2.5s
+  SI-CANN_rubber_T20_negative_s10_e30000_v3: alphas=[-2.0] obj=173.941 epochs=22211 (early stopping) 3.2s
+  SI-CANN_rubber_T20_negative_s13_e30000_v3: alphas=[-2.0] obj=171.031 epochs=7640 (early stopping) 8.4s
+  SI-CANN_rubber_T20_negative_s9_e30000_v3: alphas=[-2.0] obj=171.031 epochs=8052 (early stopping) 2.9s
+  SI-CANN_rubber_T20_negative_s14_e30000_v3: alphas=[-2.0] obj=171.035 epochs=9747 (early stopping) 2.9s
+  SI-CANN_rubber_T20_negative_s11_e30000_v3: alphas=[-2.0] obj=174.535 epochs=20816 (early stopping) 21.6s
+  SI-CANN_rubber_T20_negative_s15_e30000_v3: alphas=[-2.0] obj=171.034 epochs=16488 (early stopping) 11.1s
+  SI-CANN_rubber_T20_negative_s16_e30000_v3: alphas=[-2.0] obj=174.165 epochs=29367 (early stopping) 6.3s
+  SI-CANN_rubber_T20_combined_s0_e30000_v3: alphas=[2.0, -2.0] obj=8.27826 epochs=20406 (early stopping) 31.1s
+  SI-CANN_rubber_T20_negative_s17_e30000_v3: alphas=[-2.0] obj=173.926 epochs=24602 (early stopping) 7.8s
+  SI-CANN_rubber_T20_combined_s2_e30000_v3: alphas=[2.0, -2.0] obj=0.210484 epochs=28602 (early stopping) 19.4s
+  SI-CANN_rubber_T20_negative_s12_e30000_v3: alphas=[-2.0] obj=174.149 epochs=30000 (epochs) 6.6s
+  SI-CANN_rubber_T20_negative_s19_e30000_v3: alphas=[-2.0] obj=173.487 epochs=28964 (early stopping) 5.3s
+  SI-CANN_rubber_T20_negative_s18_e30000_v3: alphas=[-2.0] obj=171.032 epochs=19082 (early stopping) 19.2s
+  SI-CANN_rubber_T20_combined_s4_e30000_v3: alphas=[2.0, -2.0] obj=0.0568465 epochs=17672 (early stopping) 5.7s
+  SI-CANN_rubber_T20_combined_s1_e30000_v3: alphas=[2.0, -2.0] obj=171.036 epochs=17311 (early stopping) 18.1s
+  SI-CANN_rubber_T20_combined_s3_e30000_v3: alphas=[2.0, -2.0] obj=0.0578472 epochs=29989 (early stopping) 9.2s
+  SI-CANN_rubber_T20_combined_s6_e30000_v3: alphas=[2.0, -2.0] obj=0.0568264 epochs=18810 (early stopping) 12.6s
+  SI-CANN_rubber_T20_combined_s8_e30000_v3: alphas=[2.0, -2.0] obj=173.62 epochs=27208 (early stopping) 23.0s
+  SI-CANN_rubber_T20_combined_s5_e30000_v3: alphas=[2.0, -2.0] obj=0.356438 epochs=24154 (early stopping) 21.5s
+  SI-CANN_rubber_T20_combined_s9_e30000_v3: alphas=[2.0, -2.0] obj=173.621 epochs=19453 (early stopping) 13.2s
+  SI-CANN_rubber_T20_combined_s10_e30000_v3: alphas=[2.0, -2.0] obj=0.266967 epochs=30000 (epochs) 10.7s
+  SI-CANN_rubber_T20_combined_s11_e30000_v3: alphas=[2.0, -2.0] obj=0.417939 epochs=30000 (epochs) 26.8s
+  SI-CANN_rubber_T20_combined_s7_e30000_v3: alphas=[2.0, -2.0] obj=0.0563762 epochs=15682 (early stopping) 4.8s
+  SI-CANN_rubber_T20_combined_s13_e30000_v3: alphas=[2.0, -2.0] obj=0.0556027 epochs=18044 (early stopping) 25.3s
+  SI-CANN_rubber_T20_combined_s14_e30000_v3: alphas=[2.0, -2.0] obj=171.032 epochs=10751 (early stopping) 19.1s
+  SI-CANN_rubber_T20_combined_s15_e30000_v3: alphas=[2.0, -2.0] obj=0.0551472 epochs=16669 (early stopping) 5.9s
+  SI-CANN_rubber_T20_combined_s17_e30000_v3: alphas=[2.0, -2.0] obj=0.212086 epochs=23982 (early stopping) 34.9s
+  SI-CANN_rubber_T20_combined_s12_e30000_v3: alphas=[2.0, -2.0] obj=0.356425 epochs=25362 (early stopping) 8.3s
+  SI-CANN_rubber_T20_combined_s16_e30000_v3: alphas=[2.0, -2.0] obj=0.21383 epochs=17414 (early stopping) 20.9s
+  SI-CANN_brain_CX_positive_s1_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=12282 (early stopping) 2.8s
+  SI-CANN_brain_CX_positive_s0_e30000_v3: alphas=[2.0] obj=0.0654289 epochs=16795 (early stopping) 7.1s
+  SI-CANN_rubber_T20_combined_s19_e30000_v3: alphas=[2.0, -2.0] obj=0.416155 epochs=29903 (early stopping) 8.7s
+  SI-CANN_brain_CX_positive_s2_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=14785 (early stopping) 7.0s
+  SI-CANN_brain_CX_positive_s3_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=13467 (early stopping) 3.6s
+  SI-CANN_rubber_T20_combined_s18_e30000_v3: alphas=[2.0, -2.0] obj=0.356424 epochs=30000 (epochs) 40.6s
+  SI-CANN_brain_CX_positive_s6_e30000_v3: alphas=[2.0] obj=0.0654289 epochs=10516 (early stopping) 6.3s
+  SI-CANN_brain_CX_positive_s5_e30000_v3: alphas=[2.0] obj=0.0664969 epochs=15516 (early stopping) 12.6s
+  SI-CANN_brain_CX_positive_s4_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=9330 (early stopping) 13.4s
+  SI-CANN_brain_CX_positive_s8_e30000_v3: alphas=[2.0] obj=0.0654289 epochs=15373 (early stopping) 15.3s
+  SI-CANN_brain_CX_positive_s9_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=12086 (early stopping) 3.1s
+  SI-CANN_brain_CX_positive_s10_e30000_v3: alphas=[2.0] obj=0.0654289 epochs=11731 (early stopping) 8.6s
+  SI-CANN_brain_CX_positive_s11_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=12113 (early stopping) 4.4s
+  SI-CANN_brain_CX_positive_s7_e30000_v3: alphas=[2.0] obj=0.0664969 epochs=10296 (early stopping) 8.4s
+  SI-CANN_brain_CX_positive_s12_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=8230 (early stopping) 7.8s
+  SI-CANN_brain_CX_positive_s16_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=13975 (early stopping) 12.6s
+  SI-CANN_brain_CX_positive_s15_e30000_v3: alphas=[2.0] obj=0.0664969 epochs=11929 (early stopping) 26.5s
+  SI-CANN_brain_CX_positive_s18_e30000_v3: alphas=[2.0] obj=0.0664969 epochs=13975 (early stopping) 3.7s
+  SI-CANN_brain_CX_positive_s14_e30000_v3: alphas=[2.0] obj=0.0664969 epochs=12365 (early stopping) 10.3s
+  SI-CANN_brain_CX_positive_s13_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=16633 (early stopping) 5.8s
+  SI-CANN_brain_CX_positive_s19_e30000_v3: alphas=[2.0] obj=0.0654075 epochs=10835 (early stopping) 35.4s
+  SI-CANN_brain_CX_negative_s1_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=12282 (early stopping) 6.4s
+  SI-CANN_brain_CX_negative_s0_e30000_v3: alphas=[-2.0] obj=0.0503089 epochs=16795 (early stopping) 20.9s
+  SI-CANN_brain_CX_positive_s17_e30000_v3: alphas=[2.0] obj=0.0654289 epochs=13850 (early stopping) 9.6s
+  SI-CANN_brain_CX_negative_s5_e30000_v3: alphas=[-2.0] obj=0.0516161 epochs=10678 (early stopping) 8.3s
+  SI-CANN_brain_CX_negative_s3_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=13885 (early stopping) 4.6s
+  SI-CANN_brain_CX_negative_s8_e30000_v3: alphas=[-2.0] obj=0.0503089 epochs=15373 (early stopping) 3.3s
+  SI-CANN_brain_CX_negative_s4_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=9330 (early stopping) 5.2s
+  SI-CANN_brain_CX_negative_s7_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=14423 (early stopping) 4.4s
+  SI-CANN_brain_CX_negative_s11_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=8279 (early stopping) 33.1s
+  SI-CANN_brain_CX_negative_s9_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=12086 (early stopping) 2.8s
+  SI-CANN_brain_CX_negative_s6_e30000_v3: alphas=[-2.0] obj=0.0503089 epochs=10516 (early stopping) 5.6s
+  SI-CANN_brain_CX_negative_s2_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=14785 (early stopping) 12.1s
+  SI-CANN_brain_CX_negative_s10_e30000_v3: alphas=[-2.0] obj=0.0503089 epochs=11731 (early stopping) 3.6s
+  SI-CANN_brain_CX_negative_s13_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=16633 (early stopping) 4.2s
+  SI-CANN_brain_CX_negative_s15_e30000_v3: alphas=[-2.0] obj=0.0516161 epochs=11929 (early stopping) 9.4s
+  SI-CANN_brain_CX_negative_s12_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=8587 (early stopping) 4.5s
+  SI-CANN_brain_CX_negative_s19_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=10835 (early stopping) 6.1s
+  SI-CANN_brain_CX_negative_s16_e30000_v3: alphas=[-2.0] obj=0.0502804 epochs=13975 (early stopping) 6.3s
+  SI-CANN_brain_CX_negative_s17_e30000_v3: alphas=[-2.0] obj=0.0503089 epochs=13850 (early stopping) 39.8s
+  SI-CANN_brain_CX_negative_s14_e30000_v3: alphas=[-2.0] obj=0.0516161 epochs=12365 (early stopping) 7.0s
+  SI-CANN_brain_CX_combined_s1_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=14695 (early stopping) 5.3s
+  SI-CANN_brain_CX_combined_s0_e40000_v3: alphas=[2.0, -2.0] obj=0.0503089 epochs=9732 (early stopping) 12.7s
+  SI-CANN_brain_CX_combined_s2_e40000_v3: alphas=[2.0, -2.0] obj=0.0503089 epochs=8526 (early stopping) 9.2s
+  SI-CANN_brain_CX_combined_s3_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=13885 (early stopping) 24.8s
+  SI-CANN_brain_CX_negative_s18_e30000_v3: alphas=[-2.0] obj=0.0516161 epochs=13975 (early stopping) 4.0s
+  SI-CANN_brain_CX_combined_s6_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=14969 (early stopping) 21.1s
+  SI-CANN_brain_CX_combined_s5_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=10678 (early stopping) 9.8s
+  SI-CANN_brain_CX_combined_s8_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=8557 (early stopping) 11.8s
+  SI-CANN_brain_CX_combined_s4_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=9330 (early stopping) 10.4s
+  SI-CANN_brain_CX_combined_s9_e40000_v3: alphas=[2.0, -2.0] obj=0.0503089 epochs=12086 (early stopping) 9.6s
+  SI-CANN_brain_CX_combined_s10_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=11731 (early stopping) 4.7s
+  SI-CANN_brain_CX_combined_s7_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=8381 (early stopping) 4.1s
+  SI-CANN_brain_CX_combined_s11_e40000_v3: alphas=[2.0, -2.0] obj=0.0503089 epochs=12113 (early stopping) 4.8s
+  SI-CANN_brain_CX_combined_s12_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=8587 (early stopping) 6.2s
+  SI-CANN_brain_CX_combined_s13_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=12484 (early stopping) 12.7s
+  SI-CANN_brain_CX_combined_s14_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=12365 (early stopping) 12.9s
+  SI-CANN_brain_CX_combined_s16_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=8182 (early stopping) 25.8s
+  SI-CANN_brain_CC_positive_s0_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=8122 (early stopping) 4.4s
+  SI-CANN_brain_CX_combined_s19_e40000_v3: alphas=[2.0, -2.0] obj=0.0502804 epochs=6235 (early stopping) 4.1s
+  SI-CANN_brain_CX_combined_s18_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=13975 (early stopping) 5.2s
+  SI-CANN_brain_CX_combined_s15_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=11929 (early stopping) 10.6s
+  SI-CANN_brain_CC_positive_s3_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=9012 (early stopping) 2.4s
+  SI-CANN_brain_CC_positive_s2_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=8526 (early stopping) 4.7s
+  SI-CANN_brain_CC_positive_s1_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=7153 (early stopping) 4.5s
+  SI-CANN_brain_CC_positive_s5_e30000_v3: alphas=[2.0] obj=0.0213833 epochs=6444 (early stopping) 2.7s
+  SI-CANN_brain_CC_positive_s6_e30000_v3: alphas=[2.0] obj=0.0213833 epochs=6676 (early stopping) 3.8s
+  SI-CANN_brain_CC_positive_s4_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=5069 (early stopping) 13.1s
+  SI-CANN_brain_CX_combined_s17_e40000_v3: alphas=[2.0, -2.0] obj=0.0516161 epochs=13850 (early stopping) 25.9s
+  SI-CANN_brain_CC_positive_s8_e30000_v3: alphas=[2.0] obj=0.0213833 epochs=7014 (early stopping) 10.1s
+  SI-CANN_brain_CC_positive_s9_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=6019 (early stopping) 5.2s
+  SI-CANN_brain_CC_positive_s7_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=5754 (early stopping) 4.2s
+  SI-CANN_brain_CC_positive_s11_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=6133 (early stopping) 5.6s
+  SI-CANN_brain_CC_positive_s12_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=7744 (early stopping) 3.7s
+  SI-CANN_brain_CC_positive_s14_e30000_v3: alphas=[2.0] obj=0.0213833 epochs=10250 (early stopping) 10.2s
+  SI-CANN_brain_CC_positive_s13_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=9818 (early stopping) 5.2s
+  SI-CANN_brain_CC_positive_s10_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=7565 (early stopping) 4.5s
+  SI-CANN_brain_CC_positive_s17_e30000_v3: alphas=[2.0] obj=0.0212674 epochs=8947 (early stopping) 3.9s
+  SI-CANN_brain_CC_positive_s18_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=6120 (early stopping) 2.4s
+  SI-CANN_brain_CC_positive_s19_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=6235 (early stopping) 5.5s
+  SI-CANN_brain_CC_positive_s16_e30000_v3: alphas=[2.0] obj=0.0212664 epochs=8182 (early stopping) 10.9s
+  SI-CANN_brain_CC_negative_s0_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=8122 (early stopping) 3.6s
+  SI-CANN_brain_CC_positive_s15_e30000_v3: alphas=[2.0] obj=0.0213833 epochs=8858 (early stopping) 5.7s
+  SI-CANN_brain_CC_negative_s3_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=9012 (early stopping) 6.7s
+  SI-CANN_brain_CC_negative_s1_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=7932 (early stopping) 15.9s
+  SI-CANN_brain_CC_negative_s2_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=8526 (early stopping) 2.5s
+  SI-CANN_brain_CC_negative_s6_e30000_v3: alphas=[-2.0] obj=0.0191694 epochs=6676 (early stopping) 2.3s
+  SI-CANN_brain_CC_negative_s8_e30000_v3: alphas=[-2.0] obj=0.0191694 epochs=7014 (early stopping) 8.8s
+  SI-CANN_brain_CC_negative_s4_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=5069 (early stopping) 5.4s
+  SI-CANN_brain_CC_negative_s5_e30000_v3: alphas=[-2.0] obj=0.0191694 epochs=6444 (early stopping) 16.2s
+  SI-CANN_brain_CC_negative_s9_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=6019 (early stopping) 2.1s
+  SI-CANN_brain_CC_negative_s12_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=7744 (early stopping) 2.4s
+  SI-CANN_brain_CC_negative_s11_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=6133 (early stopping) 2.4s
+  SI-CANN_brain_CC_negative_s10_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=11731 (early stopping) 3.6s
+  SI-CANN_brain_CC_negative_s15_e30000_v3: alphas=[-2.0] obj=0.0191694 epochs=8858 (early stopping) 2.5s
+  SI-CANN_brain_CC_negative_s14_e30000_v3: alphas=[-2.0] obj=0.0191694 epochs=12365 (early stopping) 3.4s
+  SI-CANN_brain_CC_negative_s13_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=9818 (early stopping) 2.6s
+  SI-CANN_brain_CC_negative_s16_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=8182 (early stopping) 12.4s
+  SI-CANN_brain_CC_negative_s17_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=8945 (early stopping) 5.9s
+  SI-CANN_brain_CC_negative_s18_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=6120 (early stopping) 4.0s
+  SI-CANN_brain_CC_combined_s2_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=5940 (early stopping) 16.3s
+  SI-CANN_brain_CC_combined_s1_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=7932 (early stopping) 19.6s
+  SI-CANN_brain_CC_combined_s4_e40000_v3: alphas=[2.0, -2.0] obj=0.0212664 epochs=5069 (early stopping) 4.6s
+  SI-CANN_brain_CC_negative_s19_e30000_v3: alphas=[-2.0] obj=0.0190235 epochs=6235 (early stopping) 2.3s
+  SI-CANN_brain_CC_combined_s5_e40000_v3: alphas=[2.0, -2.0] obj=0.0190235 epochs=6444 (early stopping) 5.2s
+  SI-CANN_brain_CC_combined_s3_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=9012 (early stopping) 4.6s
+  SI-CANN_brain_CC_combined_s6_e40000_v3: alphas=[2.0, -2.0] obj=0.0212664 epochs=6676 (early stopping) 9.6s
+  SI-CANN_brain_CC_combined_s7_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=5754 (early stopping) 17.4s
+  SI-CANN_brain_CC_combined_s0_e40000_v3: alphas=[2.0, -2.0] obj=0.0213833 epochs=8122 (early stopping) 19.7s
+  SI-CANN_brain_CC_combined_s8_e40000_v3: alphas=[2.0, -2.0] obj=0.0190235 epochs=7014 (early stopping) 24.5s
+  SI-CANN_brain_CC_combined_s10_e40000_v3: alphas=[2.0, -2.0] obj=0.0212664 epochs=7565 (early stopping) 4.2s
+  SI-CANN_brain_CC_combined_s13_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=9818 (early stopping) 4.9s
+  SI-CANN_brain_CC_combined_s11_e40000_v3: alphas=[2.0, -2.0] obj=0.0212674 epochs=6133 (early stopping) 4.0s
+  SI-CANN_brain_CC_combined_s9_e40000_v3: alphas=[2.0, -2.0] obj=0.019025 epochs=6019 (early stopping) 7.3s
+  SI-CANN_brain_CC_combined_s16_e40000_v3: alphas=[2.0, -2.0] obj=0.0190235 epochs=4630 (early stopping) 23.5s
+  SI-CANN_brain_CC_negative_s7_e30000_v3: alphas=[-2.0] obj=0.019025 epochs=5754 (early stopping) 2.6s
+  SI-CANN_brain_CC_combined_s15_e40000_v3: alphas=[2.0, -2.0] obj=0.0213833 epochs=8858 (early stopping) 4.5s
+  SI-CANN_brain_CC_combined_s12_e40000_v3: alphas=[2.0, -2.0] obj=0.0212674 epochs=7744 (early stopping) 5.9s
+  SI-CANN_brain_CC_combined_s14_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=12365 (early stopping) 4.8s
+  SI-CANN_rubber_T50_positive_s0_e30000_v3: alphas=[2.0] obj=20.0626 epochs=27193 (early stopping) 4.5s
+  SI-CANN_rubber_T50_positive_s1_e30000_v3: alphas=[2.0] obj=20.0665 epochs=29576 (early stopping) 7.8s
+  SI-CANN_rubber_T50_positive_s3_e30000_v3: alphas=[2.0] obj=19.7202 epochs=6621 (early stopping) 3.4s
+  SI-CANN_rubber_T50_positive_s5_e30000_v3: alphas=[2.0] obj=19.7317 epochs=5418 (early stopping) 2.4s
+  SI-CANN_brain_CC_combined_s18_e40000_v3: alphas=[2.0, -2.0] obj=0.0191694 epochs=6120 (early stopping) 31.1s
+  SI-CANN_rubber_T50_positive_s2_e30000_v3: alphas=[2.0] obj=20.0624 epochs=6279 (early stopping) 2.5s
+  SI-CANN_brain_CC_combined_s19_e40000_v3: alphas=[2.0, -2.0] obj=0.0190235 epochs=6235 (early stopping) 4.2s
+  SI-CANN_rubber_T50_positive_s4_e30000_v3: alphas=[2.0] obj=20.0591 epochs=15227 (early stopping) 3.3s
+  SI-CANN_rubber_T50_positive_s6_e30000_v3: alphas=[2.0] obj=20.0616 epochs=7903 (early stopping) 2.7s
+  SI-CANN_brain_CC_combined_s17_e40000_v3: alphas=[2.0, -2.0] obj=0.0212664 epochs=8947 (early stopping) 10.5s
+  SI-CANN_rubber_T50_positive_s7_e30000_v3: alphas=[2.0] obj=20.0627 epochs=20047 (early stopping) 4.1s
+  SI-CANN_rubber_T50_positive_s8_e30000_v3: alphas=[2.0] obj=19.7043 epochs=7542 (early stopping) 2.5s
+  SI-CANN_rubber_T50_positive_s9_e30000_v3: alphas=[2.0] obj=20.0591 epochs=15613 (early stopping) 4.8s
+  SI-CANN_rubber_T50_positive_s11_e30000_v3: alphas=[2.0] obj=32.0747 epochs=15562 (early stopping) 3.6s
+  SI-CANN_rubber_T50_positive_s10_e30000_v3: alphas=[2.0] obj=20.0601 epochs=9838 (early stopping) 5.4s
+  SI-CANN_rubber_T50_positive_s12_e30000_v3: alphas=[2.0] obj=20.0591 epochs=12004 (early stopping) 4.5s
+  SI-CANN_rubber_T50_positive_s14_e30000_v3: alphas=[2.0] obj=223.172 epochs=6857 (early stopping) 2.3s
+  SI-CANN_rubber_T50_positive_s13_e30000_v3: alphas=[2.0] obj=20.0602 epochs=9975 (early stopping) 5.7s
+  SI-CANN_rubber_T50_positive_s16_e30000_v3: alphas=[2.0] obj=31.8057 epochs=8652 (early stopping) 2.8s
+  SI-CANN_rubber_T50_positive_s15_e30000_v3: alphas=[2.0] obj=20.0635 epochs=9484 (early stopping) 2.7s
+  SI-CANN_rubber_T50_positive_s19_e30000_v3: alphas=[2.0] obj=20.8316 epochs=13535 (early stopping) 3.2s
+  SI-CANN_rubber_T50_positive_s18_e30000_v3: alphas=[2.0] obj=20.0597 epochs=22069 (early stopping) 6.1s
+  SI-CANN_rubber_T50_negative_s1_e30000_v3: alphas=[-2.0] obj=832.905 epochs=20292 (early stopping) 4.3s
+  SI-CANN_rubber_T50_positive_s17_e30000_v3: alphas=[2.0] obj=32.0747 epochs=4496 (early stopping) 3.1s
+  SI-CANN_rubber_T50_negative_s3_e30000_v3: alphas=[-2.0] obj=796.237 epochs=4971 (early stopping) 5.5s
+  SI-CANN_rubber_T50_negative_s0_e30000_v3: alphas=[-2.0] obj=799.561 epochs=15524 (early stopping) 6.0s
+  SI-CANN_rubber_T50_negative_s5_e30000_v3: alphas=[-2.0] obj=796.247 epochs=6271 (early stopping) 4.4s
+  SI-CANN_rubber_T50_negative_s6_e30000_v3: alphas=[-2.0] obj=796.243 epochs=12298 (early stopping) 4.3s
+  SI-CANN_rubber_T50_negative_s7_e30000_v3: alphas=[-2.0] obj=796.253 epochs=3671 (early stopping) 4.3s
+  SI-CANN_rubber_T50_negative_s8_e30000_v3: alphas=[-2.0] obj=796.463 epochs=14363 (early stopping) 6.5s
+  SI-CANN_rubber_T50_negative_s9_e30000_v3: alphas=[-2.0] obj=796.236 epochs=4977 (early stopping) 2.5s
+  SI-CANN_rubber_T50_negative_s2_e30000_v3: alphas=[-2.0] obj=796.241 epochs=3662 (early stopping) 2.2s
+  SI-CANN_rubber_T50_negative_s11_e30000_v3: alphas=[-2.0] obj=856.908 epochs=3009 (early stopping) 4.0s
+  SI-CANN_rubber_T50_negative_s12_e30000_v3: alphas=[-2.0] obj=796.418 epochs=15175 (early stopping) 4.0s
+  SI-CANN_rubber_T50_negative_s4_e30000_v3: alphas=[-2.0] obj=796.236 epochs=11293 (early stopping) 3.2s
+  SI-CANN_rubber_T50_negative_s13_e30000_v3: alphas=[-2.0] obj=796.238 epochs=5099 (early stopping) 2.4s
+  SI-CANN_rubber_T50_negative_s14_e30000_v3: alphas=[-2.0] obj=802.932 epochs=5182 (early stopping) 2.3s
+  SI-CANN_rubber_T50_negative_s10_e30000_v3: alphas=[-2.0] obj=829.026 epochs=25597 (early stopping) 4.6s
+  SI-CANN_rubber_T50_negative_s17_e30000_v3: alphas=[-2.0] obj=837.529 epochs=3011 (early stopping) 2.1s
+  SI-CANN_rubber_T50_negative_s18_e30000_v3: alphas=[-2.0] obj=798.873 epochs=16407 (early stopping) 6.8s
+  SI-CANN_rubber_T50_combined_s0_e30000_v3: alphas=[2.0, -2.0] obj=105.938 epochs=9931 (early stopping) 4.8s
+  SI-CANN_rubber_T50_combined_s1_e30000_v3: alphas=[2.0, -2.0] obj=105.666 epochs=10354 (early stopping) 8.1s
+  SI-CANN_rubber_T50_negative_s16_e30000_v3: alphas=[-2.0] obj=857.586 epochs=3017 (early stopping) 2.0s
+  SI-CANN_rubber_T50_combined_s2_e30000_v3: alphas=[2.0, -2.0] obj=4.18313 epochs=17796 (early stopping) 6.3s
+  SI-CANN_rubber_T50_negative_s15_e30000_v3: alphas=[-2.0] obj=796.484 epochs=18420 (early stopping) 11.2s
+  SI-CANN_rubber_T50_combined_s3_e30000_v3: alphas=[2.0, -2.0] obj=2.45618 epochs=15463 (early stopping) 7.8s
+  SI-CANN_rubber_T50_combined_s4_e30000_v3: alphas=[2.0, -2.0] obj=2.44614 epochs=5729 (early stopping) 26.7s
+  SI-CANN_rubber_T50_negative_s19_e30000_v3: alphas=[-2.0] obj=843.453 epochs=26892 (early stopping) 4.5s
+  SI-CANN_rubber_T50_combined_s5_e30000_v3: alphas=[2.0, -2.0] obj=7.34414 epochs=10817 (early stopping) 12.1s
+  SI-CANN_rubber_T50_combined_s7_e30000_v3: alphas=[2.0, -2.0] obj=2.4453 epochs=11537 (early stopping) 18.2s
+  SI-CANN_rubber_T50_combined_s9_e30000_v3: alphas=[2.0, -2.0] obj=105.642 epochs=22134 (early stopping) 19.7s
+  SI-CANN_rubber_T50_combined_s6_e30000_v3: alphas=[2.0, -2.0] obj=2.46778 epochs=7268 (early stopping) 4.7s
+  SI-CANN_rubber_T50_combined_s8_e30000_v3: alphas=[2.0, -2.0] obj=105.658 epochs=9498 (early stopping) 11.3s
+  SI-CANN_rubber_T50_combined_s10_e30000_v3: alphas=[2.0, -2.0] obj=16.3554 epochs=7658 (early stopping) 5.3s
+  SI-CANN_rubber_T50_combined_s11_e30000_v3: alphas=[2.0, -2.0] obj=9.37094 epochs=26194 (early stopping) 23.6s
+  SI-CANN_rubber_T50_combined_s13_e30000_v3: alphas=[2.0, -2.0] obj=2.44816 epochs=12273 (early stopping) 6.3s
+  SI-CANN_rubber_T50_combined_s12_e30000_v3: alphas=[2.0, -2.0] obj=7.34348 epochs=10117 (early stopping) 6.7s
+  SI-CANN_rubber_T50_combined_s14_e30000_v3: alphas=[2.0, -2.0] obj=800.076 epochs=6789 (early stopping) 18.9s
+  SI-CANN_rubber_T50_combined_s15_e30000_v3: alphas=[2.0, -2.0] obj=2.44237 epochs=7555 (early stopping) 10.8s
+  SI-CANN_rubber_T50_combined_s16_e30000_v3: alphas=[2.0, -2.0] obj=4.41802 epochs=15123 (early stopping) 5.9s
+  SI-CANN_rubber_T50_combined_s17_e30000_v3: alphas=[2.0, -2.0] obj=4.34698 epochs=15500 (early stopping) 22.4s
+  SI-CANN_rubber_T50_combined_s18_e30000_v3: alphas=[2.0, -2.0] obj=7.35073 epochs=13670 (early stopping) 9.0s
+  SI-CANN_rubber_T50_combined_s19_e30000_v3: alphas=[2.0, -2.0] obj=7.34579 epochs=16948 (early stopping) 8.6s
+  SI-CANN_brain_CR_positive_s0_e30000_v3: alphas=[2.0] obj=0.0440962 epochs=8122 (early stopping) 5.5s
+  SI-CANN_brain_CR_positive_s1_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=7932 (early stopping) 2.5s
+  SI-CANN_brain_CR_positive_s2_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=8526 (early stopping) 2.6s
+  SI-CANN_brain_CR_positive_s3_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=9540 (early stopping) 15.5s
+  SI-CANN_brain_CR_positive_s6_e30000_v3: alphas=[2.0] obj=0.0444525 epochs=6676 (early stopping) 2.3s
+  SI-CANN_brain_CR_positive_s4_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=9330 (early stopping) 2.8s
+  SI-CANN_brain_CR_positive_s7_e30000_v3: alphas=[2.0] obj=0.0440962 epochs=5754 (early stopping) 8.6s
+  SI-CANN_brain_CR_positive_s8_e30000_v3: alphas=[2.0] obj=0.0444525 epochs=7014 (early stopping) 3.1s
+  SI-CANN_brain_CR_positive_s5_e30000_v3: alphas=[2.0] obj=0.0444525 epochs=10678 (early stopping) 7.3s
+  SI-CANN_brain_CR_positive_s11_e30000_v3: alphas=[2.0] obj=0.0440962 epochs=6133 (early stopping) 11.4s
+  SI-CANN_brain_CR_positive_s9_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=9860 (early stopping) 3.0s
+  SI-CANN_brain_CR_positive_s12_e30000_v3: alphas=[2.0] obj=0.0440962 epochs=7744 (early stopping) 2.3s
+  SI-CANN_brain_CR_positive_s10_e30000_v3: alphas=[2.0] obj=0.0440962 epochs=11731 (early stopping) 2.8s
+  SI-CANN_brain_CR_positive_s13_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=9818 (early stopping) 2.9s
+  SI-CANN_brain_CR_positive_s14_e30000_v3: alphas=[2.0] obj=0.0444525 epochs=10250 (early stopping) 2.7s
+  SI-CANN_brain_CR_positive_s15_e30000_v3: alphas=[2.0] obj=0.0444525 epochs=11929 (early stopping) 6.2s
+  SI-CANN_brain_CR_positive_s16_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=8182 (early stopping) 2.5s
+  SI-CANN_brain_CR_positive_s18_e30000_v3: alphas=[2.0] obj=0.0444525 epochs=6120 (early stopping) 3.2s
+  SI-CANN_brain_CR_positive_s19_e30000_v3: alphas=[2.0] obj=0.0440913 epochs=10835 (early stopping) 5.7s
+  SI-CANN_brain_CR_negative_s0_e30000_v3: alphas=[-2.0] obj=0.0369455 epochs=8122 (early stopping) 3.9s
+  SI-CANN_brain_CR_negative_s1_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=7932 (early stopping) 11.1s
+  SI-CANN_brain_CR_negative_s2_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=8526 (early stopping) 2.5s
+  SI-CANN_brain_CR_negative_s3_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=9012 (early stopping) 2.4s
+  SI-CANN_brain_CR_negative_s4_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=9330 (early stopping) 12.0s
+  SI-CANN_brain_CR_positive_s17_e30000_v3: alphas=[2.0] obj=0.0440962 epochs=8947 (early stopping) 3.5s
+  SI-CANN_brain_CR_negative_s9_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=9285 (early stopping) 23.4s
+  SI-CANN_brain_CR_negative_s11_e30000_v3: alphas=[-2.0] obj=0.0369455 epochs=6133 (early stopping) 2.1s
+  SI-CANN_brain_CR_negative_s10_e30000_v3: alphas=[-2.0] obj=0.0369455 epochs=11731 (early stopping) 8.5s
+  SI-CANN_brain_CR_negative_s5_e30000_v3: alphas=[-2.0] obj=0.0374092 epochs=10678 (early stopping) 5.4s
+  SI-CANN_brain_CR_negative_s7_e30000_v3: alphas=[-2.0] obj=0.0369455 epochs=8380 (early stopping) 3.7s
+  SI-CANN_brain_CR_negative_s12_e30000_v3: alphas=[-2.0] obj=0.0369455 epochs=7744 (early stopping) 13.9s
+  SI-CANN_brain_CR_negative_s6_e30000_v3: alphas=[-2.0] obj=0.0374092 epochs=6676 (early stopping) 2.2s
+  SI-CANN_brain_CR_negative_s8_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=7014 (early stopping) 17.2s
+  SI-CANN_brain_CR_negative_s14_e30000_v3: alphas=[-2.0] obj=0.0374092 epochs=10250 (early stopping) 7.6s
+  SI-CANN_brain_CR_negative_s13_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=9818 (early stopping) 2.4s
+  SI-CANN_brain_CR_negative_s18_e30000_v3: alphas=[-2.0] obj=0.0374092 epochs=6120 (early stopping) 2.4s
+  SI-CANN_brain_CR_negative_s17_e30000_v3: alphas=[-2.0] obj=0.0369455 epochs=13850 (early stopping) 10.7s
+  SI-CANN_brain_CR_negative_s16_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=8182 (early stopping) 11.1s
+  SI-CANN_brain_CR_negative_s19_e30000_v3: alphas=[-2.0] obj=0.0369384 epochs=10835 (early stopping) 9.1s
+  SI-CANN_brain_CR_negative_s15_e30000_v3: alphas=[-2.0] obj=0.0374092 epochs=8858 (early stopping) 2.4s
+  SI-CANN_brain_CR_combined_s1_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=7932 (early stopping) 4.4s
+  SI-CANN_brain_CR_combined_s0_e40000_v3: alphas=[2.0, -2.0] obj=0.0369455 epochs=8122 (early stopping) 5.0s
+  SI-CANN_brain_CR_combined_s2_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=8526 (early stopping) 7.4s
+  SI-CANN_brain_CR_combined_s4_e40000_v3: alphas=[2.0, -2.0] obj=0.0440913 epochs=9330 (early stopping) 11.7s
+  SI-CANN_brain_CR_combined_s3_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=9012 (early stopping) 6.0s
+  SI-CANN_brain_CR_combined_s5_e40000_v3: alphas=[2.0, -2.0] obj=0.0369384 epochs=10678 (early stopping) 13.7s
+  SI-CANN_brain_CR_combined_s6_e40000_v3: alphas=[2.0, -2.0] obj=0.0369384 epochs=10516 (early stopping) 12.7s
+  SI-CANN_brain_CR_combined_s7_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=8380 (early stopping) 6.3s
+  SI-CANN_brain_CR_combined_s8_e40000_v3: alphas=[2.0, -2.0] obj=0.0369384 epochs=7014 (early stopping) 4.5s
+  SI-CANN_brain_CR_combined_s9_e40000_v3: alphas=[2.0, -2.0] obj=0.0369455 epochs=9285 (early stopping) 4.3s
+  SI-CANN_brain_CR_combined_s10_e40000_v3: alphas=[2.0, -2.0] obj=0.0369384 epochs=11731 (early stopping) 6.9s
+  SI-CANN_brain_CR_combined_s13_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=9818 (early stopping) 4.8s
+  SI-CANN_brain_CR_combined_s14_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=10250 (early stopping) 10.4s
+  SI-CANN_brain_CR_combined_s16_e40000_v3: alphas=[2.0, -2.0] obj=0.0369384 epochs=8182 (early stopping) 5.3s
+  SI-CANN_brain_CR_combined_s12_e40000_v3: alphas=[2.0, -2.0] obj=0.0440962 epochs=7744 (early stopping) 6.9s
+  SI-CANN_brain_CR_combined_s15_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=8858 (early stopping) 24.8s
+  SI-CANN_brain_CR_combined_s17_e40000_v3: alphas=[2.0, -2.0] obj=0.0440913 epochs=8947 (early stopping) 4.3s
+  SI-CANN_brain_CR_combined_s19_e40000_v3: alphas=[2.0, -2.0] obj=0.0369384 epochs=6235 (early stopping) 7.4s
+  SI-CANN_brain_BG_positive_s1_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=7932 (early stopping) 4.5s
+  SI-CANN_brain_CR_combined_s11_e40000_v3: alphas=[2.0, -2.0] obj=0.0369455 epochs=12113 (early stopping) 12.8s
+  SI-CANN_brain_BG_positive_s2_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=8526 (early stopping) 14.7s
+  SI-CANN_brain_BG_positive_s0_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=8122 (early stopping) 2.5s
+  SI-CANN_brain_BG_positive_s3_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=13467 (early stopping) 5.6s
+  SI-CANN_brain_CR_combined_s18_e40000_v3: alphas=[2.0, -2.0] obj=0.0374092 epochs=13975 (early stopping) 7.6s
+  SI-CANN_brain_BG_positive_s6_e30000_v3: alphas=[2.0] obj=0.0254267 epochs=6676 (early stopping) 2.5s
+  SI-CANN_brain_BG_positive_s4_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=9330 (early stopping) 3.0s
+  SI-CANN_brain_BG_positive_s5_e30000_v3: alphas=[2.0] obj=0.0254267 epochs=6444 (early stopping) 2.2s
+  SI-CANN_brain_BG_positive_s8_e30000_v3: alphas=[2.0] obj=0.0254267 epochs=7014 (early stopping) 4.7s
+  SI-CANN_brain_BG_positive_s7_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=5754 (early stopping) 3.0s
+  SI-CANN_brain_BG_positive_s10_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=7565 (early stopping) 2.3s
+  SI-CANN_brain_BG_positive_s11_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=6133 (early stopping) 2.1s
+  SI-CANN_brain_BG_positive_s9_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=6019 (early stopping) 2.5s
+  SI-CANN_brain_BG_positive_s13_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=9818 (early stopping) 13.1s
+  SI-CANN_brain_BG_positive_s12_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=8230 (early stopping) 2.7s
+  SI-CANN_brain_BG_positive_s17_e30000_v3: alphas=[2.0] obj=0.0252242 epochs=13850 (early stopping) 3.3s
+  SI-CANN_brain_BG_positive_s16_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=8182 (early stopping) 13.9s
+  SI-CANN_brain_BG_positive_s15_e30000_v3: alphas=[2.0] obj=0.0254267 epochs=10280 (early stopping) 2.6s
+  SI-CANN_brain_BG_positive_s14_e30000_v3: alphas=[2.0] obj=0.0254267 epochs=12365 (early stopping) 2.8s
+  SI-CANN_brain_BG_positive_s19_e30000_v3: alphas=[2.0] obj=0.0252218 epochs=6235 (early stopping) 2.2s
+  SI-CANN_brain_BG_negative_s1_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=7932 (early stopping) 4.2s
+  SI-CANN_brain_BG_positive_s18_e30000_v3: alphas=[2.0] obj=0.0254267 epochs=6120 (early stopping) 2.3s
+  SI-CANN_brain_BG_negative_s0_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=8122 (early stopping) 2.5s
+  SI-CANN_brain_BG_negative_s2_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=8526 (early stopping) 2.3s
+  SI-CANN_brain_BG_negative_s4_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=9330 (early stopping) 2.6s
+  SI-CANN_brain_BG_negative_s3_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=9057 (early stopping) 2.5s
+  SI-CANN_brain_BG_negative_s6_e30000_v3: alphas=[-2.0] obj=0.0217908 epochs=6676 (early stopping) 7.4s
+  SI-CANN_brain_BG_negative_s9_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=6019 (early stopping) 2.7s
+  SI-CANN_brain_BG_negative_s8_e30000_v3: alphas=[-2.0] obj=0.0217908 epochs=7014 (early stopping) 2.8s
+  SI-CANN_brain_BG_negative_s10_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=7562 (early stopping) 2.2s
+  SI-CANN_brain_BG_negative_s7_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=5754 (early stopping) 2.2s
+  SI-CANN_brain_BG_negative_s5_e30000_v3: alphas=[-2.0] obj=0.0217908 epochs=6444 (early stopping) 2.3s
+  SI-CANN_brain_BG_negative_s11_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=6133 (early stopping) 2.1s
+  SI-CANN_brain_BG_negative_s13_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=9818 (early stopping) 27.5s
+  SI-CANN_brain_BG_negative_s14_e30000_v3: alphas=[-2.0] obj=0.0217908 epochs=8152 (early stopping) 8.3s
+  SI-CANN_brain_BG_negative_s18_e30000_v3: alphas=[-2.0] obj=0.0217908 epochs=6120 (early stopping) 4.0s
+  SI-CANN_brain_BG_negative_s12_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=8230 (early stopping) 2.5s
+  SI-CANN_brain_BG_negative_s19_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=6235 (early stopping) 4.1s
+  SI-CANN_brain_BG_negative_s17_e30000_v3: alphas=[-2.0] obj=0.0215458 epochs=13850 (early stopping) 6.2s
+  SI-CANN_brain_BG_negative_s15_e30000_v3: alphas=[-2.0] obj=0.0217908 epochs=10280 (early stopping) 2.7s
+  SI-CANN_brain_BG_combined_s0_e40000_v3: alphas=[2.0, -2.0] obj=0.0254267 epochs=8122 (early stopping) 8.8s
+  SI-CANN_brain_BG_negative_s16_e30000_v3: alphas=[-2.0] obj=0.0215427 epochs=8182 (early stopping) 14.7s
+  SI-CANN_brain_BG_combined_s2_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=8526 (early stopping) 6.9s
+  SI-CANN_brain_BG_combined_s1_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=7932 (early stopping) 13.4s
+  SI-CANN_brain_BG_combined_s4_e40000_v3: alphas=[2.0, -2.0] obj=0.0252218 epochs=9330 (early stopping) 6.6s
+  SI-CANN_brain_BG_combined_s3_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=9057 (early stopping) 10.4s
+  SI-CANN_brain_BG_combined_s6_e40000_v3: alphas=[2.0, -2.0] obj=0.0215427 epochs=6676 (early stopping) 10.7s
+  SI-CANN_brain_BG_combined_s5_e40000_v3: alphas=[2.0, -2.0] obj=0.0215427 epochs=6444 (early stopping) 5.3s
+  SI-CANN_brain_BG_combined_s7_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=5754 (early stopping) 20.1s
+  SI-CANN_brain_BG_combined_s11_e40000_v3: alphas=[2.0, -2.0] obj=0.0215458 epochs=6133 (early stopping) 4.2s
+  SI-CANN_brain_BG_combined_s10_e40000_v3: alphas=[2.0, -2.0] obj=0.0215427 epochs=7562 (early stopping) 16.1s
+  SI-CANN_brain_BG_combined_s9_e40000_v3: alphas=[2.0, -2.0] obj=0.0215458 epochs=6019 (early stopping) 4.0s
+  SI-CANN_brain_BG_combined_s12_e40000_v3: alphas=[2.0, -2.0] obj=0.0252242 epochs=8230 (early stopping) 5.7s
+  SI-CANN_brain_BG_combined_s13_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=9818 (early stopping) 5.1s
+  SI-CANN_brain_BG_combined_s8_e40000_v3: alphas=[2.0, -2.0] obj=0.0215427 epochs=7014 (early stopping) 5.7s
+  SI-CANN_brain_BG_combined_s14_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=8152 (early stopping) 4.8s
+  SI-CANN_brain_BG_combined_s15_e40000_v3: alphas=[2.0, -2.0] obj=0.0254267 epochs=10280 (early stopping) 4.8s
+  SI-CANN_brain_BG_combined_s18_e40000_v3: alphas=[2.0, -2.0] obj=0.0217908 epochs=13975 (early stopping) 5.3s
+  SI-CANN_brain_BG_combined_s17_e40000_v3: alphas=[2.0, -2.0] obj=0.0252218 epochs=13850 (early stopping) 8.0s
+  SI-CANN_brain_BG_combined_s16_e40000_v3: alphas=[2.0, -2.0] obj=0.0215427 epochs=8182 (early stopping) 6.2s
+  SI-CANN_brain_BG_combined_s19_e40000_v3: alphas=[2.0, -2.0] obj=0.0215427 epochs=6235 (early stopping) 10.8s
+wrote outputs/baselines/SI-CANN.json (6 materials x 3 families)

@@ -3,21 +3,21 @@
     "rubber_generalization": {
       "results": {
         "GI-CANN": {
-          "r2_ut": 0.99943,
-          "r2_bt": 0.996829,
-          "r2_ps": 0.999342,
-          "avg_r2": 0.998534,
-          "heldout_rel_error": 0.031927,
+          "r2_ut": 0.999775,
+          "r2_bt": 0.997387,
+          "r2_ps": 0.99904,
+          "avg_r2": 0.998734,
+          "heldout_rel_error": 0.027207,
           "n_terms": 2.0,
-          "alpha_star": 1.678959
+          "alpha_star": 1.675883
         },
         "SI-CANN": {
-          "r2_ut": 0.995042,
-          "r2_bt": 0.959891,
-          "r2_ps": 0.998047,
-          "avg_r2": 0.984326,
-          "heldout_rel_error": 0.113815,
-          "n_terms": 2.0,
+          "r2_ut": 0.998338,
+          "r2_bt": 0.947927,
+          "r2_ps": 0.998559,
+          "avg_r2": 0.981608,
+          "heldout_rel_error": 0.081056,
+          "n_terms": 3.0,
           "alpha_star": 2.0
         }
       }
@@ -25,20 +25,20 @@
     "rubber_negative_ablation": {
       "results": {
         "GI-CANN": {
-          "r2_ut": 0.143211,
+          "r2_ut": 0.17715,
           "r2_bt": 0.0,
-          "r2_ps": 0.66033,
-          "avg_r2": 0.267847,
-          "heldout_rel_error": 0.733168,
-          "n_terms": 1.0,
-          "alpha_star": -0.185057
+          "r2_ps": 0.606239,
+          "avg_r2": 0.26113,
+          "heldout_rel_error": 0.744542,
+          "n_terms": 2.0,
+          "alpha_star": -0.145282
         },
         "SI-CANN": {
           "r2_ut": 0.0,
-          "r2_bt": 0.778804,
+          "r2_bt": 0.950668,
           "r2_ps": 0.0,
-          "avg_r2": 0.259601,
-          "heldout_rel_error": 0.978603,
+          "avg_r2": 0.316889,
+          "heldout_rel_error": 0.908848,
           "n_terms": 1.0,
           "alpha_star": -2.0
         }
@@ -47,21 +47,21 @@
     "rubber_combined_ablation": {
       "results": {
         "GI-CANN": {
-          "r2_ut": 0.999646,
-          "r2_bt": 0.998191,
-          "r2_ps": 0.999337,
-          "avg_r2": 0.999058,
-          "heldout_rel_error": 0.026643,
+          "r2_ut": 0.999888,
+          "r2_bt": 0.99968,
+          "r2_ps": 0.999421,
+          "avg_r2": 0.999663,
+          "heldout_rel_error": 0.051308,
           "n_terms": 3.0,
-          "alpha_star": 1.720993
+          "alpha_star": 1.939411
         },
         "SI-CANN": {
-          "r2_ut": 0.916629,
-          "r2_bt": 0.984324,
-          "r2_ps": 0.647692,
-          "avg_r2": 0.849548,
-          "heldout_rel_error": 0.43032,
-          "n_terms": 2.0,
+          "r2_ut": 0.99984,
+          "r2_bt": 0.997817,
+          "r2_ps": 0.998918,
+          "avg_r2": 0.998858,
+          "heldout_rel_error": 0.081698,
+          "n_terms": 3.0,
           "alpha_star": 2.0
         }
       }
@@ -69,20 +69,20 @@
     "brain_generalization": {
       "results": {
         "GI-CANN": {
-          "r2_ut": 0.957499,
-          "r2_uc": 0.98882,
-          "r2_ss": 0.897285,
-          "avg_r2": 0.947868,
-          "heldout_rel_error": 0.185055,
+          "r2_ut": 0.960609,
+          "r2_uc": 0.995554,
+          "r2_ss": 0.875783,
+          "avg_r2": 0.943982,
+          "heldout_rel_error": 0.200366,
           "n_terms": 1.0,
-          "alpha_star": -18.616727
+          "alpha_star": -22.219102
         },
         "SI-CANN": {
-          "r2_ut": 0.074877,
-          "r2_uc": 0.728975,
-          "r2_ss": 0.872848,
-          "avg_r2": 0.5589,
-          "heldout_rel_error": 0.435075,
+          "r2_ut": 0.065927,
+          "r2_uc": 0.726897,
+          "r2_ss": 0.875818,
+          "avg_r2": 0.556214,
+          "heldout_rel_error": 0.433455,
           "n_terms": 1.0,
           "alpha_star": -2.0
         }
@@ -92,19 +92,19 @@
       "results": {
         "GI-CANN": {
           "r2_ut": 0.0,
-          "r2_uc": 0.557771,
-          "r2_ss": 0.89081,
-          "avg_r2": 0.48286,
-          "heldout_rel_error": 0.404319,
+          "r2_uc": 0.556041,
+          "r2_ss": 0.892133,
+          "avg_r2": 0.482725,
+          "heldout_rel_error": 0.402998,
           "n_terms": 1.0,
-          "alpha_star": 4.639424
+          "alpha_star": 4.664362
         },
         "SI-CANN": {
           "r2_ut": 0.0,
-          "r2_uc": 0.599166,
-          "r2_ss": 0.886559,
-          "avg_r2": 0.495242,
-          "heldout_rel_error": 0.40692,
+          "r2_uc": 0.598033,
+          "r2_ss": 0.888388,
+          "avg_r2": 0.495474,
+          "heldout_rel_error": 0.406123,
           "n_terms": 1.0,
           "alpha_star": 2.0
         }
@@ -113,22 +113,22 @@
     "brain_combined_ablation": {
       "results": {
         "GI-CANN": {
-          "r2_ut": 0.961155,
-          "r2_uc": 0.994486,
-          "r2_ss": 0.899906,
-          "avg_r2": 0.951849,
-          "heldout_rel_error": 0.184477,
+          "r2_ut": 0.960609,
+          "r2_uc": 0.995554,
+          "r2_ss": 0.875783,
+          "avg_r2": 0.943982,
+          "heldout_rel_error": 0.200366,
           "n_terms": 1.0,
-          "alpha_star": -22.091101
+          "alpha_star": -22.219102
         },
         "SI-CANN": {
-          "r2_ut": 0.061766,
-          "r2_uc": 0.655081,
-          "r2_ss": 0.884561,
-          "avg_r2": 0.533803,
-          "heldout_rel_error": 0.420266,
+          "r2_ut": 0.065927,
+          "r2_uc": 0.726897,
+          "r2_ss": 0.875818,
+          "avg_r2": 0.556214,
+          "heldout_rel_error": 0.433455,
           "n_terms": 1.0,
-          "alpha_star": 0.0
+          "alpha_star": -2.0
         }
       }
     }
